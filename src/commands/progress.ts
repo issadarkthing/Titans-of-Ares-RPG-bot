@@ -14,8 +14,7 @@ export async function profile(msg: Message, args: string[]) {
     return msg.channel.send("User does not exist");
   } 
 
-  const totalPoints = Math.round(await getTotalPoints(userId));
-
+  const totalPoints = await getTotalPoints(userId);
   const xp = getXp(totalPoints);
   const level = getLevel(xp);
   const levelThreshold = getLevelThreshold(level);
@@ -25,7 +24,7 @@ export async function profile(msg: Message, args: string[]) {
     .setCurrentXP(xp)
     .setRequiredXP(levelThreshold)
     .setLevel(level)
-    .setProgressBar("#ffd700", "COLOR")
+    .setProgressBar("#ff0800", "COLOR", false)
     .setOverlay("#000000")
     .setUsername(member.user.username)
     .setDiscriminator(member.user.discriminator)
