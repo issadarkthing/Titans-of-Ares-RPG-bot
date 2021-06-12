@@ -1,0 +1,4 @@
+dist
+MainDB.db
+node_modules/
+.env
