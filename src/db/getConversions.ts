@@ -17,3 +17,16 @@ export async function getConversions() {
 
   return promisify<Row>(db, sql);
 }
+
+export async function getConvertTable() {
+
+  const conversions = await getConversions();
+  const convertTable = new Map<string, number>();
+
+  conversions.forEach(convert => {
+    const tag = `${convert.Name}-${convert.ChallengeID}`;
+    convertTable.set(tag, convert.PointsValue);
+  })
+
+  return convertTable;
+}

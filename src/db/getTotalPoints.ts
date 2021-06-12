@@ -1,17 +1,11 @@
 import { getActivity } from "./getActivity";
-import { getConversions } from "./getConversions";
+import { getConvertTable } from "./getConversions";
 
 
 export async function getTotalPoints(userId: string) {
 
   const activities = await getActivity(userId);
-  const conversions = await getConversions();
-  const convertTable = new Map<string, number>();
-
-  conversions.forEach(convert => {
-    const tag = `${convert.Name}-${convert.ChallengeID}`;
-    convertTable.set(tag, convert.PointsValue);
-  })
+  const convertTable = await getConvertTable();
 
   let totalPoints = 0;
 

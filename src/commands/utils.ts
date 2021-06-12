@@ -1,6 +1,6 @@
 
 export function getLevelThreshold(level: number) {
-  return Math.round(12 * Math.pow(level, 2));
+  return Math.round(50 * Math.pow(level, 2));
 }
 
 export function getXp(point: number) {
@@ -17,3 +17,4 @@ export function getLevel(xp: number) {
 
   return level;
 }
+

@@ -2,6 +2,7 @@ import { verbose } from 'sqlite3';
 import { Client } from 'discord.js';
 import path from 'path';
 import { profile } from "./commands/progress";
+import rank from "./commands/ranks";
 
 const sqlite3 = verbose()
 export const db = new sqlite3.Database(path.resolve(__dirname, '../MainDB.db'));
@@ -31,6 +32,9 @@ client.on('message', (msg) => {
   switch (cmd) {
     case 'progress':
       profile(msg, args);
+      break;
+    case 'rank':
+      rank(msg, args);
       break;
   }
 })
