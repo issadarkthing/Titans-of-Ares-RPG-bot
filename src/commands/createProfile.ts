@@ -21,13 +21,18 @@ export default async function(
   const xp = getXp(totalPoints);
   const level = getLevel(xp);
   const levelThreshold = getLevelThreshold(level);
-  const prevLevelThreshold = getLevelThreshold(level - 1);
-  const image = options?.image || "BLACK";
+  const image = options?.image || "#556b2f";
+
+  let accPrevLevel = 0;
+  let lvl = level;
+
+  while (lvl > 0)
+    accPrevLevel += getLevelThreshold(--lvl);
 
   const rankCard = await new Rank()
     .setAvatar(user.displayAvatarURL({ format: 'png', dynamic: true }))
-    .setCurrentXP(xp - prevLevelThreshold)
-    .setRequiredXP(levelThreshold - prevLevelThreshold)
+    .setCurrentXP(Math.round(xp - accPrevLevel))
+    .setRequiredXP(Math.round(levelThreshold))
     .setLevel(level)
     .setRank(options?.rank || 0, "", options?.rank)
     .setProgressBar("#ff0800", "COLOR", false)

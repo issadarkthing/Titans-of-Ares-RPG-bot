@@ -12,6 +12,7 @@
   "license": "ISC",
   "dependencies": {
     "canvacord": "^5.2.1",
+    "canvas": "^2.8.0",
     "discord.js": "^12.5.3",
     "dotenv": "^10.0.0",
     "sqlite3": "^5.0.2",

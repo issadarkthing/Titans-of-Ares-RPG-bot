@@ -61,7 +61,6 @@ export default async function (msg: Message, args: string[]) {
   const cards = playerList
     .sort((a, b) => b.point - a.point)
 
-  // REMEMBER TO REMOVE THIS!!!!
   let i = 0;
   for (const card of cards) {
 
