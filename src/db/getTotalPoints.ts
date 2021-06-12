@@ -9,17 +9,19 @@ export async function getTotalPoints(userId: string) {
   const convertTable = new Map<string, number>();
 
   conversions.forEach(convert => {
-    convertTable.set(convert.Name + convert.ChallengeId, convert.PointsValue);
+    const tag = `${convert.Name}-${convert.ChallengeID}`;
+    convertTable.set(tag, convert.PointsValue);
   })
 
   let totalPoints = 0;
 
   activities.forEach(activity => {
-    const multiplier = convertTable.get(activity.ValueType);
+    const tag = `${activity.ValueType}-${activity.ChallengeID}`;
+    const multiplier = convertTable.get(tag);
     if (multiplier) {
       totalPoints += multiplier * activity.Value;
     }
   })
 
-  return totalPoints;
+  return Math.round(totalPoints);
 }

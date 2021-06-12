@@ -5,12 +5,14 @@ interface Row {
   Day: number;
   Value: number;
   ValueType: string;
+  ChallengeID: number;
 }
 
 export function getActivity(userId: string) {
 
   const sql = `
-  SELECT DayEntry.Day, 
+  SELECT ChallengeEntry.ChallengeID,
+         DayEntry.Day, 
          DayEntry.Value, 
          DayEntry.ValueType 
   FROM DayEntry 

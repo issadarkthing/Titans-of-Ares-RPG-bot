@@ -5,7 +5,7 @@ interface Row {
   Name: string;
   PointsValue: number;
   DailyLimit: number;
-  ChallengeId: number;
+  ChallengeID: number;
 }
 
 export async function getConversions() {
