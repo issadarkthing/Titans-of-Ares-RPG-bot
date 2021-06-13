@@ -30,7 +30,7 @@ client.on('message', (msg) => {
 
   const cmd = command.replace(PREFIX, '');
   switch (cmd) {
-    case 'progress':
+    case 'profile':
       profile(msg, args);
       break;
     case 'rank':

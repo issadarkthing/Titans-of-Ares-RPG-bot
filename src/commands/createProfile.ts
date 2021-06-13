@@ -21,7 +21,7 @@ export default async function(
   const xp = getXp(totalPoints);
   const level = getLevel(xp);
   const levelThreshold = getLevelThreshold(level);
-  const image = options?.image || "#556b2f";
+  const image = options?.image || "#111";
 
   let accPrevLevel = 0;
   let lvl = level;
@@ -34,7 +34,7 @@ export default async function(
     .setCurrentXP(Math.round(xp - accPrevLevel))
     .setRequiredXP(Math.round(levelThreshold))
     .setLevel(level)
-    .setRank(options?.rank || 0, "", options?.rank)
+    .setRank(options?.rank || 0, "", options?.rank || false)
     .setProgressBar("#ff0800", "COLOR", false)
     .setOverlay("#000000")
     .setUsername(member.nickname || user.username)
