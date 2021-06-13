@@ -1,4 +1,4 @@
-import { TextChannel, Message } from "discord.js";
+import { TextChannel, Message, DMChannel, NewsChannel } from "discord.js";
 import { getActivities } from "../db/getActivity";
 import { getConvertTable } from "../db/getConversions";
 import createProfile from "./createProfile";
@@ -20,9 +20,12 @@ async function nukeChannel(channel: TextChannel) {
     } while (deleted > 0);
 }
 
-export default async function (msg: Message, args: string[]) {
+export default async function (
+  msg: Message, 
+  args: string[], 
+  channel: TextChannel | DMChannel | NewsChannel = msg.channel,
+) {
 
-  const channel = msg.channel;
   const limit = args[0];
 
   if (!(channel instanceof TextChannel)) {
@@ -77,7 +80,7 @@ export default async function (msg: Message, args: string[]) {
       rank: i + 1,
       image: backgrounds[i],
     });
-    await msg.channel.send(attachment);
+    await channel.send(attachment);
     i++;
   }
 
