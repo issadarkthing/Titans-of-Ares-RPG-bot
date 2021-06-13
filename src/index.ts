@@ -3,6 +3,7 @@ import { Client } from 'discord.js';
 import path from 'path';
 import { profile } from "./commands/profile";
 import rank from "./commands/rank";
+import help from './commands/help';
 
 const sqlite3 = verbose()
 export const db = new sqlite3.Database(path.resolve(__dirname, '../MainDB.db'));
@@ -43,6 +44,9 @@ client.on('message', (msg) => {
       break;
     case 'rank':
       rank(msg, args);
+      break;
+    case 'help':
+      help(msg, args);
       break;
   }
 })
