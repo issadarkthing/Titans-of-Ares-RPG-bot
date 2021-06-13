@@ -2,3 +2,5 @@ dist
 MainDB.db
 node_modules/
 .env
+
+tsconfig.tsbuildinfo
