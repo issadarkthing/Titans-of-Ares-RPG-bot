@@ -2,6 +2,7 @@ import { TextChannel, Message, DMChannel, NewsChannel } from "discord.js";
 import { getActivities } from "../db/getActivity";
 import { getConvertTable } from "../db/getConversions";
 import createProfile from "./createProfile";
+import { RANK_CHANNEL } from "../index";
 
 const backgrounds = [
   "https://cdn.discordapp.com/attachments/576986467084140557/852842157417168916/iu.png",
@@ -23,8 +24,10 @@ async function nukeChannel(channel: TextChannel) {
 export default async function (
   msg: Message, 
   args: string[], 
-  channel: TextChannel | DMChannel | NewsChannel = msg.channel,
 ) {
+
+  const channel = msg.guild?.channels.cache.get(RANK_CHANNEL!);
+  if (!channel) throw Error("No rank channel");
 
   const limit = args[0];
 
