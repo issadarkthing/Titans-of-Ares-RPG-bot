@@ -12,12 +12,11 @@ interface Options {
 
 export default async function(
   member: GuildMember, 
-  points?: number, 
   options?: Options,
 ) {
 
   const user = member.user;
-  const totalPoints = points || await getTotalPoints(user.id);
+  const totalPoints = await getTotalPoints(user.id);
   const xp = getXp(totalPoints);
   const level = getLevel(xp);
   const levelThreshold = getLevelThreshold(level);
@@ -26,7 +25,7 @@ export default async function(
   let accPrevLevel = 0;
   let lvl = level;
 
-  while (lvl > 0)
+  while (lvl > 1)
     accPrevLevel += getLevelThreshold(--lvl);
 
   const rankCard = await new Rank()

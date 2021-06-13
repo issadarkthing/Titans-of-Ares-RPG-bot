@@ -1,12 +1,19 @@
-import { TextChannel, Message, DMChannel, NewsChannel } from "discord.js";
-import { getActivities } from "../db/getActivity";
-import { getConvertTable } from "../db/getConversions";
+import { TextChannel, GuildMember, Message } from "discord.js";
+import { getUsers } from "../db/getUsers";
 import createProfile from "./createProfile";
 import { RANK_CHANNEL } from "../index";
+import { getTotalPoints } from "../db/getTotalPoints";
 
 const backgrounds = [
   "https://cdn.discordapp.com/attachments/576986467084140557/852842157417168916/iu.png",
-  "https://cdn.discordapp.com/attachments/576986467084140557/853178145422442506/unknown.png",
+  "https://cdn.discordapp.com/attachments/576986467084140557/852845125487165450/iu.png",
+  "https://cdn.discordapp.com/attachments/576986467084140557/852845125487165450/iu.png",
+  "https://cdn.discordapp.com/attachments/576986467084140557/852846797041696798/iu.png",
+  "https://cdn.discordapp.com/attachments/576986467084140557/852846797041696798/iu.png",
+  "https://cdn.discordapp.com/attachments/576986467084140557/852846797041696798/iu.png",
+  "https://cdn.discordapp.com/attachments/576986467084140557/852846797041696798/iu.png",
+  "https://cdn.discordapp.com/attachments/576986467084140557/852846797041696798/iu.png",
+  "https://cdn.discordapp.com/attachments/576986467084140557/852846797041696798/iu.png",
   "https://cdn.discordapp.com/attachments/576986467084140557/852846797041696798/iu.png",
 ];
 
@@ -35,55 +42,41 @@ export default async function (
     return;
   }
 
+  const messages = await channel.messages.fetch();
 
-  if (channel.messages.cache.size > 0) {
+  if (messages.size > 0) {
     await nukeChannel(channel);
   }
 
-  type DiscordID = string;
-  type Point = number;
-  const players = new Map<DiscordID, Point>()
-  const activities = await getActivities();
-  const convertTable = await getConvertTable();
-  activities.forEach(activity => {
-    const tag = `${activity.ValueType}-${activity.ChallengeID}`;
-    const multiplier = convertTable.get(tag) || 1;
-    const point = multiplier * activity.Value;
-    const id = activity.DiscordID;
+  const users = await getUsers();
+  const cards: { member: GuildMember, point: number }[] = [];
 
+  for (const user of users) {
 
-    if (!players.has(activity.DiscordID)) {
-      players.set(id, point);
-    }
-
-    const acc = players.get(activity.DiscordID)!;
-    players.set(id, acc + point);
-  })
-
-  const playerList: { user: string, point: number }[] = [];
-
-  players.forEach((point, user) => playerList.push({ user, point }));
-
-  const cards = playerList
-    .sort((a, b) => b.point - a.point)
-
-  let i = 0;
-  for (const card of cards) {
-
-    const member = channel.guild.members.cache.get(card.user.toString());
+    const member = channel.guild.members.cache.get(user.DiscordID);
     if (!member) {
       continue;
     }
 
-    if (limit && i === parseInt(limit)) {
+    const point = await getTotalPoints(user.DiscordID);
+    cards.push({ member, point })
+  }
+
+  cards.sort((a, b) => b.point - a.point);
+
+  let i = 0;
+  for (const card of cards) {
+
+    if (limit && i >= parseInt(limit)) {
       break;
     }
 
-    const attachment = await createProfile(member, card.point, { 
+    const attachment = await createProfile(card.member, { 
       rank: i + 1,
       image: backgrounds[i],
     });
-    await channel.send(attachment);
+    
+    await channel.send(attachment)
     i++;
   }
 
