@@ -33,7 +33,7 @@ export default async function (
   args: string[], 
 ) {
 
-  const channel = msg.guild?.channels.cache.get(RANK_CHANNEL!);
+  const channel = msg.guild?.channels.resolve(RANK_CHANNEL!);
   if (!channel) throw Error("No rank channel");
 
   const limit = args[0];
