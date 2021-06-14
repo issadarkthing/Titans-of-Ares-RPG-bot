@@ -7,11 +7,11 @@ import help from './commands/help';
 import { xpLog } from "./commands/xpLog";
 
 const sqlite3 = verbose()
-export const db = new sqlite3.Database(path.resolve(__dirname, '../MainDB.db'));
 const PREFIX = process.env.PREFIX;
 const OLD_BOT_ID = process.env.OLD_BOT_ID;
 export const RANK_CHANNEL = process.env.RANK_CHANNEL;
 export const XP_LOG_CHANNEL = process.env.XP_LOG_CHANNEL;
+export const DB = process.env.DB;
 
 if (!PREFIX) {
   throw new Error('No command prefix');
@@ -19,8 +19,11 @@ if (!PREFIX) {
   throw new Error('No rank channel');
 } else if (!XP_LOG_CHANNEL) {
   throw new Error('No xp log channel');
+} else if (!DB) {
+  throw new Error('No DB specified');
 }
 
+export const db = new sqlite3.Database(path.resolve(__dirname, DB));
 const client = new Client();
 
 // stores discord id of user that triggers the xp log
