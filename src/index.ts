@@ -39,8 +39,7 @@ client.on('message', (msg) => {
 
   if (
     msg.content.startsWith("Registered") 
-    // DONT FORGET TO CHANGE THE ID
-    && msg.author.id === "264010327023288323"
+    && msg.author.id === OLD_BOT_ID
   ) {
     rank(msg, []);
     xpLog(msg, []);
