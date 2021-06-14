@@ -9,29 +9,34 @@ export async function xpLog(msg: Message, args: string[]) {
   const member = msg.guild?.members.cache.get(xpLogTriggers);
   if (!member) return;
 
-  const fullText = msg.content;
+  const lines = msg.content.split("\n");
   const rgx = /Progress:\s(?<value>\d+)\s(?<valueType>\w+)$/
-  const matches = fullText.match(rgx);
-  if (!matches || !matches.groups) return;
 
-  const {value, valueType} = matches.groups;
-  const challengeId = await getChallengeId("848830692237770761");
-  const tag = `${valueType}-${challengeId}`;
-  const convertTable = await getConvertTable();
-  const multiplier = convertTable.get(tag);
+  for (const line of lines) {
 
-  if (!multiplier) throw Error(`tag returns ${tag}`);
+    const matches = line.match(rgx);
+    if (!matches || !matches.groups) return;
 
-  const point = parseInt(value) * multiplier;
-  const logChannel = msg.guild?.channels.cache.get(XP_LOG_CHANNEL!);
-  const xp = Math.round(getXp(point));
+    const {value, valueType} = matches.groups;
+    const challengeId = await getChallengeId(msg.channel.id);
+    const tag = `${valueType}-${challengeId}`;
+    const convertTable = await getConvertTable();
+    const multiplier = convertTable.get(tag);
 
-  if (!logChannel) 
-    throw Error("No xp log channel specified");
-  else if (!(logChannel instanceof TextChannel))
-    throw Error("XP log channel is not TextChannel");
+    if (!multiplier)
+      return msg.channel.send("Invalid channel");
 
-  logChannel.send(
-    `${member.nickname || member.user.username} has earned \`${xp} xp\`!`
-  )
+    const point = parseInt(value) * multiplier;
+    const logChannel = msg.guild?.channels.cache.get(XP_LOG_CHANNEL!);
+    const xp = Math.round(getXp(point));
+
+    if (!logChannel) 
+      throw Error("No xp log channel specified");
+    else if (!(logChannel instanceof TextChannel))
+      throw Error("XP log channel is not TextChannel");
+
+    logChannel.send(
+      `${member.nickname || member.user.username} has earned \`${xp} xp\`!`
+    )
+  }
 }
