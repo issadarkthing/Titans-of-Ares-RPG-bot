@@ -6,6 +6,7 @@ import rank from "./commands/rank";
 import help from './commands/help';
 import { xpLog } from "./commands/xpLog";
 import award from "./commands/award";
+import { makeXPTable } from './db/getTotalPoints';
 
 const sqlite3 = verbose()
 const PREFIX = process.env.PREFIX;
@@ -26,6 +27,8 @@ if (!PREFIX) {
 
 export const db = new sqlite3.Database(path.resolve(__dirname, DB));
 const client = new Client();
+
+db.prepare(makeXPTable);
 
 // stores discord id of user that triggers the xp log
 export let xpLogTriggers = "";
