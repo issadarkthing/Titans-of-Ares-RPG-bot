@@ -51,11 +51,13 @@ export default async function (
   const users = await getUsers();
   const cards: { member: GuildMember, point: number }[] = [];
 
+  await channel.guild.members.fetch();
+
   for (const user of users) {
 
-    const member = channel.guild.members.cache.get(user.DiscordID);
+    let member = channel.guild.members.cache.get(user.DiscordID);
     if (!member) {
-      continue;
+        continue;
     }
 
     const point = await getTotalPoints(user.DiscordID);
@@ -64,7 +66,9 @@ export default async function (
 
   cards.sort((a, b) => b.point - a.point);
 
+
   let i = 0;
+  const files = [];
   for (const card of cards) {
 
     if (limit && i >= parseInt(limit)) {
@@ -76,8 +80,9 @@ export default async function (
       image: backgrounds[i],
     });
     
-    await channel.send(attachment)
+    files.push(attachment.setName(i.toString() + ".png"));
     i++;
   }
 
+  await channel.send({ files });
 }
