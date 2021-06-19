@@ -14,6 +14,9 @@ export default function(msg: Message, args: string[]) {
   Reset rank leaderboard. Count is the number of users to be shown on the rank
   board. Leaving it out causes the board to show all players.
 
+  $award <userId> <amount> <reason>
+  Add xp to user. To deduct, use negative amount.
+
   $profile [userId]
   Show user profile. User id can be given to show other user profile.\`\`\``
 
