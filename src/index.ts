@@ -44,7 +44,7 @@ client.on('message', (msg) => {
     msg.content.startsWith("Registered") 
     && msg.author.id === OLD_BOT_ID
   ) {
-    rank(msg, []);
+    rank(msg, ["10"]);
     xpLog(msg, []);
     
   } else if (command.startsWith("!") && !msg.author.bot) {
