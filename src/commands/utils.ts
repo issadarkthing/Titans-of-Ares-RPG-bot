@@ -1,4 +1,5 @@
 
+// returns xp needed to get to the next level
 export function getLevelThreshold(level: number) {
   return (10 + (level * 0.5));
 }

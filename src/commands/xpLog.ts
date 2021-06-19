@@ -2,7 +2,8 @@ import { Message, TextChannel } from "discord.js";
 import { xpLogTriggers, XP_LOG_CHANNEL } from "../index";
 import { getConvertTable } from "../db/getConversions";
 import { getChallengeId } from "../db/getChallengeId";
-import { getXp } from "./utils";
+import { getLevel, getXp } from "./utils";
+import { getTotalXp } from "../db/getTotalPoints";
 
 export async function xpLog(msg: Message, args: string[]) {
 
@@ -29,6 +30,11 @@ export async function xpLog(msg: Message, args: string[]) {
     const point = parseInt(value) * multiplier;
     const logChannel = msg.guild?.channels.cache.get(XP_LOG_CHANNEL!);
     const xp = Math.round(getXp(point));
+    const totalXp = await getTotalXp(member.user.id);
+    const currentLevel = getLevel(xp);
+    const prevXp = totalXp - getXp(point);
+    const prevLevel = getLevel(prevXp);
+    const name = member.nickname || member.user.username;
 
     if (!logChannel) 
       throw Error("No xp log channel specified");
@@ -36,7 +42,13 @@ export async function xpLog(msg: Message, args: string[]) {
       throw Error("XP log channel is not TextChannel");
 
     logChannel.send(
-      `${member.nickname || member.user.username} has earned \`${xp} xp\`!`
+      `${name} has earned \`${xp} xp\`!`
     )
+
+    if (currentLevel !== prevLevel) {
+      logChannel.send(
+        `${name} is now on **level ${currentLevel}**`
+      );
+    }
   }
 }

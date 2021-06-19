@@ -1,6 +1,6 @@
 import { GuildMember, MessageAttachment } from "discord.js";
-import { getTotalPoints } from "../db/getTotalPoints";
-import { getXp, getLevelThreshold, getLevel } from "./utils";
+import { getTotalXp } from "../db/getTotalPoints";
+import { getLevelThreshold, getLevel } from "./utils";
 //@ts-ignore
 import { Rank } from "canvacord";
 
@@ -16,8 +16,7 @@ export default async function(
 ) {
 
   const user = member.user;
-  const totalPoints = await getTotalPoints(user.id);
-  const xp = getXp(totalPoints);
+  const xp = await getTotalXp(user.id);
   const level = getLevel(xp);
   const levelThreshold = getLevelThreshold(level);
   const image = options?.image || "#111";
