@@ -1,5 +1,5 @@
 import { db } from "../index";
-import promisify from "./promiseWrapper";
+import { dbAll } from "./promiseWrapper";
 
 interface Row {
   Name: string;
@@ -15,7 +15,7 @@ export async function getConversions() {
   FROM Conversion
   `
 
-  return promisify<Row>(db, sql);
+  return dbAll<Row>(db, sql);
 }
 
 export async function getConvertTable() {

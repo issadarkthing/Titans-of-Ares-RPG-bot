@@ -1,5 +1,5 @@
 import { db } from "../index";
-import promisify from "./promiseWrapper";
+import { dbAll } from "./promiseWrapper";
 
 interface Row {
   Day: number;
@@ -19,7 +19,7 @@ export function getActivity(userId: string) {
   INNER JOIN ChallengeEntry ON DayEntry.EntryID = ChallengeEntry.ID 
     WHERE ChallengeEntry.DiscordID = ${userId} 
   `
-  return promisify<Row>(db, sql);
+  return dbAll<Row>(db, sql);
 }
 
 interface Row1 extends Row {
@@ -39,5 +39,5 @@ export function getActivities() {
   WHERE ChallengeEntry.ChallengeID != 1
   `
 
-  return promisify<Row1>(db, sql);
+  return dbAll<Row1>(db, sql);
 }

@@ -1,5 +1,5 @@
 import { db } from "../index";
-import promiseWrapper from "./promiseWrapper";
+import { dbAll } from "./promiseWrapper";
 
 export default async function(userId: string) {
 
@@ -9,6 +9,6 @@ export default async function(userId: string) {
     WHERE ID = ${userId}
   `
 
-  const result = await promiseWrapper(db, sql);
+  const result = await dbAll(db, sql);
   return result.length > 0;
 }

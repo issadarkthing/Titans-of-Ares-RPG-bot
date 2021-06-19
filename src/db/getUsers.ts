@@ -1,5 +1,5 @@
 import { db } from "../index";
-import promiseWrapper from "./promiseWrapper";
+import { dbAll } from "./promiseWrapper";
 
 
 export function getUsers() {
@@ -9,5 +9,5 @@ export function getUsers() {
   FROM ChallengeEntry
   `
 
-  return promiseWrapper<{ DiscordID: string }>(db, sql);
+  return dbAll<{ DiscordID: string }>(db, sql);
 }

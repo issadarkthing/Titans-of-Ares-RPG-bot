@@ -5,6 +5,7 @@ import { profile } from "./commands/profile";
 import rank from "./commands/rank";
 import help from './commands/help';
 import { xpLog } from "./commands/xpLog";
+import award from "./commands/award";
 
 const sqlite3 = verbose()
 const PREFIX = process.env.PREFIX;
@@ -64,6 +65,9 @@ client.on('message', (msg) => {
       break;
     case 'help':
       help(msg, args);
+      break;
+    case 'award':
+      award(msg, args);
       break;
   }
 })
