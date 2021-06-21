@@ -3,6 +3,7 @@ import createProfile from "./createProfile";
 import hasUser from "../db/hasUser";
 import { getUsers } from "../db/getUsers";
 import { getTotalPoints } from "../db/getTotalPoints";
+import { backgrounds } from "./rank";
 
 export async function profile(msg: Message, args: string[]) {
 
@@ -42,7 +43,10 @@ export async function profile(msg: Message, args: string[]) {
 
   const rank = cards.findIndex(x => x.member.user.id === userId)!;
 
-  const card = await createProfile(member, { rank: rank + 1 });
+  const card = await createProfile(member, { 
+    rank: rank + 1,
+    image: backgrounds[rank],
+  });
   msg.channel.send(card);
 }
 

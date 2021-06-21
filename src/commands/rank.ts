@@ -4,7 +4,7 @@ import createProfile from "./createProfile";
 import { RANK_CHANNEL } from "../index";
 import { getTotalPoints } from "../db/getTotalPoints";
 
-const backgrounds = [
+export const backgrounds = [
   "https://cdn.discordapp.com/attachments/576986467084140557/852842157417168916/iu.png",
   "https://cdn.discordapp.com/attachments/576986467084140557/852845125487165450/iu.png",
   "https://cdn.discordapp.com/attachments/576986467084140557/852845125487165450/iu.png",
