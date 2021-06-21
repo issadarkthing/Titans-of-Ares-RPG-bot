@@ -2,7 +2,7 @@ import { Message, TextChannel } from "discord.js";
 import { award } from "../db/awardUser";
 import { getAdminRoles } from "../db/isAdmin";
 import { XP_LOG_CHANNEL } from "../index";
-
+import rank from "./rank";
 
 export default async function(msg: Message, args: string[]) {
 
@@ -46,6 +46,7 @@ export default async function(msg: Message, args: string[]) {
     logChannel.send(
       `${action} \`${amount} xp\` ${prePosition} ${name}! Reason: ${reason}`
     );
+    rank(msg, ["10"]);
 
   } catch (e) {
     console.log(e);
