@@ -4,9 +4,10 @@ import { db } from "../index";
 export function award(userId: string, amount: number) {
 
   const sql = `
-    UPDATE XP
-    SET XP = XP + ${amount}
-    WHERE DiscordID = ${userId}
+    INSERT INTO XP(DiscordID, XP)
+    VALUES (${userId}, ${amount})
+    ON CONFLICT(DiscordID)
+    DO UPDATE SET XP = XP + ${amount}
   `
 
   return dbExec(db, sql);

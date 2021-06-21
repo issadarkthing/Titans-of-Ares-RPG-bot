@@ -25,10 +25,9 @@ export async function getTotalPoints(userId: string) {
 
 export const makeXPTable = `
     CREATE TABLE IF NOT EXISTS "XP" (
-      "ID"	      INTEGER NOT NULL UNIQUE,
-      "DiscordID"	TEXT NOT NULL,
+      "DiscordID"	TEXT NOT NULL UNIQUE,
       "XP"        INTEGER NOT NULL,
-      PRIMARY KEY("ID" AUTOINCREMENT)
+      PRIMARY KEY("DiscordID")
     )
 `;
 
