@@ -1,6 +1,6 @@
 import { Message, TextChannel } from "discord.js";
 import { award } from "../db/awardUser";
-import isAdmin from "../db/isAdmin";
+import { getAdminRoles } from "../db/isAdmin";
 import { XP_LOG_CHANNEL } from "../index";
 
 
@@ -23,9 +23,12 @@ export default async function(msg: Message, args: string[]) {
   else if (!member)
     return msg.channel.send("Member does not exist");
 
-  const admin = await isAdmin(authorId);
+  const adminRoles = await getAdminRoles();
+  const authorMember = msg.guild?.members.cache.get(authorId);
+  const isAdmin = authorMember?.roles.cache
+    .some(role => adminRoles.includes(role.id));
   
-  if (!admin)
+  if (!isAdmin)
     return msg.channel.send("Only admin can use this command");
 
   const logChannel = msg.guild?.channels.cache.get(XP_LOG_CHANNEL!) as TextChannel;

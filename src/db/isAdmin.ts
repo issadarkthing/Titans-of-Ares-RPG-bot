@@ -12,3 +12,14 @@ export default async function(userId: string) {
   const result = await dbAll(db, sql);
   return result.length > 0;
 }
+
+export async function getAdminRoles() {
+
+  const sql = `
+    SELECT CAST(ID AS TEXT) as ID
+    FROM AdminRole
+  `;
+
+  return dbAll<{ ID: string }>(db, sql)
+    .then(roles => roles.map(x => x.ID));
+}
