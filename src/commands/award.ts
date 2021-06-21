@@ -4,7 +4,7 @@ import { getTotalXp } from "../db/getTotalPoints";
 import { getAdminRoles } from "../db/isAdmin";
 import { XP_LOG_CHANNEL } from "../index";
 import rank from "./rank";
-import { getLevel, getXp } from "./utils";
+import { getLevel } from "./utils";
 
 export default async function(msg: Message, args: string[]) {
 
