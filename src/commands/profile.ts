@@ -2,7 +2,7 @@ import { GuildMember, Message } from "discord.js";
 import createProfile from "./createProfile";
 import hasUser from "../db/hasUser";
 import { getUsers } from "../db/getUsers";
-import { getTotalXp } from "../db/getTotalPoints";
+import { getTotalPoints, getTotalXp } from "../db/getTotalPoints";
 import { backgrounds } from "./rank";
 
 export async function profile(msg: Message, args: string[]) {
@@ -24,7 +24,11 @@ export async function profile(msg: Message, args: string[]) {
     return msg.channel.send("User has not registered to any challenge");
 
   const users = await getUsers();
-  const cards: { member: GuildMember, point: number }[] = [];
+  const cards: { 
+    member: GuildMember, 
+    point: number,
+    xp: number,
+  }[] = [];
 
   await guild.members.fetch();
 
@@ -35,18 +39,21 @@ export async function profile(msg: Message, args: string[]) {
         continue;
     }
 
-    const point = await getTotalXp(user.DiscordID);
-    cards.push({ member, point })
+    const xp = await getTotalXp(user.DiscordID);
+    const point = await getTotalPoints(user.DiscordID);
+    cards.push({ member, xp, point });
   }
 
-  cards.sort((a, b) => b.point - a.point);
+  cards.sort((a, b) => b.xp - a.xp);
 
   const rank = cards.findIndex(x => x.member.user.id === userId)!;
+  const {xp, point} = cards.find(x => x.member.user.id === userId)!;
 
   const card = await createProfile(member, { 
     rank: rank + 1,
     image: backgrounds[rank],
   });
-  msg.channel.send(card);
+  await msg.channel.send(card);
+  await msg.channel.send(`Total xp: **${xp}** Total Points: **${point}**`);
 }
 
