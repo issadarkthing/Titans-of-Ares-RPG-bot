@@ -54,6 +54,6 @@ export async function profile(msg: Message, args: string[]) {
     image: backgrounds[rank],
   });
   await msg.channel.send(card);
-  await msg.channel.send(`Total xp: **${xp}** Total Points: **${point}**`);
+  await msg.channel.send(`Total Points: **${point}** Total xp: **${xp}**`);
 }
 
