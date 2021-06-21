@@ -28,7 +28,7 @@ if (!PREFIX) {
 export const db = new sqlite3.Database(path.resolve(__dirname, DB));
 const client = new Client();
 
-db.prepare(makeXPTable);
+db.run(makeXPTable);
 
 // stores discord id of user that triggers the xp log
 export let xpLogTriggers = "";
