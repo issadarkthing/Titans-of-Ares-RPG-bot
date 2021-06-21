@@ -31,7 +31,7 @@ export async function xpLog(msg: Message, args: string[]) {
     const logChannel = msg.guild?.channels.cache.get(XP_LOG_CHANNEL!);
     const xp = Math.round(getXp(point));
     const totalXp = await getTotalXp(member.user.id);
-    const currentLevel = getLevel(xp);
+    const currentLevel = getLevel(totalXp);
     const prevXp = totalXp - getXp(point);
     const prevLevel = getLevel(prevXp);
     const name = member.nickname || member.user.username;

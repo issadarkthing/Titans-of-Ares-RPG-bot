@@ -12,7 +12,8 @@ export default async function(msg: Message, args: string[]) {
   const amount = args[1];
   const reason = args.slice(2).join(" ");
   const authorId = msg.author.id;
-  const member = msg.guild?.members.cache.get(userId);
+  const member = msg.guild?.members.cache.get(userId) ||
+    await msg.guild?.members.fetch(userId)
 
   if (!userId)
     return msg.channel.send("You need to specify user id");
