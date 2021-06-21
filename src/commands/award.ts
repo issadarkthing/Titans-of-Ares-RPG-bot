@@ -1,8 +1,10 @@
 import { Message, TextChannel } from "discord.js";
 import { award } from "../db/awardUser";
+import { getTotalXp } from "../db/getTotalPoints";
 import { getAdminRoles } from "../db/isAdmin";
 import { XP_LOG_CHANNEL } from "../index";
 import rank from "./rank";
+import { getLevel, getXp } from "./utils";
 
 export default async function(msg: Message, args: string[]) {
 
@@ -43,9 +45,23 @@ export default async function(msg: Message, args: string[]) {
     const action = amountInt >= 0 ? "Added" : "Deducted";
     const prePosition = amountInt >= 0 ? "to" : "from";
     msg.channel.send("Executed successfully");
+
+    const totalXp = await getTotalXp(userId);
+    const prevXp = totalXp - amountInt;
+    const prevLevel = getLevel(prevXp);
+    const currentLevel = getLevel(totalXp);
+
     logChannel.send(
       `${action} \`${amount} xp\` ${prePosition} ${name}! Reason: ${reason}`
     );
+
+
+    if (currentLevel > prevLevel) {
+      logChannel.send(
+        `${name} is now on **level ${currentLevel}**`
+      );
+    }
+
     rank(msg, ["10"]);
 
   } catch (e) {
