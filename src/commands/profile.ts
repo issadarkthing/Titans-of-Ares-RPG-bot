@@ -2,7 +2,7 @@ import { GuildMember, Message } from "discord.js";
 import createProfile from "./createProfile";
 import hasUser from "../db/hasUser";
 import { getUsers } from "../db/getUsers";
-import { getTotalPoints } from "../db/getTotalPoints";
+import { getTotalXp } from "../db/getTotalPoints";
 import { backgrounds } from "./rank";
 
 export async function profile(msg: Message, args: string[]) {
@@ -35,7 +35,7 @@ export async function profile(msg: Message, args: string[]) {
         continue;
     }
 
-    const point = await getTotalPoints(user.DiscordID);
+    const point = await getTotalXp(user.DiscordID);
     cards.push({ member, point })
   }
 
