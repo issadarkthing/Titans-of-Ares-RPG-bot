@@ -8,6 +8,7 @@ import { xpLog } from "./commands/xpLog";
 import award from "./commands/award";
 import { makeXPTable } from './db/getTotalPoints';
 import { xp } from './commands/xp';
+import { battle } from './commands/battle';
 
 const sqlite3 = verbose()
 const PREFIX = process.env.PREFIX;
@@ -75,6 +76,9 @@ client.on('message', (msg) => {
       break;
     case 'xp':
       xp(msg, args);
+      break;
+    case 'battle':
+      battle(msg, args);
       break;
   }
 })
