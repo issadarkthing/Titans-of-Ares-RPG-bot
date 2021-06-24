@@ -36,10 +36,10 @@ export async function battle(msg: Message, player: Player, challenger: Player) {
       await attack(challenger, player);
     }
 
-    await sleep(2000);
-
     if (player.hp <= 0 || challenger.hp <= 0)
       break;
+
+    await sleep(2000);
 
     round++;
   }
