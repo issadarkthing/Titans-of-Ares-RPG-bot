@@ -1,5 +1,5 @@
 import { db } from "..";
-import { getXp } from "../commands/utils";
+import { getXp } from "../internals/utils";
 import { getActivity } from "./getActivity";
 import { getConvertTable } from "./getConversions";
 import { dbGet } from "./promiseWrapper";

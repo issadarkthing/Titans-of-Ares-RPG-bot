@@ -2,7 +2,7 @@ import { Message, TextChannel } from "discord.js";
 import { xpLogTriggers, XP_LOG_CHANNEL } from "../index";
 import { getConvertTable } from "../db/getConversions";
 import { getChallengeId } from "../db/getChallengeId";
-import { getLevel, getXp } from "./utils";
+import { getLevel, getXp } from "../internals/utils";
 import { getTotalXp } from "../db/getTotalPoints";
 
 export async function xpLog(msg: Message, args: string[]) {

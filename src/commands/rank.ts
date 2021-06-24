@@ -1,6 +1,6 @@
 import { TextChannel, GuildMember, Message } from "discord.js";
 import { getUsers } from "../db/getUsers";
-import createProfile from "./createProfile";
+import createProfile from "../internals/createProfile";
 import { RANK_CHANNEL } from "../index";
 import { getTotalPoints } from "../db/getTotalPoints";
 

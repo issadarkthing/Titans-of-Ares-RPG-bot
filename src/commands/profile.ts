@@ -1,10 +1,10 @@
 import { GuildMember, Message } from "discord.js";
-import createProfile from "./createProfile";
+import createProfile from "../internals/createProfile";
 import hasUser from "../db/hasUser";
 import { getUsers } from "../db/getUsers";
 import { getTotalPoints, getTotalXp } from "../db/getTotalPoints";
 import { backgrounds } from "./rank";
-import { getLevel, getStats } from "./utils";
+import { getLevel, getStats } from "../internals/utils";
 import { oneLine } from "common-tags";
 
 export async function profile(msg: Message, args: string[]) {
