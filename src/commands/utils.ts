@@ -21,3 +21,10 @@ export function getLevel(xp: number) {
   return level;
 }
 
+export function getStats(level: number) {
+  const hp = level * 5;
+  const strength = level * 1;
+  const speed = level * 1;
+  const armor = level * 0;
+  return { hp, strength, speed, armor }
+}

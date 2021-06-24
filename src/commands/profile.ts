@@ -4,6 +4,8 @@ import hasUser from "../db/hasUser";
 import { getUsers } from "../db/getUsers";
 import { getTotalPoints, getTotalXp } from "../db/getTotalPoints";
 import { backgrounds } from "./rank";
+import { getLevel, getStats } from "./utils";
+import { oneLine } from "common-tags";
 
 export async function profile(msg: Message, args: string[]) {
 
@@ -53,7 +55,17 @@ export async function profile(msg: Message, args: string[]) {
     rank: rank + 1,
     image: backgrounds[rank],
   });
+  const level = getLevel(xp);
+  const stats = getStats(level);
+
   await msg.channel.send(card);
-  await msg.channel.send(`Total Points: **${point}** Total xp: **${xp}**`);
+  await msg.channel.send(oneLine`
+    Total Points: **${point}**
+    Total xp: **${xp}**
+    HP: **${stats.hp}**
+    Strength: **${stats.strength}**
+    Speed: **${stats.speed}**
+    Armor: **${stats.armor}**
+  `);
 }
 
