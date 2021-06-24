@@ -1,8 +1,8 @@
-import { Database } from "sqlite3";
+import { db } from "../index";
 
-export function dbAll<T>(db: Database, sql: string) {
+export function dbAll<T>(sql: string, param?: object) {
   return new Promise<T[]>((resolve, reject) => {
-    return db.all(sql, (err, rows) => {
+    return db.all(sql, param, (err, rows) => {
       if (err) {
         reject(err)
       } else {
@@ -12,9 +12,9 @@ export function dbAll<T>(db: Database, sql: string) {
   })
 }
 
-export function dbGet<T>(db: Database, sql: string) {
+export function dbGet<T>(sql: string, param?: object) {
   return new Promise<T>((resolve, reject) => {
-    return db.get(sql, (err, rows) => {
+    return db.get(sql, param, (err, rows) => {
       if (err) {
         reject(err)
       } else {
@@ -24,9 +24,9 @@ export function dbGet<T>(db: Database, sql: string) {
   })
 }
 
-export function dbExec(db: Database, sql: string) {
+export function dbRun(sql: string, param?: object) {
   return new Promise<void>((resolve, reject) => {
-    return db.exec(sql, (err) => {
+    return db.run(sql, param, (err) => {
       if (err) {
         reject(err);
       } else {

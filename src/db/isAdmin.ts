@@ -1,15 +1,14 @@
-import { db } from "../index";
 import { dbAll } from "./promiseWrapper";
 
-export default async function(userId: string) {
+export default async function($userId: string) {
 
   const sql = `
     SELECT 1
     FROM AdminRole
-    WHERE ID = ${userId}
+    WHERE ID = $userId
   `
 
-  const result = await dbAll(db, sql);
+  const result = await dbAll(sql, { $userId });
   return result.length > 0;
 }
 
@@ -20,6 +19,6 @@ export async function getAdminRoles() {
     FROM AdminRole
   `;
 
-  return dbAll<{ ID: string }>(db, sql)
+  return dbAll<{ ID: string }>(sql)
     .then(roles => roles.map(x => x.ID));
 }

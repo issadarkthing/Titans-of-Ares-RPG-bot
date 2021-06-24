@@ -1,14 +1,13 @@
-import { dbExec } from "./promiseWrapper";
-import { db } from "../index";
+import { dbRun } from "./promiseWrapper";
 
-export function award(userId: string, amount: number) {
+export function award($userId: string, $amount: number) {
 
   const sql = `
     INSERT INTO XP(DiscordID, XP)
-    VALUES (${userId}, ${amount})
+    VALUES ( $userId, $amount )
     ON CONFLICT(DiscordID)
-    DO UPDATE SET XP = XP + ${amount}
+    DO UPDATE SET XP = XP + $amount
   `
 
-  return dbExec(db, sql);
+  return dbRun(sql, { $userId, $amount });
 }

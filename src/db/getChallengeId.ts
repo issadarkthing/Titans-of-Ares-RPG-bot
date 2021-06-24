@@ -1,15 +1,13 @@
-import { db } from "../index";
 import { dbAll } from "./promiseWrapper";
 
-
-export async function getChallengeId(channelId: string) {
+export async function getChallengeId($channelId: string) {
 
   const sql = `
     SELECT ID
     FROM Challenge
-    WHERE ProofChannel = ${channelId}
+    WHERE ProofChannel = $channelId
   `
 
-  const result = await dbAll<{ID: string}>(db, sql);
+  const result = await dbAll<{ID: string}>(sql, { $channelId });
   return result[0]?.ID;
 }

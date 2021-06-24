@@ -1,4 +1,3 @@
-import { db } from "../index";
 import { dbAll } from "./promiseWrapper";
 
 
@@ -9,5 +8,5 @@ export function getUsers() {
   FROM ChallengeEntry
   `
 
-  return dbAll<{ DiscordID: string }>(db, sql);
+  return dbAll<{ DiscordID: string }>(sql);
 }

@@ -1,4 +1,3 @@
-import { db } from "..";
 import { getXp } from "../internals/utils";
 import { getActivity } from "./getActivity";
 import { getConvertTable } from "./getConversions";
@@ -31,15 +30,15 @@ export const makeXPTable = `
     )
 `;
 
-export async function getXpFromTable(userId: string): Promise<number> {
+export async function getXpFromTable($userId: string): Promise<number> {
 
   const sql = `
     SELECT XP
     FROM XP
-    WHERE DiscordID = "${userId}"
+    WHERE DiscordID = $userId
   `;
 
-  return dbGet<{ XP: number }>(db, sql)
+  return dbGet<{ XP: number }>(sql, { $userId })
     .then(row => row?.XP || 0);
 }
 

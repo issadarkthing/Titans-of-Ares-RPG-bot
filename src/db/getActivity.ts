@@ -1,4 +1,3 @@
-import { db } from "../index";
 import { dbAll } from "./promiseWrapper";
 
 interface Row {
@@ -8,7 +7,7 @@ interface Row {
   ChallengeID: number;
 }
 
-export function getActivity(userId: string) {
+export function getActivity($userId: string) {
 
   const sql = `
   SELECT ChallengeEntry.ChallengeID,
@@ -17,9 +16,9 @@ export function getActivity(userId: string) {
          DayEntry.ValueType 
   FROM DayEntry 
   INNER JOIN ChallengeEntry ON DayEntry.EntryID = ChallengeEntry.ID 
-    WHERE ChallengeEntry.DiscordID = ${userId} 
+    WHERE ChallengeEntry.DiscordID = $userId
   `
-  return dbAll<Row>(db, sql);
+  return dbAll<Row>(sql, { $userId });
 }
 
 interface Row1 extends Row {
@@ -39,5 +38,5 @@ export function getActivities() {
   WHERE ChallengeEntry.ChallengeID != 1
   `
 
-  return dbAll<Row1>(db, sql);
+  return dbAll<Row1>(sql);
 }

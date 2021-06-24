@@ -1,4 +1,3 @@
-import { db } from "../index";
 import { dbAll } from "./promiseWrapper";
 
 interface Row {
@@ -15,7 +14,7 @@ export async function getConversions() {
   FROM Conversion
   `
 
-  return dbAll<Row>(db, sql);
+  return dbAll<Row>(sql);
 }
 
 export async function getConvertTable() {

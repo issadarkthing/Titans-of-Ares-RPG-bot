@@ -1,5 +1,4 @@
 import { dbGet } from "./promiseWrapper";
-import { db } from "../index";
 
 export interface Challenger {
   ID: number;
@@ -12,13 +11,13 @@ export interface Challenger {
   CritChance: number;
 }
 
-export async function getChallenger(level: number) {
+export async function getChallenger($level: number) {
 
   const sql = `
     SELECT *
     FROM Challenger
-    WHERE ID = ${level}
+    WHERE ID = $level
   `;
 
-  return dbGet<Challenger>(db, sql);
+  return dbGet<Challenger>(sql, { $level });
 }
