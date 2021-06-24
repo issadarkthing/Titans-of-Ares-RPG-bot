@@ -16,18 +16,21 @@ export interface PlayerInit {
   armor: number;
   // 10% chance to hit critical attack (2x)
   criticalChance: number;
+  imageUrl: string;
 }
 
 export class Player {
   name: string;
   level: number;
   xp: number;
+  readonly maxHp: number;
   point: number;
   hp: number;
   strength: number;
   speed: number;
   armor: number;
   criticalChance: number;
+  imageUrl: string;
 
   constructor(data: PlayerInit) {
     this.name = data.name;
@@ -35,10 +38,12 @@ export class Player {
     this.xp = data.xp;
     this.point = data.point;
     this.hp = data.hp;
+    this.maxHp = data.hp;
     this.strength = data.strength;
     this.speed = data.speed;
     this.armor = data.armor;
     this.criticalChance = data.criticalChance;
+    this.imageUrl = data.imageUrl;
   }
 
   static async getPlayer(member: GuildMember): Promise<Player> {
@@ -54,6 +59,7 @@ export class Player {
       xp: totalXp,
       point: totalPoints,
       criticalChance: 0.1,
+      imageUrl: member.user.displayAvatarURL(),
     })
   }
 

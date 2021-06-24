@@ -1,3 +1,5 @@
+export const RED = "FF0000";
+export const GREEN = "008000";
 
 // returns xp needed to get to the next level
 export function getLevelThreshold(level: number) {

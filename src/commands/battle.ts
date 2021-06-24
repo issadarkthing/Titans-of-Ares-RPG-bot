@@ -17,6 +17,7 @@ export async function battle(msg: Message, args: string[]) {
     speed: 4,
     armor: 0,
     criticalChance: 0.2,
+    imageUrl: "https://www.runehq.com/image/monsterdb/s/shadowdemon.png",
   }
   
   const isRegistered = await hasUser(msg.author.id);
