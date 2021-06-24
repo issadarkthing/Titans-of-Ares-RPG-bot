@@ -35,7 +35,7 @@ export async function battle(msg: Message, player: Player, challenger: Player) {
   const attack = async (p1: Player, p2: Player) => {
     const isCrit = p1.attack(p2);
     const damage = isCrit ? p1.strength * CRIT_RATE : p1.strength;
-    const critText = isCrit ? " (critical hit)" : "";
+    const critText = isCrit ? " (x2 critical hit)" : "";
     const healthBar = bar(p2.hp, p2.maxHp);
     const remainingHp = p2.hp >= 0 ? p2.hp : 0;
 
