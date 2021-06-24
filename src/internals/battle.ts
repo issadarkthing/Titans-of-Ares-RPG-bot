@@ -1,7 +1,60 @@
-import { oneLine } from "common-tags";
 import { Message, MessageEmbed } from "discord.js";
-import { CRIT_RATE, Player } from "./player";
 import { RED } from "./utils";
+import { Random } from "random-js";
+
+export const CRIT_RATE = 2;
+
+export interface IFighter {
+  name: string;
+  level: number;
+  hp: number;
+  strength: number;
+  speed: number;
+  armor: number;
+  criticalChance: number;
+  imageUrl: string;
+}
+
+// Fighter implements battle fight
+export class Fighter {
+
+  name: string;
+  level: number;
+  hp: number;
+  readonly maxHp: number;
+  strength: number;
+  speed: number;
+  armor: number;
+  criticalChance: number;
+  imageUrl: string;
+
+  constructor(data: IFighter) {
+    this.name = data.name;
+    this.level = data.level;
+    this.hp = data.hp;
+    this.maxHp = data.hp;
+    this.strength = data.strength;
+    this.speed = data.speed;
+    this.armor = data.armor;
+    this.criticalChance = data.criticalChance;
+    this.imageUrl = data.imageUrl;
+  }
+
+  isCriticalHit() {
+    const random = new Random();
+    return random.bool(this.criticalChance);
+  }
+
+  // Attack mutates the challenger hp to simulate attack. It also accounts for
+  // critical hit. This method returns true if the attack was a critical hit.
+  attack(challenger: Fighter) {
+    const isCrit = this.isCriticalHit();
+    const attackRate = isCrit ? CRIT_RATE * this.strength : this.strength;
+    challenger.hp -= attackRate;
+    return isCrit;
+  }
+}
+
 
 function isEven(num: number) {
   return num % 2 === 0;
@@ -26,13 +79,13 @@ function bar(progress: number, maxProgress: number) {
     .join("");
 }
 
-export async function battle(msg: Message, player: Player, challenger: Player) {
+export async function battle(msg: Message, player: Fighter, challenger: Fighter) {
 
   let done = false;
   let round = 0;
   const message = await msg.channel.send("Battle start");
 
-  const attack = async (p1: Player, p2: Player) => {
+  const attack = async (p1: Fighter, p2: Fighter) => {
     const isCrit = p1.attack(p2);
     const damage = isCrit ? p1.strength * CRIT_RATE : p1.strength;
     const critText = isCrit ? " (x2 critical hit)" : "";
