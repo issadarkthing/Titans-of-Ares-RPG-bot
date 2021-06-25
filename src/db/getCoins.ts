@@ -13,10 +13,10 @@ export async function getCoin($userId: string) {
 
 export async function setCoin($userId: string, $amount: number) {
   const sql = `
-    UPDATE Player
-    SET Coin = $amount
-    WHERE DiscordID = $userId
-  `;
-
+    INSERT INTO Player(DiscordID, Coin)
+    VALUES ( $userId, $amount )
+    ON CONFLICT(DiscordID)
+    DO UPDATE SET Coin = $amount
+  `; 
   return dbRun(sql, { $userId, $amount });
 }
