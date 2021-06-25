@@ -9,8 +9,9 @@ import award from "./commands/award";
 import { makeXPTable } from './db/getTotalPoints';
 import { xp } from './commands/xp';
 import { battle } from './commands/battle';
+import { makeChallengerTable } from './db/getChallenger';
 
-const sqlite3 = verbose()
+const sqlite3 = verbose();
 const PREFIX = process.env.PREFIX;
 const OLD_BOT_ID = process.env.OLD_BOT_ID;
 export const RANK_CHANNEL = process.env.RANK_CHANNEL;
@@ -30,7 +31,9 @@ if (!PREFIX) {
 export const db = new sqlite3.Database(path.resolve(__dirname, DB));
 const client = new Client();
 
+// create necessary tables if not exist
 db.run(makeXPTable);
+db.run(makeChallengerTable);
 
 // stores discord id of user that triggers the xp log
 export let xpLogTriggers = "";
