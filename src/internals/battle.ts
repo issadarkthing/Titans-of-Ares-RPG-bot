@@ -85,7 +85,14 @@ export async function battle(msg: Message, player: Fighter, challenger: Fighter)
   let done = false;
   let round = 0;
   const message = await msg.channel.send("Battle start");
-  const moveFirst = player.speed > challenger.speed ? 0 : 1;
+
+  // This determines whichever moves first. If the player has higher speed, it
+  // returns 0, i.e, player moves first by default. Otherwise, it returns 1
+  // which flips the value of isEven that makes the player move second. If both
+  // has the same speed, it will be chosen randomly.
+  const moveFirst = 
+    player.speed === challenger.speed ?  random().pick([0, 1]) :
+    player.speed > challenger.speed ? 0 : 1;
 
   const attack = async (p1: Fighter, p2: Fighter) => {
     const isCrit = p1.attack(p2);
