@@ -10,5 +10,5 @@ export async function getCoin($userId: string) {
   `;
 
   return dbGet<{ Coin?: number }>(sql, { $userId })
-    .then(x => x.Coin || 0);
+    .then(x => x?.Coin || 0);
 }
