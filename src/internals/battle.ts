@@ -1,6 +1,6 @@
 import { Message, MessageEmbed } from "discord.js";
 import { RED } from "./utils";
-import { Random } from "random-js";
+import { MersenneTwister19937, Random } from "random-js";
 
 export const CRIT_RATE = 2;
 
@@ -41,7 +41,9 @@ export class Fighter {
   }
 
   isCriticalHit() {
-    const random = new Random();
+    const random = new Random(
+      MersenneTwister19937.autoSeed()
+    );
     return random.bool(this.criticalChance);
   }
 
