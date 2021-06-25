@@ -1,5 +1,5 @@
 import { verbose } from 'sqlite3';
-import { Client } from 'discord.js';
+import { Client, Guild } from 'discord.js';
 import path from 'path';
 import { profile } from "./commands/profile";
 import rank from "./commands/rank";
@@ -29,7 +29,7 @@ if (!PREFIX) {
 }
 
 export const db = new sqlite3.Database(path.resolve(__dirname, DB));
-const client = new Client();
+export const client = new Client();
 
 // create necessary tables if not exist
 db.run(makeXPTable);

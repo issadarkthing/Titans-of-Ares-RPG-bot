@@ -1,7 +1,8 @@
 import { MersenneTwister19937, Random } from "random-js";
 
-export const RED = "FF0000";
-export const GREEN = "008000";
+export const RED = "#FF0000";
+export const GREEN = "#008000";
+export const GOLD = "#ffd700";
 
 // returns xp needed to get to the next level
 export function getLevelThreshold(level: number) {
