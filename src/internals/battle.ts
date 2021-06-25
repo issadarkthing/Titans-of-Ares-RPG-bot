@@ -94,7 +94,8 @@ export async function battle(msg: Message, player: Fighter, challenger: Fighter)
       .setColor(RED)
       .setThumbnail(p1.imageUrl)
       .addField("Name", p1.name)
-      .addField("Attack Rate", `\`${damage}${critText}\``)
+      .addField("Attack Rate", `\`${damage}${critText}\``, true)
+      .addField("Round", round + 1, true)
       .addField(`${p2.name}'s remaining HP`, 
         `${healthBar} \`${remainingHp}/${p2.maxHp}\``)
 
