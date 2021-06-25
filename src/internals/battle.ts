@@ -1,4 +1,6 @@
 import { Message, MessageEmbed } from "discord.js";
+import { Challenger } from "./challenger";
+import { Player } from "./player";
 import { RED, random } from "./utils";
 
 export const CRIT_RATE = 2;
@@ -80,7 +82,7 @@ function bar(progress: number, maxProgress: number) {
     .join("");
 }
 
-export async function battle(msg: Message, player: Fighter, challenger: Fighter) {
+export async function battle(msg: Message, player: Player, challenger: Challenger) {
 
   let done = false;
   let round = 0;
@@ -129,8 +131,18 @@ export async function battle(msg: Message, player: Fighter, challenger: Fighter)
     round++;
   }
 
-  const battleResult = player.hp > 0 ? "won over" : "lost to";
+  const isWon = player.hp > 0;
+  const battleResult = isWon ? "won over" : "lost to";
   await msg.channel.send(
     `${player.name} has ${battleResult} ${challenger.name}!`
   );
+
+  if (isWon) {
+    const loot = challenger.loot;
+    await player.addCoin(loot);
+    await msg.channel.send(
+      `${player.name} has earned **${loot}** coins!`
+    );
+  }
+
 }

@@ -2,7 +2,7 @@ import { getLevel, getLevelThreshold, getStats, GOLD } from "./utils";
 import { getTotalPoints, getTotalXp } from "../db/getTotalPoints";
 import { GuildMember, MessageAttachment, MessageEmbed } from "discord.js";
 import { IFighter, Fighter } from "./battle";
-import { getCoin } from "../db/getCoins";
+import { getCoin, setCoin } from "../db/getCoins";
 //@ts-ignore
 import { Rank } from "canvacord";
 import { getUsers } from "../db/getUsers";
@@ -130,9 +130,16 @@ export class Player extends Fighter {
       .addField("HP", this.hp, true)
       .addField("Strength", this.strength, true)
       .addField("Speed", this.speed, true)
-      .addField("Armor", this.armor, true);
+      .addField("Armor", this.armor, true)
+      .addField("Coins", this.coins)
 
     return embed;
+  }
+
+  // this adds or deduces the amount of coins of a player
+  async addCoin(amount: number) {
+    await setCoin(this.userID, this.coins + amount);
+    this.coins += amount;
   }
 }
 
