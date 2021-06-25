@@ -1,6 +1,5 @@
 import { Message, MessageEmbed } from "discord.js";
-import { RED } from "./utils";
-import { MersenneTwister19937, Random } from "random-js";
+import { RED, random } from "./utils";
 
 export const CRIT_RATE = 2;
 
@@ -41,10 +40,7 @@ export class Fighter {
   }
 
   isCriticalHit() {
-    const random = new Random(
-      MersenneTwister19937.autoSeed()
-    );
-    return random.bool(this.criticalChance);
+    return random().bool(this.criticalChance);
   }
 
   // Attack mutates the challenger hp to simulate attack. It also accounts for

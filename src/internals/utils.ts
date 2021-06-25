@@ -1,3 +1,5 @@
+import { MersenneTwister19937, Random } from "random-js";
+
 export const RED = "FF0000";
 export const GREEN = "008000";
 
@@ -30,3 +32,5 @@ export function getStats(level: number) {
   const armor = level * 0;
   return { hp, strength, speed, armor }
 }
+
+export const random = () => new Random(MersenneTwister19937.autoSeed());
