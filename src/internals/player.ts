@@ -8,6 +8,7 @@ import { Rank } from "canvacord";
 import { getUsers } from "../db/getUsers";
 import { client } from "../index";
 import { backgrounds } from "../commands/rank";
+import { stripIndents } from "common-tags";
 
 export const CRIT_CHANCE = 0.1;
 
@@ -129,14 +130,15 @@ export class Player extends Fighter {
   getStats() {
     const embed = new MessageEmbed()
       .setColor(GOLD)
-      .addField("Total XP", this.xp, true)
-      .addField("HP", this.hp, true)
-      .addField("Strength", this.strength, true)
-      .addField("Speed", this.speed, true)
-      .addField("Armor", this.armor, true)
-      .addField("Coins", this.coins, true)
-      .addField("Crit Rate", `${this.critChance * 100}%`, true)
-      .addField("Crit Damage", "x2", true)
+      .addField("Stats", stripIndents`
+        **Stats**
+        XP: \`${this.xp}\` HP: \`${this.hp}\` Strength: \`${this.strength}\`
+        Speed: \`${this.speed}\` Armor: \`${this.armor}\` 
+        Crit Rate: \`${this.critChance * 100}%\` Crit Damage: \`x2\` 
+        
+        **Inventory**
+        Coins: \`${this.coins}\`
+      `);
 
     return embed;
   }
