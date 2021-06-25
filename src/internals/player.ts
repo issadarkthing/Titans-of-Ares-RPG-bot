@@ -125,13 +125,12 @@ export class Player extends Fighter {
   getStats() {
     const embed = new MessageEmbed()
       .setColor(GOLD)
-      .addField("Total points", this.points, true)
       .addField("Total xp", this.xp, true)
       .addField("HP", this.hp, true)
       .addField("Strength", this.strength, true)
       .addField("Speed", this.speed, true)
       .addField("Armor", this.armor, true)
-      .addField("Coins", this.coins)
+      .addField("Coins", this.coins, true)
 
     return embed;
   }
