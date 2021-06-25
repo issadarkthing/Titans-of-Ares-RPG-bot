@@ -85,6 +85,7 @@ export async function battle(msg: Message, player: Fighter, challenger: Fighter)
   let done = false;
   let round = 0;
   const message = await msg.channel.send("Battle start");
+  const moveFirst = player.speed > challenger.speed ? 0 : 1;
 
   const attack = async (p1: Fighter, p2: Fighter) => {
     const isCrit = p1.attack(p2);
@@ -107,7 +108,7 @@ export async function battle(msg: Message, player: Fighter, challenger: Fighter)
 
   while (!done) {
 
-    if (isEven(round)) {
+    if (isEven(round + moveFirst)) {
       await attack(player, challenger);
     } else {
       await attack(challenger, player);
