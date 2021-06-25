@@ -6,7 +6,7 @@ import rank from "./commands/rank";
 import help from './commands/help';
 import { xpLog } from "./commands/xpLog";
 import award from "./commands/award";
-import { makeXPTable } from './db/getTotalPoints';
+import { makePlayerTable } from './db/getTotalPoints';
 import { xp } from './commands/xp';
 import { battle } from './commands/battle';
 import { makeChallengerTable } from './db/getChallenger';
@@ -32,7 +32,7 @@ export const db = new sqlite3.Database(path.resolve(__dirname, DB));
 export const client = new Client();
 
 // create necessary tables if not exist
-db.run(makeXPTable);
+db.run(makePlayerTable);
 db.run(makeChallengerTable);
 
 // stores discord id of user that triggers the xp log

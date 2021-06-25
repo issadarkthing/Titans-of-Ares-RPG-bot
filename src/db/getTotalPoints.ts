@@ -22,7 +22,7 @@ export async function getTotalPoints(userId: string) {
   return Math.round(totalPoints);
 }
 
-export const makeXPTable = `
+export const makePlayerTable = `
     CREATE TABLE IF NOT EXISTS Player (
       DiscordID	TEXT NOT NULL UNIQUE,
       XP        DEFAULT 0,
