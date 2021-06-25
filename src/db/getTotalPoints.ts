@@ -26,7 +26,7 @@ export const makeXPTable = `
     CREATE TABLE IF NOT EXISTS Player (
       DiscordID	TEXT NOT NULL UNIQUE,
       XP        DEFAULT 0,
-      Gold      DEFAULT 0,
+      Coin      DEFAULT 0,
       PRIMARY KEY("DiscordID")
     )
 `;
