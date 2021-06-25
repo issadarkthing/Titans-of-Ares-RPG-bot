@@ -35,7 +35,7 @@ export async function getXpFromTable($userId: string): Promise<number> {
 
   const sql = `
     SELECT XP
-    FROM XP
+    FROM Player
     WHERE DiscordID = $userId
   `;
 
