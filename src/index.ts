@@ -1,5 +1,5 @@
 import { verbose } from 'sqlite3';
-import { Client, Guild } from 'discord.js';
+import { Client } from 'discord.js';
 import path from 'path';
 import { profile } from "./commands/profile";
 import rank from "./commands/rank";
