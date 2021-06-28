@@ -12,6 +12,8 @@ const emojis = ["◀️", "⏺️", "▶️"];
 
 export async function battle(msg: Message, args: string[]) {
 
+  let question;
+
   try {
     const member = msg.guild?.members.cache.get(msg.author.id);
     const isRegistered = await hasUser(msg.author.id);
@@ -50,7 +52,7 @@ export async function battle(msg: Message, args: string[]) {
            : emojis[2] + ` ${maxLevel + 1}`
     }).join(" ");
 
-    const question = await msg.channel.send(
+    question = await msg.channel.send(
       oneLine`Which level you want to challenge? ${levelHint}`
     );
 
@@ -63,7 +65,7 @@ export async function battle(msg: Message, args: string[]) {
     }
 
     const colllected = await question.awaitReactions(filter, 
-      { max: 1, time: 6000, errors: ["time"] });
+      { max: 1, time: 30 * 1000, errors: ["time"] });
 
     await question.delete();
 
@@ -81,7 +83,8 @@ export async function battle(msg: Message, args: string[]) {
 
   } catch (e) {
     if (e instanceof Collection) {
-      msg.channel.send("No level was chosen");
+      await question?.reactions.removeAll();
+      await msg.channel.send("No level was chosen");
     } else {
       console.log(e)
     }
