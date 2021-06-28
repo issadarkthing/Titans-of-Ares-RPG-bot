@@ -34,7 +34,7 @@ export async function xpLog(msg: Message, args: string[]) {
     const currentLevel = getLevel(totalXp);
     const prevXp = totalXp - getXp(point);
     const prevLevel = getLevel(prevXp);
-    const name = member.nickname || member.user.username;
+    const name = member.displayName;
 
     if (!logChannel) 
       throw Error("No xp log channel specified");
