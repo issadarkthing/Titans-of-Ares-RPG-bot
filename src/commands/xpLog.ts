@@ -45,6 +45,17 @@ export async function xpLog(msg: Message, args: string[]) {
       `${name} has earned \`${xp} xp\`!`
     )
 
+    // add logging for specific user
+    if (member.user.id === "826313725501112342") {
+      console.log("point", point);
+      console.log("xp", xp);
+      console.log("totalXp", totalXp);
+      console.log("prevXp", prevXp);
+      console.log("currentLevel", currentLevel);
+      console.log("prevLevel", prevLevel);
+      console.log("name", name);
+    }
+
     if (currentLevel !== prevLevel) {
       logChannel.send(
         `${name} is now on **level ${currentLevel}**`
