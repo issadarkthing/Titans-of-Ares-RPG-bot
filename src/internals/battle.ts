@@ -160,8 +160,8 @@ export async function battle(msg: Message, player: Player, challenger: Challenge
     embed.setColor(GOLD);
     await message.edit(embed);
     await player.addCoin(loot);
-    await setMaxChallenger(player.userID, player.challengerMaxLevel + 1);
-    player.challengerMaxLevel += 1;
+    await setMaxChallenger(player.userID, challenger.level);
+    player.challengerMaxLevel = challenger.level;
     await msg.channel.send(
       `${player.name} has earned **${loot}** coins!`
     );
