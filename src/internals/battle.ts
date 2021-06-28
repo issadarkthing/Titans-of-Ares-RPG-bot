@@ -1,4 +1,5 @@
 import { Message, MessageEmbed } from "discord.js";
+import { setMaxChallenger } from "../db/getChallenger";
 import { Challenger } from "./challenger";
 import { Player } from "./player";
 import { RED, random } from "./utils";
@@ -100,8 +101,11 @@ export async function battle(msg: Message, player: Player, challenger: Challenge
     const isCrit = p1.attack(p2);
     const damage = isCrit ? p1.strength * CRIT_RATE : p1.strength;
     const critText = isCrit ? " (x2 critical hit)" : "";
-    const healthBar = bar(p2.hp, p2.maxHp);
-    const remainingHp = p2.hp >= 0 ? p2.hp : 0;
+
+    const p1HealthBar = bar(p1.hp, p1.maxHp);
+    const p1RemainingHp = p1.hp >= 0 ? p1.hp : 0;
+    const p2HealthBar = bar(p2.hp, p2.maxHp);
+    const p2RemainingHp = p2.hp >= 0 ? p2.hp : 0;
 
     const embed = new MessageEmbed()
       .setColor(RED)
@@ -109,8 +113,21 @@ export async function battle(msg: Message, player: Player, challenger: Challenge
       .addField("Name", p1.name)
       .addField("Attack Rate", `\`${damage}${critText}\``, true)
       .addField("Round", round + 1, true)
-      .addField(`${p2.name}'s remaining HP`, 
-        `${healthBar} \`${remainingHp}/${p2.maxHp}\``)
+
+    if (p1.name === player.name) {
+
+      embed.addField(`${p1.name}'s remaining HP`, 
+        `${p1HealthBar} \`${p1RemainingHp}/${p1.maxHp}\``)
+      embed.addField(`${p2.name}'s remaining HP`, 
+        `${p2HealthBar} \`${p2RemainingHp}/${p2.maxHp}\``)
+
+    } else {
+
+      embed.addField(`${p2.name}'s remaining HP`, 
+        `${p2HealthBar} \`${p2RemainingHp}/${p2.maxHp}\``)
+      embed.addField(`${p1.name}'s remaining HP`, 
+        `${p1HealthBar} \`${p1RemainingHp}/${p1.maxHp}\``)
+    }
 
     await message.edit(embed);
   }
@@ -140,6 +157,8 @@ export async function battle(msg: Message, player: Player, challenger: Challenge
   if (isWon) {
     const loot = challenger.loot;
     await player.addCoin(loot);
+    await setMaxChallenger(player.userID, player.challengerMaxLevel + 1);
+    player.challengerMaxLevel += 1;
     await msg.channel.send(
       `${player.name} has earned **${loot}** coins!`
     );
