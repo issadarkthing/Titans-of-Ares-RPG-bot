@@ -5,7 +5,7 @@ import { Player } from "../internals/player";
 import { Challenger } from "../internals/challenger";
 import { setEnergy, setTimer, TimerType } from "../db/cooldowns";
 import { DateTime } from "luxon";
-import { timerPeriod, showTimeLeft } from "../internals/timers";
+import { ENERGY_TIMEOUT, showTimeLeft } from "../internals/timers";
 
 export async function battle(msg: Message, args: string[]) {
 
@@ -28,7 +28,7 @@ export async function battle(msg: Message, args: string[]) {
     return msg.channel.send(`You have 0 energy left. Please wait for ${timeText}`);
   }
 
-  const expireDate = DateTime.now().plus({ hours: timerPeriod }).toISO();
+  const expireDate = DateTime.now().plus(ENERGY_TIMEOUT).toISO();
   await setEnergy(player.userID, -1);
   await setTimer(TimerType.Charge, player.userID, expireDate);
 

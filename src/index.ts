@@ -37,9 +37,7 @@ db.run(makePlayerTable);
 db.run(makeChallengerTable);
 db.run(makeTimerTable);
 
-setInterval(() => {
-  energyMainLoop();
-}, 60 * 1000) // run every minute
+setInterval(energyMainLoop, 1000) // run every second
 
 // stores discord id of user that triggers the xp log
 export let xpLogTriggers = "";

@@ -1,24 +1,29 @@
-import { deleteTimer, getAllTimers, getTimer, setEnergy, setTimer, TimerType } from "../db/cooldowns";
-import { DateTime } from "luxon";
+import {
+  deleteTimer,
+  getAllTimers,
+  getTimer,
+  setEnergy,
+  setTimer,
+  TimerType,
+} from "../db/cooldowns";
+import { DateTime, DurationInput } from "luxon";
 
-export const timerPeriod = 8; // hours
+export const ENERGY_TIMEOUT: DurationInput = { hours: 8 };
+export const MAX_ENERGY = 5;
 
 export async function energyMainLoop() {
-
   const timers = await getAllTimers(TimerType.Charge);
 
   for (const timer of timers) {
-
     const expire = DateTime.fromISO(timer.Expires);
     const now = DateTime.now();
 
     // if the timer is expired
-    if (now > expire) {
-
+    if (expire.diffNow(["seconds"]).seconds <= 0) {
       deleteTimer(TimerType.Charge, timer.DiscordID);
       const energy = await setEnergy(timer.DiscordID, 1);
-      if (energy < 3) {
-        const expiryDate = now.plus({ hours: timerPeriod }).toISO();
+      if (energy < MAX_ENERGY) {
+        const expiryDate = now.plus(ENERGY_TIMEOUT).toISO();
         setTimer(TimerType.Charge, timer.DiscordID, expiryDate);
       }
     }
