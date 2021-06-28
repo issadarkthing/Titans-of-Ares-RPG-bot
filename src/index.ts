@@ -10,7 +10,6 @@ import { xp } from './commands/xp';
 import { battle } from './commands/battle';
 import { makeChallengerTable, makePlayerTable, makeTimerTable } from "./db/schema";
 import { energyMainLoop } from './internals/timers';
-import { energy } from "./commands/energy";
 
 const sqlite3 = verbose();
 const PREFIX = process.env.PREFIX;
@@ -86,9 +85,6 @@ client.on('message', (msg) => {
       break;
     case 'battle':
       battle(msg, args);
-      break;
-    case 'energy':
-      energy(msg, args);
       break;
   }
 })
