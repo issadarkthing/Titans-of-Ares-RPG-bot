@@ -14,7 +14,7 @@ export const makePlayerTable = `
       DiscordID	TEXT NOT NULL UNIQUE,
       XP        DEFAULT 0,
       Coin      DEFAULT 0,
-      Energy    DEFAULT 3,
+      Energy    DEFAULT 5,
       PRIMARY KEY("DiscordID")
     )
 `;

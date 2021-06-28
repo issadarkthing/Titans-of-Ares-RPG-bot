@@ -9,6 +9,7 @@ import { createUser, getUser, getUsers } from "../db/getUsers";
 import { client } from "../index";
 import { backgrounds } from "../commands/rank";
 import { stripIndents } from "common-tags";
+import { MAX_ENERGY, showTimeLeft } from "./timers";
 
 export const CRIT_CHANCE = 0.1;
 
@@ -135,10 +136,12 @@ export class Player extends Fighter {
     return new MessageAttachment(rankCard, "rank.png");
   }
 
-  getStats() {
+  async getStats() {
+    const energyTimer = await showTimeLeft(this.userID);
     const embed = new MessageEmbed()
       .setColor(GOLD)
-      .addField("Stats", stripIndents`
+      .setTitle(this.name)
+      .addField("-----", stripIndents`
         **Stats**
         XP: \`${this.xp}\` HP: \`${this.hp}\` Strength: \`${this.strength}\`
         Speed: \`${this.speed}\` Armor: \`${this.armor}\` 
@@ -146,6 +149,9 @@ export class Player extends Fighter {
         
         **Inventory**
         Coins: \`${this.coins}\`
+
+        **Energy**
+        ${this.energy}/${MAX_ENERGY} ${energyTimer}
       `);
 
     return embed;

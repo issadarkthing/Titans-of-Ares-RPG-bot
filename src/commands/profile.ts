@@ -20,7 +20,7 @@ export async function profile(msg: Message, args: string[]) {
 
   const player = await Player.getPlayer(member);
   const card = await player.getProfile();
-  const stats = player.getStats();
+  const stats = await player.getStats();
 
   await msg.channel.send(card);
   await msg.channel.send(stats);
