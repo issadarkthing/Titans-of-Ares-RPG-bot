@@ -19,6 +19,7 @@ export interface IPlayer extends IFighter {
   energy: number;
   coins: number;
   userID: string;
+  challengerMaxLevel: number;
   // needed for the stupid rankcord library
   discriminator: string;
   critRate: number;
@@ -30,6 +31,7 @@ export class Player extends Fighter {
   points: number;
   coins: number;
   energy: number;
+  challengerMaxLevel: number;
   readonly userID: string;
   readonly discriminator: string;
   readonly critChance: number;
@@ -43,6 +45,7 @@ export class Player extends Fighter {
     this.discriminator = data.discriminator;
     this.critChance = data.critRate;
     this.energy = data.energy;
+    this.challengerMaxLevel = data.challengerMaxLevel;
   }
 
   static async getPlayer(member: GuildMember): Promise<Player> {
@@ -72,6 +75,7 @@ export class Player extends Fighter {
       discriminator: member.user.discriminator,
       critRate: 0.1,
       energy: player.Energy,
+      challengerMaxLevel: player.ChallengerMaxLevel,
     })
   }
 

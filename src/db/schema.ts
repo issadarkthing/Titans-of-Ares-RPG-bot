@@ -11,10 +11,11 @@ export const makeTimerTable = `
 
 export const makePlayerTable = `
     CREATE TABLE IF NOT EXISTS Player (
-      DiscordID	TEXT NOT NULL UNIQUE,
-      XP        DEFAULT 0,
-      Coin      DEFAULT 0,
-      Energy    DEFAULT 5,
+      DiscordID	         TEXT NOT NULL UNIQUE,
+      XP                 DEFAULT 0,
+      Coin               DEFAULT 0,
+      Energy             DEFAULT 5,
+      ChallengerMaxLevel DEFAULT 0,
       PRIMARY KEY("DiscordID")
     )
 `;

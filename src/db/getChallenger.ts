@@ -1,4 +1,4 @@
-import { dbGet } from "./promiseWrapper";
+import { dbGet, dbRun } from "./promiseWrapper";
 
 export interface Challenger {
   ID: number;
@@ -20,4 +20,13 @@ export async function getChallenger($level: number) {
   `;
 
   return dbGet<Challenger>(sql, { $level });
+}
+
+export function setMaxChallenger($userID: string, $level: number) {
+  const sql = `
+    UPDATE Player
+    SET ChallengerMaxLevel = $level
+    WHERE DiscordID = $userID
+  `
+  return dbRun(sql, { $userID, $level });
 }

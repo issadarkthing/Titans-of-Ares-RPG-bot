@@ -5,6 +5,7 @@ export interface Player {
   XP: number;
   Coin: number;
   Energy: number;
+  ChallengerMaxLevel: number;
 }
 
 export function getUsers() {
