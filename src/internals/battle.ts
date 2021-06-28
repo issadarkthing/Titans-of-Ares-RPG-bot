@@ -2,7 +2,7 @@ import { Message, MessageEmbed } from "discord.js";
 import { setMaxChallenger } from "../db/getChallenger";
 import { Challenger } from "./challenger";
 import { Player } from "./player";
-import { RED, random } from "./utils";
+import { RED, random, GOLD } from "./utils";
 
 export const CRIT_RATE = 2;
 
@@ -87,6 +87,7 @@ export async function battle(msg: Message, player: Player, challenger: Challenge
 
   let done = false;
   let round = 0;
+  let embed = new MessageEmbed();
   const message = await msg.channel.send("Battle start");
 
   // This determines whichever moves first. If the player has higher speed, it
@@ -107,7 +108,7 @@ export async function battle(msg: Message, player: Player, challenger: Challenge
     const p2HealthBar = bar(p2.hp, p2.maxHp);
     const p2RemainingHp = p2.hp >= 0 ? p2.hp : 0;
 
-    const embed = new MessageEmbed()
+    embed = new MessageEmbed()
       .setColor(RED)
       .setThumbnail(p1.imageUrl)
       .addField("Name", p1.name)
@@ -156,6 +157,8 @@ export async function battle(msg: Message, player: Player, challenger: Challenge
 
   if (isWon) {
     const loot = challenger.loot;
+    embed.setColor(GOLD);
+    await message.edit(embed);
     await player.addCoin(loot);
     await setMaxChallenger(player.userID, player.challengerMaxLevel + 1);
     player.challengerMaxLevel += 1;
