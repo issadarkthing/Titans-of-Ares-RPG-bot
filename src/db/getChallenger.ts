@@ -11,19 +11,6 @@ export interface Challenger {
   CritChance: number;
 }
 
-export const makeChallengerTable = `
-  CREATE TABLE IF NOT EXISTS Challenger (
-    ID         INTEGER PRIMARY KEY,
-    Name       TEXT,
-    Loot       INT,
-    HP         INT,
-    Strength   INT,
-    Speed      INT,
-    Armor      INT,
-    CritChance REAL
-  )
-`;
-
 export async function getChallenger($level: number) {
 
   const sql = `

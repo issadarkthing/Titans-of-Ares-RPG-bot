@@ -2,10 +2,10 @@ import { getLevel, getLevelThreshold, getStats, GOLD } from "./utils";
 import { getTotalPoints, getTotalXp } from "../db/getTotalPoints";
 import { GuildMember, MessageAttachment, MessageEmbed } from "discord.js";
 import { IFighter, Fighter } from "./battle";
-import { getCoin, setCoin } from "../db/getCoins";
+import { setCoin } from "../db/getCoins";
 //@ts-ignore
 import { Rank } from "canvacord";
-import { getUsers } from "../db/getUsers";
+import { createUser, getUser, getUsers } from "../db/getUsers";
 import { client } from "../index";
 import { backgrounds } from "../commands/rank";
 import { stripIndents } from "common-tags";
@@ -15,6 +15,7 @@ export const CRIT_CHANCE = 0.1;
 export interface IPlayer extends IFighter {
   xp: number;
   points: number;
+  energy: number;
   coins: number;
   userID: string;
   // needed for the stupid rankcord library
@@ -27,6 +28,7 @@ export class Player extends Fighter {
   xp: number;
   points: number;
   coins: number;
+  energy: number;
   readonly userID: string;
   readonly discriminator: string;
   readonly critChance: number;
@@ -39,6 +41,7 @@ export class Player extends Fighter {
     this.userID = data.userID;
     this.discriminator = data.discriminator;
     this.critChance = data.critRate;
+    this.energy = data.energy;
   }
 
   static async getPlayer(member: GuildMember): Promise<Player> {
@@ -47,7 +50,11 @@ export class Player extends Fighter {
     const totalPoints = await getTotalPoints(userId);
     const level = getLevel(totalXp);
     const stats = getStats(level);
-    const coins = await getCoin(userId);
+    let player = await getUser(userId);
+    if (!player) {
+      player = await createUser(userId);
+    }
+
     return new Player({
       name: member.displayName,
       level,
@@ -59,10 +66,11 @@ export class Player extends Fighter {
       imageUrl: member.user.displayAvatarURL({ format: "jpg" }),
       points: totalPoints,
       xp: totalXp,
-      coins: coins,
+      coins: player.Coin,
       userID: member.user.id,
       discriminator: member.user.discriminator,
       critRate: 0.1,
+      energy: player.Energy,
     })
   }
 

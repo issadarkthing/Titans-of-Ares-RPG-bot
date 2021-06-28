@@ -17,7 +17,7 @@ export class Challenger extends Fighter {
   }
 
   static async getChallenger(level: number) {
-    const challenger = await dbGetChallenger(level);
+    const challenger = await dbGetChallenger(level || 1);
     return new Challenger({
       name: challenger.Name,
       level: challenger.ID,

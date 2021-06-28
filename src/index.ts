@@ -6,10 +6,11 @@ import rank from "./commands/rank";
 import help from './commands/help';
 import { xpLog } from "./commands/xpLog";
 import award from "./commands/award";
-import { makePlayerTable } from './db/getTotalPoints';
 import { xp } from './commands/xp';
 import { battle } from './commands/battle';
-import { makeChallengerTable } from './db/getChallenger';
+import { makeChallengerTable, makePlayerTable, makeTimerTable } from "./db/schema";
+import { energyMainLoop } from './internals/timers';
+import { energy } from "./commands/energy";
 
 const sqlite3 = verbose();
 const PREFIX = process.env.PREFIX;
@@ -34,6 +35,11 @@ export const client = new Client();
 // create necessary tables if not exist
 db.run(makePlayerTable);
 db.run(makeChallengerTable);
+db.run(makeTimerTable);
+
+setInterval(() => {
+  energyMainLoop();
+}, 60 * 1000) // run every minute
 
 // stores discord id of user that triggers the xp log
 export let xpLogTriggers = "";
@@ -82,6 +88,9 @@ client.on('message', (msg) => {
       break;
     case 'battle':
       battle(msg, args);
+      break;
+    case 'energy':
+      energy(msg, args);
       break;
   }
 })
