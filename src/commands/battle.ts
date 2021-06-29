@@ -1,4 +1,4 @@
-import { Collection, Message, MessageReaction, ReactionEmoji, User } from "discord.js";
+import { Collection, Message, MessageReaction, User } from "discord.js";
 import hasUser from "../db/hasUser";
 import { battle as battleSimulator } from "../internals/battle";
 import { Player } from "../internals/player";
@@ -10,7 +10,7 @@ import { oneLine } from "common-tags";
 
 const emojis = ["◀️", "⏺️", "▶️"];
 
-export async function battle(msg: Message, args: string[]) {
+export async function battle(msg: Message, _: string[]) {
 
   let question;
 
