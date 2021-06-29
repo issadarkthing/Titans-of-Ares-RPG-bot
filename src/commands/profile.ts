@@ -1,5 +1,4 @@
 import { Message } from "discord.js";
-import hasUser from "../db/hasUser";
 import { Player } from "../internals/player";
 
 export async function profile(msg: Message, args: string[]) {
@@ -12,11 +11,6 @@ export async function profile(msg: Message, args: string[]) {
     return msg.channel.send("Member does not exist");
   else if (!guild)
     return;
-
-  const user = await hasUser(member.user.id);
-
-  if (!user)
-    return msg.channel.send("User has not registered to any challenge");
 
   const player = await Player.getPlayer(member);
   const card = await player.getProfile();
