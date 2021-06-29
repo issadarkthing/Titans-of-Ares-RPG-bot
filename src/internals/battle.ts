@@ -2,7 +2,7 @@ import { Message, MessageEmbed } from "discord.js";
 import { setMaxChallenger } from "../db/getChallenger";
 import { Challenger } from "./challenger";
 import { Player } from "./player";
-import { RED, random, GOLD } from "./utils";
+import { RED, random, GOLD, PLAYER_CRIT_GIF, CHALLENGER_CRIT_GIF } from "./utils";
 import { Fighter } from "./fighter";
 
 export const CRIT_RATE = 2;
@@ -66,11 +66,20 @@ export async function battle(msg: Message, player: Player, challenger: Challenge
     embed = new MessageEmbed()
       .setColor(RED)
       .setThumbnail(p1.imageUrl)
-      .addField("Name", p1.name)
+      .addField("Attacking Player", p1.name)
       .addField("Attack Rate", `\`${attackRate}${critText}\``, true)
       .addField("Damage Reduction", `\`${damageReduction}\``, true)
       .addField("Damage Done", `\`${damageDone}\``, true)
       .addField("Round", round + 1, true)
+
+    const createCritEmbed = async (url: string) => {
+      const critEmbed = new MessageEmbed()
+        .setTitle(`${p1.name} Critical Attack`)
+        .setColor(RED)
+        .setImage(url);
+
+      await message.edit(critEmbed);
+    }
 
     if (p1.name === player.name) {
 
@@ -85,6 +94,18 @@ export async function battle(msg: Message, player: Player, challenger: Challenge
         `${p2HealthBar} \`${p2RemainingHp}/${p2.maxHp}\``)
       embed.addField(`${p1.name}'s remaining HP`, 
         `${p1HealthBar} \`${p1RemainingHp}/${p1.maxHp}\``)
+    }
+
+
+
+    if (isCrit) {
+      if (p1.name === player.name) {
+        await createCritEmbed(PLAYER_CRIT_GIF);
+      } else {
+        await createCritEmbed(CHALLENGER_CRIT_GIF);
+      }
+
+      await sleep(4000);
     }
 
     await message.edit(embed);
