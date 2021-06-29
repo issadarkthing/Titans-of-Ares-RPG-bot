@@ -81,7 +81,7 @@ export class Player extends Fighter {
 
   async getRank() {
 
-    const guild = client.guilds.cache.get("754602090357325863");
+    const guild = client.guilds.cache.get(SERVER_ID!);
     const users = await getUsers();
     const cards: { 
       member: GuildMember, 
