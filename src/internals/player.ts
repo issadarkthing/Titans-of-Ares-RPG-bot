@@ -1,7 +1,7 @@
 import { getLevel, getLevelThreshold, getStats, GOLD } from "./utils";
 import { getTotalPoints, getTotalXp } from "../db/getTotalPoints";
 import { GuildMember, MessageAttachment, MessageEmbed } from "discord.js";
-import { IFighter, Fighter } from "./battle";
+import { IFighter, Fighter } from "./fighter";
 import { setCoin } from "../db/getCoins";
 //@ts-ignore
 import { Rank } from "canvacord";

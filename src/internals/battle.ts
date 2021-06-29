@@ -3,58 +3,9 @@ import { setMaxChallenger } from "../db/getChallenger";
 import { Challenger } from "./challenger";
 import { Player } from "./player";
 import { RED, random, GOLD } from "./utils";
+import { Fighter } from "./fighter";
 
 export const CRIT_RATE = 2;
-
-export interface IFighter {
-  name: string;
-  level: number;
-  hp: number;
-  strength: number;
-  speed: number;
-  armor: number;
-  criticalChance: number;
-  imageUrl: string;
-}
-
-// Fighter implements battle fight
-export class Fighter {
-
-  name: string;
-  level: number;
-  hp: number;
-  readonly maxHp: number;
-  strength: number;
-  speed: number;
-  armor: number;
-  criticalChance: number;
-  imageUrl: string;
-
-  constructor(data: IFighter) {
-    this.name = data.name;
-    this.level = data.level;
-    this.hp = data.hp;
-    this.maxHp = data.hp;
-    this.strength = data.strength;
-    this.speed = data.speed;
-    this.armor = data.armor;
-    this.criticalChance = data.criticalChance;
-    this.imageUrl = data.imageUrl;
-  }
-
-  isCriticalHit() {
-    return random().bool(this.criticalChance);
-  }
-
-  // Attack mutates the challenger hp to simulate attack. It also accounts for
-  // critical hit. This method returns true if the attack was a critical hit.
-  attack(challenger: Fighter) {
-    const isCrit = this.isCriticalHit();
-    const attackRate = isCrit ? CRIT_RATE * this.strength : this.strength;
-    challenger.hp -= attackRate;
-    return isCrit;
-  }
-}
 
 
 function isEven(num: number) {
@@ -99,8 +50,12 @@ export async function battle(msg: Message, player: Player, challenger: Challenge
     player.speed > challenger.speed ? 0 : 1;
 
   const attack = async (p1: Fighter, p2: Fighter) => {
-    const isCrit = p1.attack(p2);
-    const damage = isCrit ? p1.strength * CRIT_RATE : p1.strength;
+    const [
+      isCrit,
+      attackRate,
+      damageReduction,
+      damageDone,
+    ] = p1.attack(p2);
     const critText = isCrit ? " (x2 critical hit)" : "";
 
     const p1HealthBar = bar(p1.hp, p1.maxHp);
@@ -112,7 +67,9 @@ export async function battle(msg: Message, player: Player, challenger: Challenge
       .setColor(RED)
       .setThumbnail(p1.imageUrl)
       .addField("Name", p1.name)
-      .addField("Attack Rate", `\`${damage}${critText}\``, true)
+      .addField("Attack Rate", `\`${attackRate}${critText}\``, true)
+      .addField("Damage Reduction", `\`${damageReduction}\``, true)
+      .addField("Damage Done", `\`${damageDone}\``, true)
       .addField("Round", round + 1, true)
 
     if (p1.name === player.name) {
