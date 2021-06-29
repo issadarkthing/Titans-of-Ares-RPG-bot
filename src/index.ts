@@ -66,7 +66,7 @@ client.on('message', (msg) => {
     return;
   }
 
-  const cmd = command.replace(PREFIX, '');
+  const cmd = command.replace(PREFIX, '').toLowerCase();
   switch (cmd) {
     case 'profile':
       profile(msg, args);
