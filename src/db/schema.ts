@@ -16,6 +16,7 @@ export const makePlayerTable = `
       Coin               DEFAULT 0,
       Energy             DEFAULT 5,
       ChallengerMaxLevel DEFAULT 0,
+      Buff               TEXT,
       PRIMARY KEY("DiscordID")
     )
 `;

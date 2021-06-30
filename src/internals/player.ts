@@ -6,10 +6,11 @@ import { setCoin } from "../db/getCoins";
 //@ts-ignore
 import { Rank } from "canvacord";
 import { createUser, getUser, getUsers } from "../db/getUsers";
-import { client } from "../index";
+import { client, SERVER_ID } from "../index";
 import { backgrounds } from "../commands/rank";
 import { stripIndents } from "common-tags";
 import { MAX_ENERGY, showTimeLeft } from "./timers";
+import { Buff, BuffID } from "./buff";
 
 export const CRIT_CHANCE = 0.1;
 
@@ -23,6 +24,7 @@ export interface IPlayer extends IFighter {
   // needed for the stupid rankcord library
   discriminator: string;
   critRate: number;
+  buff: BuffID | null;
 }
 
 export class Player extends Fighter {
@@ -32,6 +34,7 @@ export class Player extends Fighter {
   coins: number;
   energy: number;
   challengerMaxLevel: number;
+  buff: Buff | null;
   readonly userID: string;
   readonly discriminator: string;
   readonly critChance: number;
@@ -46,6 +49,7 @@ export class Player extends Fighter {
     this.critChance = data.critRate;
     this.energy = data.energy;
     this.challengerMaxLevel = data.challengerMaxLevel;
+    this.buff = data.buff && new Buff(data.buff);
   }
 
   static async getPlayer(member: GuildMember): Promise<Player> {
@@ -76,6 +80,7 @@ export class Player extends Fighter {
       critRate: 0.1,
       energy: player.Energy,
       challengerMaxLevel: player.ChallengerMaxLevel,
+      buff: player.Buff,
     })
   }
 

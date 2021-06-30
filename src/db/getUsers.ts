@@ -1,3 +1,4 @@
+import { BuffID } from "../internals/buff";
 import { dbAll, dbGet, dbRun } from "./promiseWrapper";
 
 export interface Player {
@@ -6,6 +7,7 @@ export interface Player {
   Coin: number;
   Energy: number;
   ChallengerMaxLevel: number;
+  Buff: BuffID | null;
 }
 
 export function getUsers() {

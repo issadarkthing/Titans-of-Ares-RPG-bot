@@ -10,6 +10,7 @@ import { xp } from './commands/xp';
 import { battle } from './commands/battle';
 import { makeChallengerTable, makePlayerTable, makeTimerTable } from "./db/schema";
 import { energyMainLoop } from './internals/timers';
+import { Buff } from './internals/buff';
 
 const sqlite3 = verbose();
 const PREFIX = process.env.PREFIX;
