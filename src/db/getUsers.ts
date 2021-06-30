@@ -39,3 +39,12 @@ export async function createUser($userID: string) {
   const user = await getUser($userID);
   return user!;
 }
+
+export function addBuff($userID: string, $buffID: string) {
+  const sql = `
+  UPDATE Player
+  SET Buff = $buffID
+  WHERE DiscordID = $userID
+  `
+  return dbRun(sql, { $userID, $buffID });
+}

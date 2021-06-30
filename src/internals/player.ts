@@ -9,10 +9,12 @@ import { createUser, getUser, getUsers } from "../db/getUsers";
 import { client, SERVER_ID } from "../index";
 import { backgrounds } from "../commands/rank";
 import { stripIndents } from "common-tags";
-import { MAX_ENERGY, showTimeLeft } from "./timers";
+import { MAX_ENERGY, showTimeLeft } from "./energy";
 import { Buff, BuffID } from "./buff";
+import { TimerType } from "../db/timer";
 
-export const CRIT_CHANCE = 0.1;
+export const CRIT_RATE = 0.1;
+export const CRIT_DAMAGE = 2;
 
 export interface IPlayer extends IFighter {
   xp: number;
@@ -23,7 +25,6 @@ export interface IPlayer extends IFighter {
   challengerMaxLevel: number;
   // needed for the stupid rankcord library
   discriminator: string;
-  critRate: number;
   buff: BuffID | null;
 }
 
@@ -37,7 +38,6 @@ export class Player extends Fighter {
   buff: Buff | null;
   readonly userID: string;
   readonly discriminator: string;
-  readonly critChance: number;
 
   constructor(data: IPlayer) {
     super(data);
@@ -46,10 +46,10 @@ export class Player extends Fighter {
     this.coins = data.coins;
     this.userID = data.userID;
     this.discriminator = data.discriminator;
-    this.critChance = data.critRate;
     this.energy = data.energy;
     this.challengerMaxLevel = data.challengerMaxLevel;
     this.buff = data.buff && new Buff(data.buff);
+    this.buff?.use(this);
   }
 
   static async getPlayer(member: GuildMember): Promise<Player> {
@@ -70,14 +70,14 @@ export class Player extends Fighter {
       strength: stats.strength,
       speed: stats.speed,
       armor: stats.armor,
-      criticalChance: CRIT_CHANCE,
+      critRate: CRIT_RATE,
+      critDamage: CRIT_DAMAGE,
       imageUrl: member.user.displayAvatarURL({ format: "jpg" }),
       points: totalPoints,
       xp: totalXp,
       coins: player.Coin,
       userID: member.user.id,
       discriminator: member.user.discriminator,
-      critRate: 0.1,
       energy: player.Energy,
       challengerMaxLevel: player.ChallengerMaxLevel,
       buff: player.Buff,
@@ -146,7 +146,7 @@ export class Player extends Fighter {
   }
 
   async getStats() {
-    const energyTimer = await showTimeLeft(this.userID);
+    const energyTimer = await showTimeLeft(TimerType.Energy, this.userID);
     const embed = new MessageEmbed()
       .setColor(GOLD)
       .setTitle(this.name)
@@ -154,7 +154,7 @@ export class Player extends Fighter {
         **Stats**
         XP: \`${this.xp}\` HP: \`${this.hp}\` Strength: \`${this.strength}\`
         Speed: \`${this.speed}\` Armor: \`${this.armor}\` 
-        Crit Rate: \`${this.critChance * 100}%\` Crit Damage: \`x2\` 
+        Crit Rate: \`${this.critRate * 100}%\` Crit Damage: \`x2\` 
         
         **Inventory**
         Coins: \`${this.coins}\`

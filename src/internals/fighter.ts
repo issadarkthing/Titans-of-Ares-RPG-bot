@@ -8,7 +8,8 @@ export interface IFighter {
   strength: number;
   speed: number;
   armor: number;
-  criticalChance: number;
+  critRate: number;
+  critDamage: number;
   imageUrl: string;
 }
 
@@ -22,7 +23,8 @@ export class Fighter {
   strength: number;
   speed: number;
   armor: number;
-  criticalChance: number;
+  critRate: number;
+  critDamage: number;
   imageUrl: string;
 
   constructor(data: IFighter) {
@@ -33,12 +35,13 @@ export class Fighter {
     this.strength = data.strength;
     this.speed = data.speed;
     this.armor = data.armor;
-    this.criticalChance = data.criticalChance;
+    this.critRate = data.critRate;
+    this.critDamage = data.critDamage;
     this.imageUrl = data.imageUrl;
   }
 
   isCriticalHit() {
-    return random().bool(this.criticalChance);
+    return random().bool(this.critRate);
   }
 
   // Attack mutates the challenger hp to simulate attack. It also accounts for

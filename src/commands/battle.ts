@@ -2,9 +2,9 @@ import { Collection, Message, MessageReaction, User } from "discord.js";
 import { battle as battleSimulator } from "../internals/battle";
 import { Player } from "../internals/player";
 import { Challenger } from "../internals/challenger";
-import { setEnergy, setTimer, TimerType } from "../db/cooldowns";
+import { setEnergy, setTimer, TimerType } from "../db/timer";
 import { DateTime } from "luxon";
-import { ENERGY_TIMEOUT, showTimeLeft } from "../internals/timers";
+import { ENERGY_TIMEOUT, showTimeLeft } from "../internals/energy";
 import { oneLine } from "common-tags";
 
 const emojis = ["◀️", "⏺️", "▶️"];
@@ -23,7 +23,7 @@ export async function battle(msg: Message, _: string[]) {
 
     if (player.energy <= 0) {
 
-      const timeText = await showTimeLeft(player.userID);
+      const timeText = await showTimeLeft(TimerType.Energy, player.userID);
       return msg.channel.send(`You have 0 energy left. Please wait for ${timeText}`);
     }
 
@@ -70,7 +70,7 @@ export async function battle(msg: Message, _: string[]) {
 
     const expireDate = DateTime.now().plus(ENERGY_TIMEOUT).toISO();
     await setEnergy(player.userID, -1);
-    await setTimer(TimerType.Charge, player.userID, expireDate);
+    await setTimer(TimerType.Energy, player.userID, expireDate);
 
     const selectedLevel = player.challengerMaxLevel + index;
     msg.channel.send(`Starting challenge level ${selectedLevel}`);

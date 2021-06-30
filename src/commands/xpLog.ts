@@ -3,9 +3,13 @@ import { xpLogTriggers, XP_LOG_CHANNEL } from "../index";
 import { getConvertTable } from "../db/getConversions";
 import { getChallengeId } from "../db/getChallengeId";
 import { getLevel, getXp } from "../internals/utils";
-import { getTotalXp } from "../db/getTotalPoints";
+import { Player } from "../internals/player";
+import { Buff, BUFF_EXPIRE } from "../internals/buff";
+import { setTimer, TimerType } from "../db/timer";
+import { DateTime } from "luxon";
+import { addBuff } from "../db/getUsers";
 
-export async function xpLog(msg: Message, args: string[]) {
+export async function xpLog(msg: Message, _: string[]) {
 
   const member = msg.guild?.members.cache.get(xpLogTriggers);
   if (!member) return;
@@ -19,7 +23,7 @@ export async function xpLog(msg: Message, args: string[]) {
     if (!matches || !matches.groups) return;
 
     const {value, valueType} = matches.groups;
-    const challengeId = await getChallengeId(msg.channel.id);
+    const challengeId = await getChallengeId("770375114066886697"); // TODO change this later
     const tag = `${valueType}-${challengeId}`;
     const convertTable = await getConvertTable();
     const multiplier = convertTable.get(tag);
@@ -30,11 +34,12 @@ export async function xpLog(msg: Message, args: string[]) {
     const point = parseInt(value) * multiplier;
     const logChannel = msg.guild?.channels.cache.get(XP_LOG_CHANNEL!);
     const xp = Math.round(getXp(point));
-    const totalXp = await getTotalXp(member.user.id);
-    const currentLevel = getLevel(totalXp);
-    const prevXp = totalXp - getXp(point);
+    const player = await Player.getPlayer(member);
+    const totalXp = player.xp;
+    const currentLevel = player.level;
+    const prevXp = totalXp - xp;
     const prevLevel = getLevel(prevXp);
-    const name = member.displayName;
+    const name = player.name;
 
     if (!logChannel) 
       throw Error("No xp log channel specified");
@@ -54,6 +59,14 @@ export async function xpLog(msg: Message, args: string[]) {
       console.log("currentLevel", currentLevel);
       console.log("prevLevel", prevLevel);
       console.log("name", name);
+    }
+
+    if (xp >= 10 && !player.buff) {
+      const buff = Buff.random();
+      const expireDate = DateTime.now().plus(BUFF_EXPIRE).toISO();
+      setTimer(TimerType.Buff, player.userID, expireDate);
+      addBuff(player.userID, buff.getID());
+      logChannel.send(`${name} has earned ${buff.getName()}!`);
     }
 
     if (currentLevel !== prevLevel) {

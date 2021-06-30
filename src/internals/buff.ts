@@ -1,18 +1,22 @@
+import { DurationInput } from "luxon";
+import { deleteTimer, getAllTimers, TimerType } from "../db/timer";
+import { isExpired, showTimeLeft } from "./energy";
+import { Player } from "./player";
 import { random } from "./utils";
 
-
-const commonPercentage = [10, 15, 20, 25, 50];
+const commonPercentage = [0.1, 0.15, 0.2, 0.25, 0.5];
 
 const buffs = {
   hp: commonPercentage,
-  critRate: [2, 4, 6, 8, 15],
+  critRate: [0.02, 0.04, 0.06, 0.08, 0.15],
   critDamage: [0.1, 0.2, 0.3, 0.4, 1],
   strength: commonPercentage,
   speed: commonPercentage,
 }
 
-const chances = [400, 300, 150, 100, 50]
+const chances = [400, 300, 150, 100, 50];
 
+export const BUFF_EXPIRE: DurationInput = { hours: 2 };
 
 type BuffRaw = typeof buffs;
 type BuffType = keyof BuffRaw;
@@ -34,6 +38,16 @@ export class Buff {
 
     this.type = type;
     this.level = level;
+  }
+
+  static async mainLoop() {
+    const timers = await getAllTimers(TimerType.Buff);
+
+    for (const timer of timers) {
+      if (isExpired(timer.Expires)) {
+        deleteTimer(TimerType.Buff, timer.DiscordID);
+      }
+    }
   }
 
   // randomly picks level according to its rarity
@@ -89,5 +103,32 @@ export class Buff {
   // returns buff value based on type
   getValue() {
     return buffs[this.type][this.level];
+  }
+
+  use(player: Player) {
+    switch (this.type) {
+      case "critDamage":
+        player.critDamage += this.getValue();
+        break;
+      case "critRate":
+        player.critRate += this.getValue();
+        break;
+      case "speed":
+        player.speed += this.getValue() * player.speed;
+        break;
+      case "strength":
+        player.strength += this.getValue() * player.strength;
+        break;
+      case "hp":
+        player.hp += this.getValue() * player.hp;
+        break;
+    }
+  }
+
+  getTimeLeft(player: Player) {
+    const id = player.buff?.getID();
+    if (!id) return "";
+
+    return showTimeLeft(TimerType.Buff, player.userID);
   }
 }

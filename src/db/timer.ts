@@ -1,7 +1,8 @@
 import { dbAll, dbGet, dbRun } from "./promiseWrapper";
 
 export enum TimerType {
-  Charge = "charge",
+  Energy = "charge",
+  Buff   = "buff",
 }
 
 

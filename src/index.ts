@@ -9,7 +9,7 @@ import award from "./commands/award";
 import { xp } from './commands/xp';
 import { battle } from './commands/battle';
 import { makeChallengerTable, makePlayerTable, makeTimerTable } from "./db/schema";
-import { energyMainLoop } from './internals/timers';
+import { energyMainLoop } from './internals/energy';
 import { Buff } from './internals/buff';
 
 const sqlite3 = verbose();
@@ -19,6 +19,7 @@ export const RANK_CHANNEL = process.env.RANK_CHANNEL;
 export const XP_LOG_CHANNEL = process.env.XP_LOG_CHANNEL;
 export const DB = process.env.DB;
 export const SERVER_ID = process.env.SERVER_ID;
+export const DEV_ID = process.env.DEV_ID!;
 
 if (!PREFIX) {
   throw new Error('No command prefix');
@@ -40,7 +41,10 @@ db.run(makePlayerTable);
 db.run(makeChallengerTable);
 db.run(makeTimerTable);
 
-setInterval(energyMainLoop, 1000) // run every second
+setInterval(() => {
+  energyMainLoop();
+  Buff.mainLoop();
+}, 1000) // run every second
 
 // stores discord id of user that triggers the xp log
 export let xpLogTriggers = "";
@@ -58,7 +62,7 @@ client.on('message', (msg) => {
 
   if (
     msg.content.startsWith("Registered") 
-    && msg.author.id === OLD_BOT_ID
+    && (msg.author.id === OLD_BOT_ID || msg.author.id === DEV_ID)
   ) {
     rank(msg, ["10"]);
     xpLog(msg, []);
