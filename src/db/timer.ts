@@ -50,10 +50,21 @@ export async function setEnergy($userID: string, $amount: number) {
     .then(x => x.Energy);
 }
 
+export async function hasTimer($name: TimerType, $userID: string) {
+  const sql = `
+  SELECT COUNT(*) AS Count
+  FROM Timer
+  WHERE DiscordID = $userID AND Name = $name
+  `
+
+  return dbGet<{ Count: number }>(sql, { $name, $userID })
+    .then(x => x.Count > 0);
+}
+
 // Sets a timer in database. $expires is the expiry date in ISO string
 export function setTimer($name: TimerType, $userID: string, $expires: string) {
   const sql = `
-  INSERT OR IGNORE INTO Timer (DiscordID, Name, Expires)
+  INSERT INTO Timer (DiscordID, Name, Expires)
   VALUES ($userID, $name, $expires)
   `
 

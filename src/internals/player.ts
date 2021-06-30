@@ -147,6 +147,7 @@ export class Player extends Fighter {
 
   async getStats() {
     const energyTimer = await showTimeLeft(TimerType.Energy, this.userID);
+    const buffTimer = await this.buff?.getTimeLeft(this);
     const embed = new MessageEmbed()
       .setColor(GOLD)
       .setTitle(this.name)
@@ -154,13 +155,16 @@ export class Player extends Fighter {
         **Stats**
         XP: \`${this.xp}\` HP: \`${this.hp}\` Strength: \`${this.strength}\`
         Speed: \`${this.speed}\` Armor: \`${this.armor}\` 
-        Crit Rate: \`${this.critRate * 100}%\` Crit Damage: \`x2\` 
+        Crit Rate: \`${this.critRate * 100}%\` Crit Damage: \`x${this.critDamage}\` 
         
         **Inventory**
         Coins: \`${this.coins}\`
 
         **Energy**
         ${this.energy}/${MAX_ENERGY} ${energyTimer}
+
+        **Buff**
+        ${this.buff?.getName() || ""} ${buffTimer || ""}
       `);
 
     return embed;

@@ -93,9 +93,9 @@ export class Buff {
     const levelName = buffLevelName[this.level];
 
     if (this.type === "critDamage") {
-      return `${levelName} ${typeName} buff x${this.getValue()}`;
+      return `${levelName} ${typeName} buff \`+x${this.getValue()}\``;
     } else {
-      return `${levelName} ${typeName} buff +${this.getValue()}%`;
+      return `${levelName} ${typeName} buff \`+${this.getValue()}%\``;
     }
 
   }

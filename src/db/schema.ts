@@ -1,11 +1,12 @@
 // this table records timer for user energy charger
 export const makeTimerTable = `
   CREATE TABLE IF NOT EXISTS Timer (
-    DiscordID TEXT NOT NULL UNIQUE,
+    ID        INTEGER NOT NULL UNIQUE,
+    DiscordID TEXT NOT NULL,
     Name      TEXT NOT NULL,
     Created   DEFAULT CURRENT_TIMESTAMP,
     Expires   TEXT NOT NULL,
-    PRIMARY KEY(DiscordID)
+    PRIMARY KEY(ID AUTOINCREMENT)
   )
 `;
 
