@@ -1,6 +1,13 @@
-import { DurationInput } from "luxon";
-import { deleteTimer, getAllTimers, TimerType } from "../db/timer";
-import { isExpired, showTimeLeft } from "./energy";
+import { DateTime, DurationInput } from "luxon";
+import { deleteBuff } from "../db/getUsers";
+import { 
+  deleteTimer, 
+  getAllTimers, 
+  getTimer, 
+  Timer, 
+  TimerType, 
+} from "../db/timer";
+import { isExpired } from "./energy";
 import { Player } from "./player";
 import { random } from "./utils";
 
@@ -16,7 +23,8 @@ const buffs = {
 
 const chances = [400, 300, 150, 100, 50];
 
-export const BUFF_EXPIRE: DurationInput = { hours: 2 };
+export const BUFF_ACTIVE_LIMIT: DurationInput = { hours: 2 };
+export const BUFF_LIMIT: DurationInput = { days: 1 };
 export const XP_THRESHOLD = 20;
 
 type BuffRaw = typeof buffs;
@@ -39,33 +47,6 @@ export class Buff {
 
     this.type = type;
     this.level = level;
-  }
-
-  static async mainLoop() {
-    const timers = await getAllTimers(TimerType.Buff);
-
-    for (const timer of timers) {
-      if (isExpired(timer.Expires)) {
-        deleteTimer(TimerType.Buff, timer.DiscordID);
-      }
-    }
-  }
-
-  // randomly picks level according to its rarity
-  private static pickBuffLevel() {
-    const samples = chances
-      .map((count, index) =>  Array(count).fill(index))
-      .flat();
-    const randomizedSample = random().shuffle<BuffLevel>(samples);
-    return random().pick(randomizedSample);
-  }
-
-  // randomly choses buff according to its rarity
-  static random() {
-    const buffTypes = Object.keys(buffs);
-    const buffType = random().pick(buffTypes) as BuffType;
-    const buffLevel = this.pickBuffLevel();
-    return new Buff(`${buffType}_${buffLevel}` as BuffID);
   }
 
   getID(): BuffID {
@@ -126,10 +107,54 @@ export class Buff {
     }
   }
 
-  getTimeLeft(player: Player) {
+  async getTimeLeft(player: Player) {
     const id = player.buff?.getID();
     if (!id) return "";
 
-    return showTimeLeft(TimerType.Buff, player.userID);
+    const timer = await getTimer(TimerType.Buff, player.userID);
+    if (!timer) return "";
+
+    const expiryDate = Buff.getActiveTimeLimit(timer);
+    if (isExpired(expiryDate.toISO())) {
+      return "";
+    }
+
+    const diff = expiryDate.diffNow();
+    return diff.toFormat("`(hh:mm:ss)`");
   }
+
+  static async mainLoop() {
+    const timers = await getAllTimers(TimerType.Buff);
+
+    for (const timer of timers) {
+      if (isExpired(timer.Expires)) {
+        deleteTimer(TimerType.Buff, timer.DiscordID);
+        deleteBuff(timer.DiscordID);
+      }
+    }
+  }
+
+  static getActiveTimeLimit(timer: Timer) {
+    return DateTime
+      .fromISO(timer.Created, { zone: "GMT" })
+      .plus(BUFF_ACTIVE_LIMIT);
+  }
+
+  // randomly picks level according to its rarity
+  private static pickBuffLevel() {
+    const samples = chances
+      .map((count, index) =>  Array(count).fill(index))
+      .flat();
+    const randomizedSample = random().shuffle<BuffLevel>(samples);
+    return random().pick(randomizedSample);
+  }
+
+  // randomly choses buff according to its rarity
+  static random() {
+    const buffTypes = Object.keys(buffs);
+    const buffType = random().pick(buffTypes) as BuffType;
+    const buffLevel = this.pickBuffLevel();
+    return new Buff(`${buffType}_${buffLevel}` as BuffID);
+  }
+
 }

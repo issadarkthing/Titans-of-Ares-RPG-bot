@@ -73,7 +73,14 @@ export function setTimer($name: TimerType, $userID: string, $expires: string) {
 
 export function getTimer($name: TimerType, $userID: string) {
   const sql = `
-  SELECT * FROM Timer WHERE Name = $name AND DiscordID = $userID
+  SELECT 
+    ID, 
+    DiscordID, 
+    Name, 
+    strftime("%Y-%m-%dT%H:%M:%f", Created) AS Created, 
+    Expires
+  FROM Timer 
+  WHERE Name = $name AND DiscordID = $userID
   `
   return dbGet<Timer>(sql, { $name, $userID });
 }

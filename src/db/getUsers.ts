@@ -48,3 +48,13 @@ export function addBuff($userID: string, $buffID: string) {
   `
   return dbRun(sql, { $userID, $buffID });
 }
+
+export function deleteBuff($userID: string) {
+  const sql = `
+  UPDATE Player
+  SET Buff = NULL
+  WHERE DiscordID = $userID
+  `
+
+  return dbRun(sql, { $userID });
+}
