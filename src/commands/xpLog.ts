@@ -5,7 +5,7 @@ import { getChallengeId } from "../db/getChallengeId";
 import { getLevel, getXp } from "../internals/utils";
 import { Player } from "../internals/player";
 import { Buff, BUFF_LIMIT, XP_THRESHOLD } from "../internals/buff";
-import { setTimer, TimerType } from "../db/timer";
+import { getTimer, setTimer, TimerType } from "../db/timer";
 import { DateTime } from "luxon";
 import { addBuff } from "../db/getUsers";
 
@@ -61,7 +61,9 @@ export async function xpLog(msg: Message, _: string[]) {
       console.log("name", name);
     }
 
-    if (xp >= XP_THRESHOLD && !player.buff) {
+    const timer = await getTimer(TimerType.Buff, member.id);
+
+    if (xp >= XP_THRESHOLD && !timer) {
       const buff = Buff.random();
       const expireDate = DateTime.now().plus(BUFF_LIMIT).toISO();
       setTimer(TimerType.Buff, player.userID, expireDate);
