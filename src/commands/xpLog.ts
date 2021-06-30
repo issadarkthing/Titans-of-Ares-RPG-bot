@@ -66,7 +66,7 @@ export async function xpLog(msg: Message, _: string[]) {
       const expireDate = DateTime.now().plus(BUFF_LIMIT).toISO();
       setTimer(TimerType.Buff, player.userID, expireDate);
       addBuff(player.userID, buff.getID());
-      logChannel.send(`${name} has earned ${buff.getName()}!`);
+      logChannel.send(`${member} has earned ${buff.getName()}!`);
     }
 
     if (currentLevel !== prevLevel) {
