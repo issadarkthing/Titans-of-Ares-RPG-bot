@@ -2,7 +2,7 @@ import { Message, MessageEmbed } from "discord.js";
 import { setMaxChallenger } from "../db/getChallenger";
 import { Challenger } from "./challenger";
 import { Player } from "./player";
-import { RED, random, GOLD, PLAYER_CRIT_GIF, CHALLENGER_CRIT_GIF } from "./utils";
+import { RED, random, GOLD, PLAYER_CRIT_GIF, CHALLENGER_CRIT_GIF, numberFormat } from "./utils";
 import { Fighter } from "./fighter";
 
 export const CRIT_RATE = 2;
@@ -59,9 +59,9 @@ export async function battle(msg: Message, player: Player, challenger: Challenge
     const critText = isCrit ? " (x2 critical hit)" : "";
 
     const p1HealthBar = bar(p1.hp, p1.maxHp);
-    const p1RemainingHp = p1.hp >= 0 ? p1.hp : 0;
+    const p1RemainingHp = p1.hp >= 0 ? numberFormat(p1.hp) : 0;
     const p2HealthBar = bar(p2.hp, p2.maxHp);
-    const p2RemainingHp = p2.hp >= 0 ? p2.hp : 0;
+    const p2RemainingHp = p2.hp >= 0 ? numberFormat(p2.hp) : 0;
 
     embed = new MessageEmbed()
       .setColor(RED)
