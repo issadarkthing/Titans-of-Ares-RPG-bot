@@ -4,7 +4,7 @@ import { getConvertTable } from "../db/getConversions";
 import { getChallengeId } from "../db/getChallengeId";
 import { getLevel, getXp } from "../internals/utils";
 import { Player } from "../internals/player";
-import { Buff, BUFF_EXPIRE } from "../internals/buff";
+import { Buff, BUFF_EXPIRE, XP_THRESHOLD } from "../internals/buff";
 import { setTimer, TimerType } from "../db/timer";
 import { DateTime } from "luxon";
 import { addBuff } from "../db/getUsers";
@@ -61,7 +61,7 @@ export async function xpLog(msg: Message, _: string[]) {
       console.log("name", name);
     }
 
-    if (xp >= 10 && !player.buff) {
+    if (xp >= XP_THRESHOLD && !player.buff) {
       const buff = Buff.random();
       const expireDate = DateTime.now().plus(BUFF_EXPIRE).toISO();
       setTimer(TimerType.Buff, player.userID, expireDate);
