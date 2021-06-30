@@ -136,7 +136,7 @@ export class Buff {
 
   static getActiveTimeLimit(timer: Timer) {
     return DateTime
-      .fromISO(timer.Created, { zone: "GMT" })
+      .fromSQL(timer.Created, { zone: "GMT" })
       .plus(BUFF_ACTIVE_LIMIT);
   }
 
