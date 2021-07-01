@@ -46,9 +46,7 @@ export async function xpLog(msg: Message, _: string[]) {
     else if (!(logChannel instanceof TextChannel))
       throw Error("XP log channel is not TextChannel");
 
-    logChannel.send(
-      `${name} has earned \`${xp} xp\`!`
-    )
+    logChannel.send(`${name} has earned \`${xp} xp\`!`)
 
     // add logging for specific user
     if (member.user.id === "826313725501112342") {
@@ -63,12 +61,13 @@ export async function xpLog(msg: Message, _: string[]) {
 
     const timer = await getTimer(TimerType.Buff, member.id);
 
-    const currentChallenge = await getCurrentChallenge();
+    // TODO: change this later
+    // const currentChallenge = await getCurrentChallenge();
     const d = new Date();
     if (
       xp >= XP_THRESHOLD && 
       !timer && 
-      currentChallenge.ProofChannel !== msg.channel.id &&
+      // currentChallenge.ProofChannel !== msg.channel.id &&
       parseInt(day) === d.getDate()
     ) {
       const buff = Buff.random();
@@ -79,9 +78,7 @@ export async function xpLog(msg: Message, _: string[]) {
     }
 
     if (currentLevel !== prevLevel) {
-      logChannel.send(
-        `${name} is now on **level ${currentLevel}**`
-      );
+      logChannel.send(`${name} is now on **level ${currentLevel}**`);
     }
   }
 }
