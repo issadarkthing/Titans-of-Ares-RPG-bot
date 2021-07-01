@@ -1,7 +1,7 @@
 import { Message, TextChannel } from "discord.js";
 import { xpLogTriggers, XP_LOG_CHANNEL } from "../index";
 import { getConvertTable } from "../db/getConversions";
-import { getChallengeId } from "../db/getChallengeId";
+import { getChallengeId, getCurrentChallenge } from "../db/getChallengeId";
 import { getLevel, getXp } from "../internals/utils";
 import { Player } from "../internals/player";
 import { Buff, BUFF_LIMIT, XP_THRESHOLD } from "../internals/buff";
@@ -15,15 +15,15 @@ export async function xpLog(msg: Message, _: string[]) {
   if (!member) return;
 
   const lines = msg.content.split("\n");
-  const rgx = /Progress:\s(?<value>\d+)\s(?<valueType>\w+)$/
+  const rgx = /^Registered\sDay:\s(?<day>\d+)\s.*Progress:\s(?<value>\d+)\s(?<valueType>\w+)$/;
 
   for (const line of lines) {
 
     const matches = line.match(rgx);
     if (!matches || !matches.groups) return;
 
-    const {value, valueType} = matches.groups;
-    const challengeId = await getChallengeId("770375114066886697"); // TODO change this later
+    const { day, value, valueType } = matches.groups;
+    const challengeId = await getChallengeId("848830692237770761"); // TODO change this later
     const tag = `${valueType}-${challengeId}`;
     const convertTable = await getConvertTable();
     const multiplier = convertTable.get(tag);
@@ -63,7 +63,14 @@ export async function xpLog(msg: Message, _: string[]) {
 
     const timer = await getTimer(TimerType.Buff, member.id);
 
-    if (xp >= XP_THRESHOLD && !timer) {
+    const currentChallenge = await getCurrentChallenge();
+    const d = new Date();
+    if (
+      xp >= XP_THRESHOLD && 
+      !timer && 
+      currentChallenge.ProofChannel !== msg.channel.id &&
+      parseInt(day) !== d.getDate()
+    ) {
       const buff = Buff.random();
       const expireDate = DateTime.now().plus(BUFF_LIMIT).toISO();
       setTimer(TimerType.Buff, player.userID, expireDate);
