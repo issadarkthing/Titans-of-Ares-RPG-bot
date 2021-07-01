@@ -1,4 +1,4 @@
-import { getLevel, getLevelThreshold, getStats, GOLD } from "./utils";
+import { getLevel, getLevelThreshold, getStats, GOLD, numberFormat } from "./utils";
 import { getTotalPoints, getTotalXp } from "../db/getTotalPoints";
 import { GuildMember, MessageAttachment, MessageEmbed } from "discord.js";
 import { IFighter, Fighter } from "./fighter";
@@ -157,14 +157,21 @@ export class Player extends Fighter {
   async getStats() {
     const energyTimer = await showTimeLeft(TimerType.Energy, this.userID);
     const buffTimer = await this.buff?.getTimeLeft(this);
+    const xp = numberFormat(this.xp);
+    const hp = numberFormat(this.hp);
+    const strength = numberFormat(this.strength);
+    const speed = numberFormat(this.speed);
+    const armor = numberFormat(this.armor);
+    const critRate = numberFormat(this.critRate * 100);
+    const critDamage = numberFormat(this.critDamage);
     const embed = new MessageEmbed()
       .setColor(GOLD)
       .setTitle(this.name)
       .addField("-----", stripIndents`
         **Stats**
-        XP: \`${this.xp}\` HP: \`${this.hp}\` Strength: \`${this.strength}\`
-        Speed: \`${this.speed}\` Armor: \`${this.armor}\` 
-        Crit Rate: \`${this.critRate * 100}%\` Crit Damage: \`x${this.critDamage}\` 
+        XP: \`${xp}\` HP: \`${hp}\` Strength: \`${strength}\`
+        Speed: \`${speed}\` Armor: \`${armor}\` 
+        Crit Rate: \`${critRate}%\` Crit Damage: \`x${critDamage}\` 
         
         **Inventory**
         Coins: \`${this.coins}\`
