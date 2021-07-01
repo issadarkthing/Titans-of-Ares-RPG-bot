@@ -69,7 +69,7 @@ export async function xpLog(msg: Message, _: string[]) {
       xp >= XP_THRESHOLD && 
       !timer && 
       currentChallenge.ProofChannel !== msg.channel.id &&
-      parseInt(day) !== d.getDate()
+      parseInt(day) === d.getDate()
     ) {
       const buff = Buff.random();
       const expireDate = DateTime.now().plus(BUFF_LIMIT).toISO();
