@@ -15,6 +15,9 @@ export function getUsers() {
   const sql = `
   SELECT DISTINCT CAST (DiscordID AS text) as DiscordID
   FROM ChallengeEntry
+  UNION
+  SELECT DiscordID
+  FROM Player;
   `
 
   return dbAll<{ DiscordID: string }>(sql);

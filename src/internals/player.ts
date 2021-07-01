@@ -6,7 +6,6 @@ import { setCoin } from "../db/getCoins";
 //@ts-ignore
 import { Rank } from "canvacord";
 import { createUser, getUser, getUsers } from "../db/getUsers";
-import { client, SERVER_ID } from "../index";
 import { backgrounds } from "../commands/rank";
 import { stripIndents } from "common-tags";
 import { isExpired, MAX_ENERGY, showTimeLeft } from "./energy";
@@ -95,31 +94,23 @@ export class Player extends Fighter {
 
   async getRank() {
 
-    const guild = client.guilds.cache.get(SERVER_ID!);
     const users = await getUsers();
     const cards: { 
-      member: GuildMember, 
-        point: number,
-        xp: number,
+      id: string,
+      point: number,
+      xp: number,
     }[] = [];
 
-    await guild?.members.fetch();
 
     for (const user of users) {
-
-      let member = guild?.members.cache.get(user.DiscordID);
-      if (!member) {
-        continue;
-      }
-
       const xp = await getTotalXp(user.DiscordID);
       const point = await getTotalPoints(user.DiscordID);
-      cards.push({ member, xp, point });
+      cards.push({ id: user.DiscordID, xp, point });
     }
 
     cards.sort((a, b) => b.xp - a.xp);
 
-    const rank = cards.findIndex(x => x.member.user.id === this.userID)!;
+    const rank = cards.findIndex(x => x.id === this.userID);
     return rank + 1;
   }
 
