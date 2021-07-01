@@ -8,6 +8,7 @@ import { Buff, BUFF_LIMIT, XP_THRESHOLD } from "../internals/buff";
 import { getTimer, setTimer, TimerType } from "../db/timer";
 import { DateTime } from "luxon";
 import { addBuff } from "../db/getUsers";
+import { oneLine } from "common-tags";
 
 export async function xpLog(msg: Message, _: string[]) {
 
@@ -74,7 +75,10 @@ export async function xpLog(msg: Message, _: string[]) {
       const expireDate = DateTime.now().plus(BUFF_LIMIT).toISO();
       setTimer(TimerType.Buff, player.userID, expireDate);
       addBuff(player.userID, buff.getID());
-      logChannel.send(`${member} has earned ${buff.getName()}!`);
+      logChannel.send(
+        oneLine`Ares has granted ${member} the ${buff.getName()} 
+        for getting 10 points in the monthly challenge today!`
+      );
     }
 
     if (currentLevel !== prevLevel) {
