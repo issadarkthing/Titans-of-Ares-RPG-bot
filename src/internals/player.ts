@@ -130,7 +130,7 @@ export class Player extends Fighter {
     const levelThreshold = getLevelThreshold(level);
     const rank = await this.getRank();
     const color = "#111";
-    const image = backgrounds[rank];
+    const image = backgrounds[rank - 1];
 
     let accPrevLevel = 0;
     let lvl = level;
