@@ -24,7 +24,7 @@ export async function xpLog(msg: Message, _: string[]) {
     if (!matches || !matches.groups) return;
 
     const { day, value, valueType } = matches.groups;
-    const challengeId = await getChallengeId("848830692237770761"); // TODO change this later
+    const challengeId = await getChallengeId(msg.channel.id);
     const tag = `${valueType}-${challengeId}`;
     const convertTable = await getConvertTable();
     const multiplier = convertTable.get(tag);
@@ -49,26 +49,14 @@ export async function xpLog(msg: Message, _: string[]) {
 
     logChannel.send(`${name} has earned \`${xp} xp\`!`)
 
-    // add logging for specific user
-    if (member.user.id === "826313725501112342") {
-      console.log("point", point);
-      console.log("xp", xp);
-      console.log("totalXp", totalXp);
-      console.log("prevXp", prevXp);
-      console.log("currentLevel", currentLevel);
-      console.log("prevLevel", prevLevel);
-      console.log("name", name);
-    }
-
     const timer = await getTimer(TimerType.Buff, member.id);
 
-    // TODO: change this later
-    // const currentChallenge = await getCurrentChallenge();
+    const currentChallenge = await getCurrentChallenge();
     const d = new Date();
     if (
       xp >= XP_THRESHOLD && 
       !timer && 
-      // currentChallenge.ProofChannel !== msg.channel.id &&
+      currentChallenge.ProofChannel !== msg.channel.id &&
       parseInt(day) === d.getDate()
     ) {
       const buff = Buff.random();
