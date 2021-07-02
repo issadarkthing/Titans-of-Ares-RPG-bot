@@ -72,7 +72,7 @@ export class Buff {
     }
 
     const typeName = buffTypeName[this.type];
-    const levelName = buffLevelName[this.level];
+    const levelName = buffLevelName[this.level - 1];
 
     if (this.type === "critDamage") {
       return `${levelName} ${typeName} buff \`+x${this.getValue()}\``;
@@ -84,7 +84,7 @@ export class Buff {
 
   // returns buff value based on type
   getValue() {
-    return buffs[this.type][this.level];
+    return buffs[this.type][this.level - 1];
   }
 
   use(player: Player) {
