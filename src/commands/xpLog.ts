@@ -64,7 +64,7 @@ export async function xpLog(msg: Message, _: string[]) {
       setTimer(TimerType.Buff, player.userID, expireDate);
       addBuff(player.userID, buff.getID());
       logChannel.send(
-        oneLine`Ares has granted ${member} the ${buff.getName()} 
+        oneLine`Ares has granted ${member} a 2 hour ${buff.getName()} 
         for getting 10 points in the monthly challenge today!`
       );
     }
