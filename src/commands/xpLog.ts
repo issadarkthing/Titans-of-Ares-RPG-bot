@@ -56,7 +56,7 @@ export async function xpLog(msg: Message, _: string[]) {
     if (
       xp >= XP_THRESHOLD && 
       !timer && 
-      currentChallenge.ProofChannel !== msg.channel.id &&
+      currentChallenge.ProofChannel === msg.channel.id &&
       parseInt(day) === d.getDate()
     ) {
       const buff = Buff.random();
