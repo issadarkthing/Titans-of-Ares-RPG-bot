@@ -4,7 +4,7 @@ import { Player } from "../internals/player";
 export async function profile(msg: Message, args: string[]) {
 
   const userId = args[0] || msg.author.id;
-  const member = msg.guild?.members.cache.get(userId);
+  const member = await msg.guild?.members.fetch(userId);
   const guild = msg.guild;
 
   if (!member)
