@@ -24,7 +24,7 @@ const buffs = {
 const chances = [400, 300, 150, 100, 50];
 
 export const BUFF_ACTIVE_LIMIT: DurationInput = { hours: 2 };
-export const BUFF_LIMIT: DurationInput = { day: 1 };
+export const BUFF_LIMIT: DurationInput = { hours: 2 };
 export const XP_THRESHOLD = 20;
 
 type BuffRaw = typeof buffs;
