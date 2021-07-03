@@ -143,7 +143,7 @@ export class Buff {
   // randomly picks level according to its rarity
   private static pickBuffLevel() {
     const samples = chances
-      .map((count, index) =>  Array(count).fill(index))
+      .map((count, index) =>  Array(count).fill(index + 1))
       .flat();
     const randomizedSample = random().shuffle<BuffLevel>(samples);
     return random().pick(randomizedSample);
