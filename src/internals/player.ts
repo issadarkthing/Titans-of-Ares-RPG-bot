@@ -48,7 +48,10 @@ export class Player extends Fighter {
     this.energy = data.energy;
     this.challengerMaxLevel = data.challengerMaxLevel;
     this.buff = data.buff && new Buff(data.buff);
-    this.buff?.use(this);
+    if (this.buff) {
+      this.buff.use(this);
+      this.maxHp = this.hp;
+    }
   }
 
   static async getPlayer(member: GuildMember): Promise<Player> {

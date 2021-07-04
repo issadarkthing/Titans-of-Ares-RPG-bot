@@ -58,9 +58,12 @@ export async function battle(msg: Message, player: Player, challenger: Challenge
     ] = p1.attack(p2);
     const critText = isCrit ? " (x2 critical hit)" : "";
 
-    const p1HealthBar = bar(p1.hp, p1.maxHp);
+    const p1MaxHP = numberFormat(p1.getMaxHP());
+    const p1HealthBar = bar(p1.hp, p1.getMaxHP());
     const p1RemainingHp = p1.hp >= 0 ? numberFormat(p1.hp) : 0;
-    const p2HealthBar = bar(p2.hp, p2.maxHp);
+
+    const p2MaxHP = numberFormat(p2.getMaxHP());
+    const p2HealthBar = bar(p2.hp, p2.getMaxHP());
     const p2RemainingHp = p2.hp >= 0 ? numberFormat(p2.hp) : 0;
 
     embed = new MessageEmbed()
@@ -84,16 +87,16 @@ export async function battle(msg: Message, player: Player, challenger: Challenge
     if (p1.name === player.name) {
 
       embed.addField(`${p1.name}'s remaining HP`, 
-        `${p1HealthBar} \`${p1RemainingHp}/${p1.maxHp}\``)
+        `${p1HealthBar} \`${p1RemainingHp}/${p1MaxHP}\``)
       embed.addField(`${p2.name}'s remaining HP`, 
-        `${p2HealthBar} \`${p2RemainingHp}/${p2.maxHp}\``)
+        `${p2HealthBar} \`${p2RemainingHp}/${p2MaxHP}\``)
 
     } else {
 
       embed.addField(`${p2.name}'s remaining HP`, 
-        `${p2HealthBar} \`${p2RemainingHp}/${p2.maxHp}\``)
+        `${p2HealthBar} \`${p2RemainingHp}/${p2MaxHP}\``)
       embed.addField(`${p1.name}'s remaining HP`, 
-        `${p1HealthBar} \`${p1RemainingHp}/${p1.maxHp}\``)
+        `${p1HealthBar} \`${p1RemainingHp}/${p1MaxHP}\``)
     }
 
 

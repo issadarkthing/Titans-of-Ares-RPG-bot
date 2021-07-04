@@ -19,7 +19,7 @@ export class Fighter {
   name: string;
   level: number;
   hp: number;
-  readonly maxHp: number;
+  protected maxHp: number;
   strength: number;
   speed: number;
   armor: number;
@@ -38,6 +38,10 @@ export class Fighter {
     this.critRate = data.critRate;
     this.critDamage = data.critDamage;
     this.imageUrl = data.imageUrl;
+  }
+
+  getMaxHP() {
+    return this.maxHp;
   }
 
   isCriticalHit() {
