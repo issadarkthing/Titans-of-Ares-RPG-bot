@@ -8,7 +8,7 @@ export async function getChallengeId($channelId: string) {
     WHERE ProofChannel = $channelId
   `
 
-  const result = await dbAll<{ID: string}>(sql, { $channelId });
+  const result = await dbAll<{ID: number}>(sql, { $channelId });
   return result[0]?.ID;
 }
 

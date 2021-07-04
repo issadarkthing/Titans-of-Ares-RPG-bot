@@ -4,6 +4,7 @@ interface Row {
   Day: number;
   Value: number;
   ValueType: string;
+  XP: number;
   ChallengeID: number;
 }
 

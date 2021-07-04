@@ -4,7 +4,7 @@ export function award($userId: string, $amount: number) {
 
   const sql = `
     INSERT INTO Player(DiscordID, XP)
-    VALUES ( $userId, $amount )
+    VALUES ($userId, $amount)
     ON CONFLICT(DiscordID)
     DO UPDATE SET XP = XP + $amount
   `

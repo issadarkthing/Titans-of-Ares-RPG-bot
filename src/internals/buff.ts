@@ -114,12 +114,9 @@ export class Buff {
     const timer = await getTimer(TimerType.Buff, player.userID);
     if (!timer) return "";
 
-    const expiryDate = Buff.getActiveTimeLimit(timer);
-    if (isExpired(expiryDate.toISO())) {
-      return "";
-    }
+    const expireDate = DateTime.fromISO(timer.Expires);
+    const diff = expireDate.diffNow();
 
-    const diff = expiryDate.diffNow();
     return diff.toFormat("`(hh:mm:ss)`");
   }
 
@@ -132,12 +129,6 @@ export class Buff {
         deleteBuff(timer.DiscordID);
       }
     }
-  }
-
-  static getActiveTimeLimit(timer: Timer) {
-    return DateTime
-      .fromSQL(timer.Created, { zone: "GMT" })
-      .plus(BUFF_ACTIVE_LIMIT);
   }
 
   // randomly picks level according to its rarity

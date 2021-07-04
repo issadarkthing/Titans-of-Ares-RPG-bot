@@ -8,9 +8,9 @@ import { Rank } from "canvacord";
 import { createUser, getUser, getUsers } from "../db/getUsers";
 import { backgrounds } from "../commands/rank";
 import { stripIndents } from "common-tags";
-import { isExpired, MAX_ENERGY, showTimeLeft } from "./energy";
+import { MAX_ENERGY, showTimeLeft } from "./energy";
 import { Buff, BuffID } from "./buff";
-import { getTimer, TimerType } from "../db/timer";
+import { TimerType } from "../db/timer";
 
 export const CRIT_RATE = 0.1;
 export const CRIT_DAMAGE = 2;
@@ -60,15 +60,6 @@ export class Player extends Fighter {
     let player = await getUser(userId);
     if (!player) {
       player = await createUser(userId);
-    }
-
-    const buffTimer = await getTimer(TimerType.Buff, userId);
-    if (buffTimer) {
-
-      const activeTimeLimit = Buff.getActiveTimeLimit(buffTimer);
-      if (isExpired(activeTimeLimit.toISO())) {
-        player.Buff = null;
-      }
     }
 
     return new Player({

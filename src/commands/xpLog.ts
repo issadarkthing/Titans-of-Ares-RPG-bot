@@ -9,6 +9,7 @@ import { getTimer, setTimer, TimerType } from "../db/timer";
 import { DateTime } from "luxon";
 import { addBuff } from "../db/getUsers";
 import { oneLine } from "common-tags";
+import { createEntry, getXPEntry, resetXPEntry, setXPEntry } from "../db/xpEntry";
 
 export async function xpLog(msg: Message, _: string[]) {
 
@@ -23,8 +24,8 @@ export async function xpLog(msg: Message, _: string[]) {
     const matches = line.match(rgx);
     if (!matches || !matches.groups) return;
 
-    const { day, value, valueType } = matches.groups;
-    const challengeId = await getChallengeId(msg.channel.id);
+    const { value, valueType } = matches.groups;
+    const challengeId = await getChallengeId("848830692237770761"); // TODO change this later
     const tag = `${valueType}-${challengeId}`;
     const convertTable = await getConvertTable();
     const multiplier = convertTable.get(tag);
@@ -47,22 +48,28 @@ export async function xpLog(msg: Message, _: string[]) {
     else if (!(logChannel instanceof TextChannel))
       throw Error("XP log channel is not TextChannel");
 
-    logChannel.send(`${name} has earned \`${xp} xp\`!`)
+    logChannel.send(`${name} has earned \`${xp} xp\`!`);
 
     const timer = await getTimer(TimerType.Buff, member.id);
+    const day = parseInt(matches.groups.day);
+    let xpEntry = await getXPEntry(challengeId, day, member.id);
 
-    const currentChallenge = await getCurrentChallenge();
-    const d = new Date();
-    if (
-      xp >= XP_THRESHOLD && 
-      !timer && 
-      currentChallenge.ProofChannel === msg.channel.id &&
-      parseInt(day) === d.getDate()
-    ) {
+    if (xpEntry) {
+      !timer && await setXPEntry(xpEntry.ID, xp);
+    } else {
+      await createEntry(challengeId, day, member.id, xp);
+    }
+
+    xpEntry = await getXPEntry(challengeId, day, member.id);
+
+    if (xpEntry.XP >= XP_THRESHOLD && !timer) {
+      await resetXPEntry(challengeId, day, member.id);
+
       const buff = Buff.random();
       const expireDate = DateTime.now().plus(BUFF_LIMIT).toISO();
       setTimer(TimerType.Buff, player.userID, expireDate);
       addBuff(player.userID, buff.getID());
+
       logChannel.send(
         oneLine`Ares has granted ${member} a 2 hour ${buff.getName()} 
         for getting 10 points in the monthly challenge today!`

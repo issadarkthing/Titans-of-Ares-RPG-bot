@@ -8,7 +8,7 @@ import { xpLog } from "./commands/xpLog";
 import award from "./commands/award";
 import { xp } from './commands/xp';
 import { battle } from './commands/battle';
-import { makeChallengerTable, makePlayerTable, makeTimerTable } from "./db/schema";
+import { makeChallengerTable, makePlayerTable, makeTimerTable, makeXPEntryTable } from "./db/schema";
 import { energyMainLoop } from './internals/energy';
 import { Buff } from './internals/buff';
 
@@ -40,6 +40,7 @@ export const client = new Client();
 db.run(makePlayerTable);
 db.run(makeChallengerTable);
 db.run(makeTimerTable);
+db.run(makeXPEntryTable);
 
 setInterval(() => {
   energyMainLoop();

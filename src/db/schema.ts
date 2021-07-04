@@ -34,3 +34,13 @@ export const makeChallengerTable = `
     CritChance REAL
   )
 `;
+
+export const makeXPEntryTable = `
+  CREATE TABLE IF NOT EXISTS XPEntry (
+    ID          INTEGER PRIMARY KEY,
+    ChallengeID INTEGER,
+    Day         INTEGER,
+    XP          INTEGER,
+    DiscordID   TEXT
+  )
+`
