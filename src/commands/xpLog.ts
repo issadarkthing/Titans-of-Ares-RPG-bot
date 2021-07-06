@@ -1,7 +1,7 @@
 import { Message, TextChannel } from "discord.js";
 import { xpLogTriggers, XP_LOG_CHANNEL } from "../index";
 import { getConvertTable } from "../db/getConversions";
-import { getChallengeId, getCurrentChallenge } from "../db/getChallengeId";
+import { getChallengeId } from "../db/getChallengeId";
 import { getLevel, getXp } from "../internals/utils";
 import { Player } from "../internals/player";
 import { Buff, BUFF_LIMIT, XP_THRESHOLD } from "../internals/buff";
@@ -68,7 +68,7 @@ export async function xpLog(msg: Message, _: string[]) {
       const buff = Buff.random();
       const expireDate = DateTime.now().plus(BUFF_LIMIT).toISO();
       setTimer(TimerType.Buff, player.userID, expireDate);
-      addBuff(player.userID, buff.getID());
+      addBuff(player.userID, buff.id);
 
       logChannel.send(
         oneLine`Ares has granted ${member} a 2 hour ${buff.getName()} 

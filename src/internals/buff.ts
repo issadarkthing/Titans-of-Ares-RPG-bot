@@ -49,7 +49,7 @@ export class Buff {
     this.level = level;
   }
 
-  getID(): BuffID {
+  get id(): BuffID {
     return `${this.type}_${this.level}` as BuffID;
   }
 
@@ -108,7 +108,7 @@ export class Buff {
   }
 
   async getTimeLeft(player: Player) {
-    const id = player.buff?.getID();
+    const id = player.buff?.id;
     if (!id) return "";
 
     const timer = await getTimer(TimerType.Buff, player.userID);
