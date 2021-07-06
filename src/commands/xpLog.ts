@@ -67,8 +67,8 @@ export async function xpLog(msg: Message, _: string[]) {
 
       const buff = Buff.random();
       const expireDate = DateTime.now().plus(BUFF_LIMIT).toISO();
-      setTimer(TimerType.Buff, player.userID, expireDate);
-      addBuff(player.userID, buff.id);
+      setTimer(TimerType.Buff, player.id, expireDate);
+      addBuff(player.id, buff.id);
 
       logChannel.send(
         oneLine`Ares has granted ${member} a 2 hour ${buff.getName()} 

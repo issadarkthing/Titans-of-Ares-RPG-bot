@@ -111,7 +111,7 @@ export class Buff {
     const id = player.buff?.id;
     if (!id) return "";
 
-    const timer = await getTimer(TimerType.Buff, player.userID);
+    const timer = await getTimer(TimerType.Buff, player.id);
     if (!timer) return "";
 
     const expireDate = DateTime.fromISO(timer.Expires);

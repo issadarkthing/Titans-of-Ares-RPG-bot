@@ -23,7 +23,7 @@ export async function battle(msg: Message, _: string[]) {
 
     if (player.energy <= 0) {
 
-      const timeText = await showTimeLeft(TimerType.Energy, player.userID);
+      const timeText = await showTimeLeft(TimerType.Energy, player.id);
       return msg.channel.send(`You have 0 energy left. Please wait for ${timeText}`);
     }
 
@@ -69,11 +69,11 @@ export async function battle(msg: Message, _: string[]) {
     const index = emojis.findIndex(e => e === reacted.emoji.name)! - 1;
 
     const expireDate = DateTime.now().plus(ENERGY_TIMEOUT).toISO();
-    await setEnergy(player.userID, -1);
+    await setEnergy(player.id, -1);
 
-    const prevEnergyTimer = await hasTimer(TimerType.Energy, player.userID);
+    const prevEnergyTimer = await hasTimer(TimerType.Energy, player.id);
     if (!prevEnergyTimer)
-      await setTimer(TimerType.Energy, player.userID, expireDate);
+      await setTimer(TimerType.Energy, player.id, expireDate);
 
     const selectedLevel = player.challengerMaxLevel + index;
     msg.channel.send(`Starting challenge level ${selectedLevel}`);

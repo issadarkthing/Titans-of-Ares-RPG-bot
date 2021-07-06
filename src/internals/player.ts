@@ -35,7 +35,7 @@ export class Player extends Fighter {
   energy: number;
   challengerMaxLevel: number;
   buff: Buff | null;
-  readonly userID: string;
+  readonly id: string;
   readonly discriminator: string;
 
   constructor(data: IPlayer) {
@@ -43,7 +43,7 @@ export class Player extends Fighter {
     this.xp = data.xp;
     this.points = data.points;
     this.coins = data.coins;
-    this.userID = data.userID;
+    this.id = data.userID;
     this.discriminator = data.discriminator;
     this.energy = data.energy;
     this.challengerMaxLevel = data.challengerMaxLevel;
@@ -104,7 +104,7 @@ export class Player extends Fighter {
 
     cards.sort((a, b) => b.xp - a.xp);
 
-    const rank = cards.findIndex(x => x.id === this.userID);
+    const rank = cards.findIndex(x => x.id === this.id);
     return rank + 1;
   }
 
@@ -116,14 +116,14 @@ export class Player extends Fighter {
       level: this.level,
       rank: await this.getRank(),
       imageUrl: this.imageUrl,
-      userID: this.userID,
+      userID: this.id,
     });
 
     return profile.build();
   }
 
   async getStats() {
-    const energyTimer = await showTimeLeft(TimerType.Energy, this.userID);
+    const energyTimer = await showTimeLeft(TimerType.Energy, this.id);
     const buffTimer = await this.buff?.getTimeLeft(this);
     const xp = numberFormat(this.xp);
     const hp = numberFormat(this.hp);
@@ -156,7 +156,7 @@ export class Player extends Fighter {
 
   // this adds or deduces the amount of coins of a player
   async addCoin(amount: number) {
-    await setCoin(this.userID, this.coins + amount);
+    await setCoin(this.id, this.coins + amount);
     this.coins += amount;
   }
 }
