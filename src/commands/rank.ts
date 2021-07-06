@@ -1,8 +1,6 @@
-import { TextChannel, GuildMember, Message } from "discord.js";
+import { TextChannel, Message } from "discord.js";
 import { getUsers } from "../db/getUsers";
-import createProfile from "../internals/createProfile";
 import { RANK_CHANNEL } from "../index";
-import { getTotalPoints } from "../db/getTotalPoints";
 import { Player } from "../internals/player";
 
 const first = "https://cdn.discordapp.com/attachments/852546444086214676/860427588589846568/image0.jpg";

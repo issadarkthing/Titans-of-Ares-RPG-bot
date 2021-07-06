@@ -35,7 +35,6 @@ if (!PREFIX) {
 
 export const db = new sqlite3.Database(path.resolve(__dirname, DB));
 export const client = new Client();
-export const profileCache = new Map<string, MessageAttachment>();
 
 // create necessary tables if not exist
 db.run(makePlayerTable);
