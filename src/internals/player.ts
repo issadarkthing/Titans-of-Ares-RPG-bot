@@ -3,8 +3,7 @@ import { getTotalPoints, getTotalXp } from "../db/getTotalPoints";
 import { GuildMember, MessageAttachment, MessageEmbed } from "discord.js";
 import { IFighter, Fighter } from "./fighter";
 import { setCoin } from "../db/getCoins";
-//@ts-ignore
-import { Rank } from "canvacord";
+import Rankcard from "@jiman24/rankcard";
 import { createUser, getUser, getUsers } from "../db/getUsers";
 import { backgrounds } from "../commands/rank";
 import { stripIndents } from "common-tags";
@@ -114,7 +113,7 @@ export class Player extends Fighter {
     const level = this.level;
     const levelThreshold = getLevelThreshold(level);
     const rank = await this.getRank();
-    const color = "#111";
+    const color = "#23272a";
     const image = backgrounds[rank - 1];
 
     let accPrevLevel = 0;
@@ -123,16 +122,15 @@ export class Player extends Fighter {
     while (lvl > 1)
       accPrevLevel += getLevelThreshold(--lvl);
 
-    const rankCard = await new Rank()
+    const rankCard = await new Rankcard.Rank()
       .setAvatar(this.imageUrl)
       .setCurrentXP(Math.round(xp - accPrevLevel))
       .setRequiredXP(Math.round(levelThreshold))
       .setLevel(level)
       .setRank(rank, "")
       .setProgressBar("#ff0800", "COLOR", false)
-      .setOverlay("#000000")
+      .setOverlay("#fff", 0.05)
       .setUsername(this.name)
-      .setDiscriminator(this.discriminator)
       .setBackground(image ? "IMAGE" : "COLOR", image || color)
       .build();
 

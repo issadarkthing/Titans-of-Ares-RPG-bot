@@ -1,18 +1,17 @@
 import { GuildMember, MessageAttachment } from "discord.js";
 import { getTotalXp } from "../db/getTotalPoints";
 import { getLevelThreshold, getLevel } from "./utils";
-//@ts-ignore
-import { Rank } from "canvacord";
+import RankCard from "@jiman24/rankcard";
 
 interface Options {
-  rank?: number;
-  image?: string;
+  rank: number;
+  image: string;
 }
 
 
 export default async function(
   member: GuildMember, 
-  options?: Options,
+  options: Options,
 ) {
 
   const user = member.user;
@@ -27,16 +26,15 @@ export default async function(
   while (lvl > 1)
     accPrevLevel += getLevelThreshold(--lvl);
 
-  const rankCard = await new Rank()
+  const rankCard = await new RankCard.Rank()
     .setAvatar(user.displayAvatarURL({ format: 'png', dynamic: true }))
     .setCurrentXP(Math.round(xp - accPrevLevel))
     .setRequiredXP(Math.round(levelThreshold))
     .setLevel(level)
-    .setRank(options?.rank || 0, "", options?.rank || false)
+    .setRank(options?.rank || 0, "", true)
     .setProgressBar("#ff0800", "COLOR", false)
     .setOverlay("#000000")
     .setUsername(member.nickname || user.username)
-    .setDiscriminator(user.discriminator)
     .setBackground(options?.image ? "IMAGE" : "COLOR", image)
     .build();
 
