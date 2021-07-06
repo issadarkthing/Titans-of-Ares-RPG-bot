@@ -1,5 +1,5 @@
 import { verbose } from 'sqlite3';
-import { Client, MessageAttachment } from 'discord.js';
+import { Client } from 'discord.js';
 import path from 'path';
 import { profile } from "./commands/profile";
 import rank from "./commands/rank";
@@ -10,7 +10,7 @@ import { xp } from './commands/xp';
 import { battle } from './commands/battle';
 import { makeChallengerTable, makePlayerTable, makeProfileTable, makeTimerTable, makeXPEntryTable } from "./db/schema";
 import { energyMainLoop } from './internals/energy';
-import { Buff } from './internals/buff';
+import { Buff } from './internals/Buff';
 
 const sqlite3 = verbose();
 const PREFIX = process.env.PREFIX;

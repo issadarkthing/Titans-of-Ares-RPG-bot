@@ -4,11 +4,10 @@ import {
   deleteTimer, 
   getAllTimers, 
   getTimer, 
-  Timer, 
   TimerType, 
 } from "../db/timer";
 import { isExpired } from "./energy";
-import { Player } from "./player";
+import { Player } from "./Player";
 import { random } from "./utils";
 
 const commonPercentage = [0.1, 0.15, 0.2, 0.25, 0.5];

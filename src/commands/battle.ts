@@ -1,7 +1,7 @@
 import { Collection, Message, MessageReaction, User } from "discord.js";
 import { battle as battleSimulator } from "../internals/battle";
-import { Player } from "../internals/player";
-import { Challenger } from "../internals/challenger";
+import { Player } from "../internals/Player";
+import { Challenger } from "../internals/Challenger";
 import { hasTimer, setEnergy, setTimer, TimerType } from "../db/timer";
 import { DateTime } from "luxon";
 import { ENERGY_TIMEOUT, showTimeLeft } from "../internals/energy";

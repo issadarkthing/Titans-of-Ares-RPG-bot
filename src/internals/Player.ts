@@ -1,16 +1,14 @@
-import { getLevel, getLevelThreshold, getStats, GOLD, numberFormat } from "./utils";
+import { getLevel, getStats, GOLD, numberFormat } from "./utils";
 import { getTotalPoints, getTotalXp } from "../db/getTotalPoints";
-import { GuildMember, MessageAttachment, MessageEmbed } from "discord.js";
-import { IFighter, Fighter } from "./fighter";
+import { GuildMember, MessageEmbed } from "discord.js";
+import { IFighter, Fighter } from "./Fighter";
 import { setCoin } from "../db/getCoins";
-import Rankcard from "@jiman24/rankcard";
 import { createUser, getUser, getUsers } from "../db/getUsers";
-import { backgrounds } from "../commands/rank";
 import { stripIndents } from "common-tags";
 import { MAX_ENERGY, showTimeLeft } from "./energy";
-import { Buff, BuffID } from "./buff";
+import { Buff, BuffID } from "./Buff";
 import { TimerType } from "../db/timer";
-import { Profile } from "./profile";
+import { Profile } from "./Profile";
 
 export const CRIT_RATE = 0.1;
 export const CRIT_DAMAGE = 2;

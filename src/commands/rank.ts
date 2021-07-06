@@ -1,7 +1,7 @@
 import { TextChannel, Message } from "discord.js";
 import { getUsers } from "../db/getUsers";
 import { RANK_CHANNEL } from "../index";
-import { Player } from "../internals/player";
+import { Player } from "../internals/Player";
 
 const first = "https://cdn.discordapp.com/attachments/852546444086214676/860427588589846568/image0.jpg";
 const second = "https://cdn.discordapp.com/attachments/574852830125359126/860430411423416360/unknown.png";

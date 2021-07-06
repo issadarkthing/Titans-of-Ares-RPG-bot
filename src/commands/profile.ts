@@ -1,5 +1,5 @@
 import { Message } from "discord.js";
-import { Player } from "../internals/player";
+import { Player } from "../internals/Player";
 
 export async function profile(msg: Message, args: string[]) {
 

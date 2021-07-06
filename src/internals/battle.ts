@@ -1,32 +1,36 @@
 import { Message, MessageEmbed } from "discord.js";
 import { setMaxChallenger } from "../db/getChallenger";
-import { Challenger } from "./challenger";
-import { Player } from "./player";
-import { RED, random, GOLD, PLAYER_CRIT_GIF, CHALLENGER_CRIT_GIF, numberFormat } from "./utils";
-import { Fighter } from "./fighter";
+import { Challenger } from "./Challenger";
+import { Player } from "./Player";
+import {
+  RED,
+  random,
+  GOLD,
+  PLAYER_CRIT_GIF,
+  CHALLENGER_CRIT_GIF,
+  numberFormat,
+} from "./utils";
+import { Fighter } from "./Fighter";
 
 export const CRIT_RATE = 2;
-
 
 function isEven(num: number) {
   return num % 2 === 0;
 }
 
 function sleep(seconds: number) {
-  return new Promise<void>(resolve => {
-    return setTimeout(() => resolve(), seconds)
-  })
+  return new Promise<void>((resolve) => {
+    return setTimeout(() => resolve(), seconds);
+  });
 }
 
 function bar(progress: number, maxProgress: number) {
-
-  if (progress < 0)
-    progress = 0;
+  if (progress < 0) progress = 0;
 
   const maxFill = 20;
   const fill = "█";
   const path = "░";
-  const fillProgress = Math.round(progress * maxFill / maxProgress);
+  const fillProgress = Math.round((progress * maxFill) / maxProgress);
 
   return Array(maxFill)
     .fill(fill)
@@ -34,8 +38,11 @@ function bar(progress: number, maxProgress: number) {
     .join("");
 }
 
-export async function battle(msg: Message, player: Player, challenger: Challenger) {
-
+export async function battle(
+  msg: Message,
+  player: Player,
+  challenger: Challenger
+) {
   let done = false;
   let round = 0;
   let embed = new MessageEmbed();
@@ -45,17 +52,15 @@ export async function battle(msg: Message, player: Player, challenger: Challenge
   // returns 0, i.e, player moves first by default. Otherwise, it returns 1
   // which flips the value of isEven that makes the player move second. If both
   // has the same speed, it will be chosen randomly.
-  const moveFirst = 
-    player.speed === challenger.speed ?  random().pick([0, 1]) :
-    player.speed > challenger.speed ? 0 : 1;
+  const moveFirst =
+    player.speed === challenger.speed
+      ? random().pick([0, 1])
+      : player.speed > challenger.speed
+      ? 0
+      : 1;
 
   const attack = async (p1: Fighter, p2: Fighter) => {
-    const [
-      isCrit,
-      attackRate,
-      damageReduction,
-      damageDone,
-    ] = p1.attack(p2);
+    const [isCrit, attackRate, damageReduction, damageDone] = p1.attack(p2);
     const critText = isCrit ? " (x2 critical hit)" : "";
 
     const p1MaxHP = numberFormat(p1.getMaxHP());
@@ -73,7 +78,7 @@ export async function battle(msg: Message, player: Player, challenger: Challenge
       .addField("Attack Rate", `\`${attackRate}${critText}\``, true)
       .addField("Damage Reduction", `\`${damageReduction}\``, true)
       .addField("Damage Done", `\`${damageDone}\``, true)
-      .addField("Round", round + 1, true)
+      .addField("Round", round + 1, true);
 
     const createCritEmbed = async (url: string) => {
       const critEmbed = new MessageEmbed()
@@ -82,24 +87,27 @@ export async function battle(msg: Message, player: Player, challenger: Challenge
         .setImage(url);
 
       await message.edit(critEmbed);
-    }
+    };
 
     if (p1.name === player.name) {
-
-      embed.addField(`${p1.name}'s remaining HP`, 
-        `${p1HealthBar} \`${p1RemainingHp}/${p1MaxHP}\``)
-      embed.addField(`${p2.name}'s remaining HP`, 
-        `${p2HealthBar} \`${p2RemainingHp}/${p2MaxHP}\``)
-
+      embed.addField(
+        `${p1.name}'s remaining HP`,
+        `${p1HealthBar} \`${p1RemainingHp}/${p1MaxHP}\``
+      );
+      embed.addField(
+        `${p2.name}'s remaining HP`,
+        `${p2HealthBar} \`${p2RemainingHp}/${p2MaxHP}\``
+      );
     } else {
-
-      embed.addField(`${p2.name}'s remaining HP`, 
-        `${p2HealthBar} \`${p2RemainingHp}/${p2MaxHP}\``)
-      embed.addField(`${p1.name}'s remaining HP`, 
-        `${p1HealthBar} \`${p1RemainingHp}/${p1MaxHP}\``)
+      embed.addField(
+        `${p2.name}'s remaining HP`,
+        `${p2HealthBar} \`${p2RemainingHp}/${p2MaxHP}\``
+      );
+      embed.addField(
+        `${p1.name}'s remaining HP`,
+        `${p1HealthBar} \`${p1RemainingHp}/${p1MaxHP}\``
+      );
     }
-
-
 
     if (isCrit) {
       if (p1.name === player.name) {
@@ -112,18 +120,16 @@ export async function battle(msg: Message, player: Player, challenger: Challenge
     }
 
     await message.edit(embed);
-  }
+  };
 
   while (!done) {
-
     if (isEven(round + moveFirst)) {
       await attack(player, challenger);
     } else {
       await attack(challenger, player);
     }
 
-    if (player.hp <= 0 || challenger.hp <= 0)
-      break;
+    if (player.hp <= 0 || challenger.hp <= 0) break;
 
     await sleep(2000);
 
@@ -143,9 +149,6 @@ export async function battle(msg: Message, player: Player, challenger: Challenge
     await player.addCoin(loot);
     await setMaxChallenger(player.id, challenger.level);
     player.challengerMaxLevel = challenger.level;
-    await msg.channel.send(
-      `${player.name} has earned **${loot}** coins!`
-    );
+    await msg.channel.send(`${player.name} has earned **${loot}** coins!`);
   }
-
 }

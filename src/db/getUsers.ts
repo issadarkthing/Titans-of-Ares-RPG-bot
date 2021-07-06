@@ -1,4 +1,4 @@
-import { BuffID } from "../internals/buff";
+import { BuffID } from "../internals/Buff";
 import { dbAll, dbGet, dbRun } from "./promiseWrapper";
 
 export interface Player {
