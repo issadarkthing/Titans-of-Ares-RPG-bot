@@ -1,5 +1,5 @@
 import { verbose } from 'sqlite3';
-import { Client } from 'discord.js';
+import { Client, MessageAttachment } from 'discord.js';
 import path from 'path';
 import { profile } from "./commands/profile";
 import rank from "./commands/rank";
@@ -8,7 +8,7 @@ import { xpLog } from "./commands/xpLog";
 import award from "./commands/award";
 import { xp } from './commands/xp';
 import { battle } from './commands/battle';
-import { makeChallengerTable, makePlayerTable, makeTimerTable, makeXPEntryTable } from "./db/schema";
+import { makeChallengerTable, makePlayerTable, makeProfileTable, makeTimerTable, makeXPEntryTable } from "./db/schema";
 import { energyMainLoop } from './internals/energy';
 import { Buff } from './internals/buff';
 
@@ -35,12 +35,14 @@ if (!PREFIX) {
 
 export const db = new sqlite3.Database(path.resolve(__dirname, DB));
 export const client = new Client();
+export const profileCache = new Map<string, MessageAttachment>();
 
 // create necessary tables if not exist
 db.run(makePlayerTable);
 db.run(makeChallengerTable);
 db.run(makeTimerTable);
 db.run(makeXPEntryTable);
+db.run(makeProfileTable);
 
 setInterval(() => {
   energyMainLoop();

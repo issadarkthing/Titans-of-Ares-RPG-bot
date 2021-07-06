@@ -3,6 +3,7 @@ import { getUsers } from "../db/getUsers";
 import createProfile from "../internals/createProfile";
 import { RANK_CHANNEL } from "../index";
 import { getTotalPoints } from "../db/getTotalPoints";
+import { Player } from "../internals/player";
 
 const first = "https://cdn.discordapp.com/attachments/852546444086214676/860427588589846568/image0.jpg";
 const second = "https://cdn.discordapp.com/attachments/574852830125359126/860430411423416360/unknown.png";
@@ -53,40 +54,19 @@ export default async function (
   }
 
   const users = await getUsers();
-  const cards: { member: GuildMember, point: number }[] = [];
 
   await channel.guild.members.fetch();
 
-  for (const user of users) {
+  let playersPromise = users
+    .map(user => channel.guild.members.cache.get(user.DiscordID)!)
+    .filter(member => !!member)
+    .map(member =>  Player.getPlayer(member));
 
-    let member = channel.guild.members.cache.get(user.DiscordID);
-    if (!member) {
-        continue;
-    }
+  let players = await Promise.all(playersPromise);
 
-    const point = await getTotalPoints(user.DiscordID);
-    cards.push({ member, point })
-  }
+  players.sort((a, b) => b.points - a.points);
+  players = players.slice(0, parseInt(limit) || 10);
 
-  cards.sort((a, b) => b.point - a.point);
-
-
-  let i = 0;
-  const files = [];
-  for (const card of cards) {
-
-    if (limit && i >= parseInt(limit)) {
-      break;
-    }
-
-    const attachment = await createProfile(card.member, { 
-      rank: i + 1,
-      image: backgrounds[i],
-    });
-    
-    files.push(attachment.setName(i.toString() + ".png"));
-    i++;
-  }
-
+  const files = await Promise.all(players.map(x => x.getProfile()));
   await channel.send({ files });
 }

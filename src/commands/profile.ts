@@ -12,9 +12,13 @@ export async function profile(msg: Message, args: string[]) {
   else if (!guild)
     return;
 
+  msg.channel.startTyping();
+
   const player = await Player.getPlayer(member);
   const card = await player.getProfile();
   const stats = await player.getStats();
+
+  msg.channel.stopTyping();
 
   await msg.channel.send(card);
   await msg.channel.send(stats);

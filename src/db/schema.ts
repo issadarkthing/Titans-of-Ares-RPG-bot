@@ -43,4 +43,12 @@ export const makeXPEntryTable = `
     XP          INTEGER,
     DiscordID   TEXT
   )
+`;
+
+export const makeProfileTable = `
+  CREATE TABLE IF NOT EXISTS Profile (
+    DiscordID   TEXT PRIMARY KEY,
+    Checksum    TEXT NOT NULL,
+    Data        BLOB NOT NULL
+  )
 `

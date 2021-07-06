@@ -8,6 +8,7 @@ export interface Player {
   Energy: number;
   ChallengerMaxLevel: number;
   Buff: BuffID | null;
+  Profile: Buffer;
 }
 
 export function getUsers() {

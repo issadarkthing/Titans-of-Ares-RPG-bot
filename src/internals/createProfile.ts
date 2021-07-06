@@ -18,7 +18,7 @@ export default async function(
   const xp = await getTotalXp(user.id);
   const level = getLevel(xp);
   const levelThreshold = getLevelThreshold(level);
-  const image = options?.image || "#111";
+  const image = options?.image || "#23272a";
 
   let accPrevLevel = 0;
   let lvl = level;

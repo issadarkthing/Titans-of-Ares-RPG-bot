@@ -1,4 +1,5 @@
 import { MersenneTwister19937, Random } from "random-js";
+import crypto from "crypto";
 
 export const RED = "#FF0000";
 export const GREEN = "#008000";
@@ -45,4 +46,8 @@ export function numberFormat(value: number) {
   }
 
   return value.toFixed(2);
+}
+
+export function hash(data: string) {
+  return crypto.createHash("sha256").update(data).digest("hex");
 }

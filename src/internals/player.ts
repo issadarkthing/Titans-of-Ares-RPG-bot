@@ -10,6 +10,7 @@ import { stripIndents } from "common-tags";
 import { MAX_ENERGY, showTimeLeft } from "./energy";
 import { Buff, BuffID } from "./buff";
 import { TimerType } from "../db/timer";
+import { Profile } from "./profile";
 
 export const CRIT_RATE = 0.1;
 export const CRIT_DAMAGE = 2;
@@ -109,32 +110,16 @@ export class Player extends Fighter {
 
   async getProfile() {
 
-    const xp = this.xp;
-    const level = this.level;
-    const levelThreshold = getLevelThreshold(level);
-    const rank = await this.getRank();
-    const color = "#23272a";
-    const image = backgrounds[rank - 1];
+    const profile = new Profile({
+      name: this.name,
+      xp: this.xp,
+      level: this.level,
+      rank: await this.getRank(),
+      imageUrl: this.imageUrl,
+      userID: this.userID,
+    });
 
-    let accPrevLevel = 0;
-    let lvl = level;
-
-    while (lvl > 1)
-      accPrevLevel += getLevelThreshold(--lvl);
-
-    const rankCard = await new Rankcard.Rank()
-      .setAvatar(this.imageUrl)
-      .setCurrentXP(Math.round(xp - accPrevLevel))
-      .setRequiredXP(Math.round(levelThreshold))
-      .setLevel(level)
-      .setRank(rank, "")
-      .setProgressBar("#ff0800", "COLOR", false)
-      .setOverlay("#fff", 0.05)
-      .setUsername(this.name)
-      .setBackground(image ? "IMAGE" : "COLOR", image || color)
-      .build();
-
-    return new MessageAttachment(rankCard, "rank.png");
+    return profile.build();
   }
 
   async getStats() {
