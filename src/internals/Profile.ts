@@ -1,5 +1,5 @@
 import { backgrounds } from "../commands/rank";
-import { getLevelThreshold, hash } from "./utils";
+import { absoluteXP, getLevelThreshold, hash } from "./utils";
 import Rankcard from "@jiman24/rankcard";
 import { MessageAttachment } from "discord.js";
 import { getProfile, setProfile } from "../db/profile";
@@ -63,12 +63,7 @@ export class Profile {
     const rank = this.rank;
     const color = "#23272a";
     const image = backgrounds[rank - 1];
-
-    let accPrevLevel = 0; // total xp needed for previous level
-    let lvl = level;
-
-    while (lvl > 1)
-      accPrevLevel += getLevelThreshold(--lvl);
+    const accPrevLevel = absoluteXP(level - 1);
 
     const rankCard = await new Rankcard.Rank()
       .setAvatar(this.imageUrl)

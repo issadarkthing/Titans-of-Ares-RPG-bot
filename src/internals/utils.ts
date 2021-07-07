@@ -55,3 +55,15 @@ export function hash(data: string) {
 export function capitalize(str: string) {
   return str.charAt(0).toUpperCase() + str.slice(1);
 }
+
+// returns total xp needed to reach given level
+export function absoluteXP(level: number) {
+
+  let accXP = 0;
+  let lvl = level;
+
+  while(lvl > 1)
+    accXP += getLevelThreshold(--lvl);
+
+  return accXP;
+}

@@ -1,13 +1,13 @@
-import { Message, TextChannel } from "discord.js";
+import { Message } from "discord.js";
 import { addXP } from "../db/xp";
 import { getTotalXp } from "../db/player";
 import { getAdminRoles } from "../db/admin";
-import { XP_LOG_CHANNEL } from "../index";
 import rank from "./rank";
 import { getLevel } from "../internals/utils";
 import { Medal, MedalType } from "../internals/Medal";
 import { Player } from "../internals/Player";
 import { oneLine } from "common-tags";
+import { logChannel } from "../index";
 
 export default async function(msg: Message, args: string[]) {
 
@@ -15,12 +15,7 @@ export default async function(msg: Message, args: string[]) {
   const amount = args[1];
   const reason = args.slice(2).join(" ");
   const authorId = msg.author.id;
-  const member = msg.guild?.members.cache.get(userId) ||
-    await msg.guild?.members.fetch(userId)
-
-  const logChannel = msg.guild?.channels.cache.get(XP_LOG_CHANNEL!) as TextChannel;
-  if (!logChannel)
-    throw new Error("XP log channel not found");
+  const member = await msg.guild?.members.fetch(userId);
 
   if (!member) {
     return msg.channel.send("member does not exist");

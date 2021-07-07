@@ -1,5 +1,5 @@
 import { verbose } from 'sqlite3';
-import { Client } from 'discord.js';
+import { Client, TextChannel } from 'discord.js';
 import path from 'path';
 import { profile } from "./commands/profile";
 import rank from "./commands/rank";
@@ -59,8 +59,12 @@ setInterval(() => {
 // stores discord id of user that triggers the xp log
 export let xpLogTriggers = "";
 
-client.once('ready', () => {
+export let logChannel: TextChannel;
+
+client.once('ready', async () => {
   console.log('Bot is ready');
+  const guild = await client.guilds.fetch(SERVER_ID);
+  logChannel = guild.channels.cache.get(XP_LOG_CHANNEL) as TextChannel;
 })
 
 
