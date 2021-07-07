@@ -32,7 +32,7 @@ export default async function(msg: Message, args: string[]) {
   if (Medal.isValidMedal(args[1])) {
 
     const medal = new Medal(args[1] as MedalType);
-    const amount = parseInt(args[2]);
+    const amount = parseInt(args[2]) || 1;
     if (!amount) {
       return msg.channel.send("Please provide valid number");
     }
@@ -42,7 +42,8 @@ export default async function(msg: Message, args: string[]) {
     logChannel.send(
       `${member} has been awarded **${medal.name}** and received **${medal.chest.name}**`
     )
-
+    
+    msg.channel.send("Executed successfully");
     return;
   }
 
