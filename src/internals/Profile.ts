@@ -51,10 +51,10 @@ export class Profile {
     return hash(tmp);
   }
 
-  async build() {
+  async build(force?: boolean) {
 
     const cache = await getProfile(this.userID);
-    if (cache?.Checksum === this.id)
+    if (!force && cache?.Checksum === this.id)
       return new MessageAttachment(cache.Data, `${this.id}.png`);
 
     const xp = this.xp;
@@ -63,11 +63,10 @@ export class Profile {
     const rank = this.rank;
     const color = "#23272a";
     const image = backgrounds[rank - 1];
-    const accPrevLevel = absoluteXP(level - 1);
 
     const rankCard = await new Rankcard.Rank()
       .setAvatar(this.imageUrl)
-      .setCurrentXP(Math.round(xp - accPrevLevel))
+      .setCurrentXP(Math.round(xp - absoluteXP(level)))
       .setRequiredXP(Math.round(levelThreshold))
       .setLevel(level)
       .setRank(rank, "")
