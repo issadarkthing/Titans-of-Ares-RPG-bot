@@ -1,5 +1,5 @@
 import { Message } from "discord.js";
-import { getTotalXp } from "../db/getTotalPoints";
+import { getTotalXp } from "../db/player";
 
 export async function xp(msg: Message, args: string[]) {
 

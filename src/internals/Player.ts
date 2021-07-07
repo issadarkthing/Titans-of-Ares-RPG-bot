@@ -1,9 +1,8 @@
 import { getLevel, getStats, GOLD, numberFormat } from "./utils";
-import { getTotalPoints, getTotalXp } from "../db/getTotalPoints";
 import { GuildMember, MessageEmbed } from "discord.js";
 import { IFighter, Fighter } from "./Fighter";
-import { setCoin } from "../db/getCoins";
-import { createUser, getUser, getUsers } from "../db/getUsers";
+import { setCoin } from "../db/coin";
+import { createUser, getTotalPoints, getTotalXp, getUser, getUsers } from "../db/player";
 import { stripIndents } from "common-tags";
 import { MAX_ENERGY, showTimeLeft } from "./energy";
 import { Buff, BuffID } from "./Buff";

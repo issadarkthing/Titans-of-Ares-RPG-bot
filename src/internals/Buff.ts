@@ -1,5 +1,5 @@
 import { DateTime, DurationInput } from "luxon";
-import { deleteBuff } from "../db/getUsers";
+import { deleteBuff } from "../db/player";
 import { 
   deleteTimer, 
   getAllTimers, 

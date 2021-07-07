@@ -1,17 +1,16 @@
 import { Message, TextChannel } from "discord.js";
 import { xpLogTriggers, XP_LOG_CHANNEL } from "../index";
-import { getConvertTable } from "../db/getConversions";
-import { getChallengeId } from "../db/getChallengeId";
+import { getChallengeId, getConvertTable } from "../db/monthlyChallenge";
 import { getLevel, getXp } from "../internals/utils";
 import { Player } from "../internals/Player";
 import { Buff, BUFF_LIMIT, XP_THRESHOLD } from "../internals/Buff";
 import { getTimer, setTimer, TimerType } from "../db/timer";
 import { DateTime } from "luxon";
-import { addBuff } from "../db/getUsers";
+import { addBuff } from "../db/player";
 import { oneLine } from "common-tags";
 import { createEntry, getXPEntry, resetXPEntry, setXPEntry } from "../db/xpEntry";
 
-export async function xpLog(msg: Message, _: string[]) {
+export async function xpLog(msg: Message) {
 
   const member = msg.guild?.members.cache.get(xpLogTriggers);
   if (!member) return;

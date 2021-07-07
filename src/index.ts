@@ -4,7 +4,7 @@ import path from 'path';
 import { profile } from "./commands/profile";
 import rank from "./commands/rank";
 import help from './commands/help';
-import { xpLog } from "./commands/xpLog";
+import { xpLog } from "./internals/xpLog";
 import award from "./commands/award";
 import { xp } from './commands/xp';
 import { battle } from './commands/battle';
@@ -75,7 +75,7 @@ client.on('message', (msg) => {
     && (msg.author.id === OLD_BOT_ID || msg.author.id === DEV_ID)
   ) {
     rank(msg, ["10"]);
-    xpLog(msg, []);
+    xpLog(msg);
     
   } else if (command.startsWith("!") && !msg.author.bot) {
     xpLogTriggers = msg.author.id;

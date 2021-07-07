@@ -1,7 +1,7 @@
 import { Message, TextChannel } from "discord.js";
 import { addXP } from "../db/xp";
-import { getTotalXp } from "../db/getTotalPoints";
-import { getAdminRoles } from "../db/isAdmin";
+import { getTotalXp } from "../db/player";
+import { getAdminRoles } from "../db/admin";
 import { XP_LOG_CHANNEL } from "../index";
 import rank from "./rank";
 import { getLevel } from "../internals/utils";

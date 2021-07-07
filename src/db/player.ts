@@ -1,4 +1,7 @@
 import { BuffID } from "../internals/Buff";
+import { getXp } from "../internals/utils";
+import { getActivity } from "./activity";
+import { getConvertTable } from "./monthlyChallenge";
 import { dbAll, dbGet, dbRun } from "./promiseWrapper";
 
 export interface Player {
@@ -64,4 +67,54 @@ export function deleteBuff($userID: string) {
   `
 
   return dbRun(sql, { $userID });
+}
+
+export default async function($userId: string) {
+
+  const sql = `
+    SELECT 1
+    FROM ChallengeEntry
+    WHERE DiscordID = $userId
+  `
+  const result = await dbAll(sql, { $userId });
+  return result.length > 0;
+}
+
+
+
+export async function getTotalPoints(userId: string) {
+
+  const activities = await getActivity(userId);
+  const convertTable = await getConvertTable();
+
+  let totalPoints = 0;
+
+  activities.forEach(activity => {
+    const tag = `${activity.ValueType}-${activity.ChallengeID}`;
+    const multiplier = convertTable.get(tag);
+    if (multiplier) {
+      totalPoints += multiplier * activity.Value;
+    }
+  })
+
+  return Math.round(totalPoints);
+}
+
+
+export async function getXpFromTable($userId: string): Promise<number> {
+
+  const sql = `
+    SELECT XP
+    FROM Player
+    WHERE DiscordID = $userId
+  `;
+
+  return dbGet<{ XP: number }>(sql, { $userId })
+    .then(row => row?.XP || 0);
+}
+
+export async function getTotalXp(userId: string) {
+  const xp = await getXpFromTable(userId);
+  return getTotalPoints(userId)
+    .then(points => getXp(points) + xp);
 }

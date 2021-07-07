@@ -1,5 +1,5 @@
 import { TextChannel, Message } from "discord.js";
-import { getUsers } from "../db/getUsers";
+import { getUsers } from "../db/player";
 import { RANK_CHANNEL } from "../index";
 import { Player } from "../internals/Player";
 

@@ -1,5 +1,5 @@
 import { Fighter, IFighter } from "./Fighter";
-import { getChallenger as dbGetChallenger } from "../db/getChallenger";
+import { getChallenger as dbGetChallenger } from "../db/challenger";
 
 const imageUrl = "https://cdn.discordapp.com/attachments/607917288527626250/857580537131958282/unknown.png";
 

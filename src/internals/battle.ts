@@ -1,5 +1,5 @@
 import { Message, MessageEmbed } from "discord.js";
-import { setMaxChallenger } from "../db/getChallenger";
+import { setMaxChallenger } from "../db/challenger";
 import { Challenger } from "./Challenger";
 import { Player } from "./Player";
 import {
