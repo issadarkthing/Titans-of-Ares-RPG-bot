@@ -51,6 +51,7 @@ export default async function (
     await nukeChannel(channel);
   }
 
+  channel.startTyping();
   const users = await getUsers();
 
   await channel.guild.members.fetch();
@@ -66,5 +67,6 @@ export default async function (
   players = players.slice(0, parseInt(limit) || 10);
 
   const files = await Promise.all(players.map(x => x.getProfile()));
+  channel.stopTyping();
   await channel.send({ files });
 }
