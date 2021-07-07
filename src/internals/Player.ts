@@ -151,6 +151,10 @@ export class Player extends Fighter {
     const armor = numberFormat(this.armor);
     const critRate = numberFormat(this.critRate * 100);
     const critDamage = numberFormat(this.critDamage);
+    const itemsAcc = this.inventory.itemsCount();
+    const items = itemsAcc.reduce((acc, val) => {
+      return `${acc}\n\`x${val.count} ${val.name}\``
+    }, "").trim();
     const embed = new MessageEmbed()
       .setColor(GOLD)
       .setTitle(this.name)
@@ -162,6 +166,7 @@ export class Player extends Fighter {
         
         **Inventory**
         Coins: \`${this.coins}\`
+        ${items}
 
         **Energy**
         ${this.energy}/${MAX_ENERGY} ${energyTimer}
