@@ -35,7 +35,7 @@ export class Inventory {
         return;
       }
 
-      aggregate.set(item.id, { name: item.name, count: 0 });
+      aggregate.set(item.id, { name: item.name, count: 1 });
     })
 
     return [...aggregate.values()];
