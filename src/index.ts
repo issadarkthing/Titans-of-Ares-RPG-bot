@@ -8,7 +8,13 @@ import { xpLog } from "./commands/xpLog";
 import award from "./commands/award";
 import { xp } from './commands/xp';
 import { battle } from './commands/battle';
-import { makeChallengerTable, makePlayerTable, makeProfileTable, makeTimerTable, makeXPEntryTable } from "./db/schema";
+import { 
+  makeChallengerTable, 
+  makePlayerTable, 
+  makeProfileTable, 
+  makeTimerTable, 
+  makeXPEntryTable,
+} from "./db/schema";
 import { energyMainLoop } from './internals/energy';
 import { Buff } from './internals/Buff';
 
