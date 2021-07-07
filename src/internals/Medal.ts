@@ -34,6 +34,8 @@ export class Medal {
   async give(player: Player, amount: number) {
     const chest = Chest.fromMedal(this.medal);
     await addMedal(player.id, this.medal, amount);
-    await addInventory(player.id, chest.id);
+    for (let i = 0; i < amount; i++) {
+      await addInventory(player.id, chest.id);
+    }
   }
 }
