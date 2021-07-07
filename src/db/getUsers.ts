@@ -9,6 +9,9 @@ export interface Player {
   ChallengerMaxLevel: number;
   Buff: BuffID | null;
   Profile: Buffer;
+  GoldMedal: number;
+  SilverMedal: number;
+  BronzeMedal: number;
 }
 
 export function getUsers() {

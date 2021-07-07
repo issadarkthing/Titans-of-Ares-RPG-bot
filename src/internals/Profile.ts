@@ -11,6 +11,9 @@ interface ProfileInfo {
   rank: number;
   imageUrl: string;
   userID: string;
+  gold: number;
+  silver: number;
+  bronze: number;
 }
 
 export class Profile {
@@ -21,6 +24,9 @@ export class Profile {
   private imageUrl: string;
   private name: string;
   private userID: string;
+  private gold: number;
+  private silver: number;
+  private bronze: number;
 
   constructor(data: ProfileInfo) {
     this.xp = data.xp;
@@ -29,6 +35,9 @@ export class Profile {
     this.imageUrl = data.imageUrl;
     this.name = data.name;
     this.userID = data.userID;
+    this.gold = data.gold;
+    this.silver = data.silver;
+    this.bronze = data.bronze;
   }
 
   get id() {
@@ -71,6 +80,9 @@ export class Profile {
       .setOverlay(image ? "#000" : "#fff", image ? 0.5 : 0.05)
       .setUsername(this.name)
       .setBackground(image ? "IMAGE" : "COLOR", image || color)
+      .setBronze(this.bronze)
+      .setSilver(this.silver)
+      .setGold(this.gold)
       .build();
 
     setProfile(this.userID, this.id, rankCard);

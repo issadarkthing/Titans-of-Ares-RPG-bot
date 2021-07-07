@@ -9,6 +9,8 @@ import { MAX_ENERGY, showTimeLeft } from "./energy";
 import { Buff, BuffID } from "./Buff";
 import { TimerType } from "../db/timer";
 import { Profile } from "./Profile";
+import { Inventory } from "./Inventory";
+import { getInventory, Item } from "../db/inventory";
 
 export const CRIT_RATE = 0.1;
 export const CRIT_DAMAGE = 2;
@@ -23,6 +25,10 @@ export interface IPlayer extends IFighter {
   // needed for the stupid rankcord library
   discriminator: string;
   buff: BuffID | null;
+  inventory: Item[];
+  goldMedal: number;
+  silverMedal: number;
+  bronzeMedal: number;
 }
 
 export class Player extends Fighter {
@@ -33,6 +39,10 @@ export class Player extends Fighter {
   energy: number;
   challengerMaxLevel: number;
   buff: Buff | null;
+  inventory: Inventory;
+  goldMedal: number;
+  silverMedal: number;
+  bronzeMedal: number;
   readonly id: string;
   readonly discriminator: string;
 
@@ -45,6 +55,10 @@ export class Player extends Fighter {
     this.discriminator = data.discriminator;
     this.energy = data.energy;
     this.challengerMaxLevel = data.challengerMaxLevel;
+    this.inventory = new Inventory(data.inventory);
+    this.goldMedal = data.goldMedal;
+    this.silverMedal = data.silverMedal;
+    this.bronzeMedal = data.bronzeMedal;
     this.buff = data.buff && new Buff(data.buff);
     if (this.buff) {
       this.buff.use(this);
@@ -58,6 +72,7 @@ export class Player extends Fighter {
     const totalPoints = await getTotalPoints(userId);
     const level = getLevel(totalXp);
     const stats = getStats(level);
+    const inventory = await getInventory(userId);
     let player = await getUser(userId);
     if (!player) {
       player = await createUser(userId);
@@ -81,6 +96,10 @@ export class Player extends Fighter {
       energy: player.Energy,
       challengerMaxLevel: player.ChallengerMaxLevel,
       buff: player.Buff,
+      inventory,
+      goldMedal: player.GoldMedal,
+      silverMedal: player.SilverMedal,
+      bronzeMedal: player.BronzeMedal,
     })
   }
 
@@ -115,6 +134,9 @@ export class Player extends Fighter {
       rank: await this.getRank(),
       imageUrl: this.imageUrl,
       userID: this.id,
+      gold: this.goldMedal,
+      silver: this.silverMedal,
+      bronze: this.bronzeMedal,
     });
 
     return profile.build();

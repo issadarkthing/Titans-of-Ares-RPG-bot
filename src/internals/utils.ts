@@ -51,3 +51,7 @@ export function numberFormat(value: number) {
 export function hash(data: string) {
   return crypto.createHash("sha256").update(data).digest("hex");
 }
+
+export function capitalize(str: string) {
+  return str.charAt(0).toUpperCase() + str.slice(1);
+}

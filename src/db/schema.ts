@@ -17,6 +17,9 @@ export const makePlayerTable = `
       Coin               DEFAULT 0,
       Energy             DEFAULT 5,
       ChallengerMaxLevel DEFAULT 0,
+      GoldMedal          DEFAULT 0,
+      SilveMedal         DEFAULT 0,
+      BronzeMedal        DEFAULT 0,
       Buff               TEXT,
       PRIMARY KEY("DiscordID")
     )
@@ -50,5 +53,14 @@ export const makeProfileTable = `
     DiscordID   TEXT PRIMARY KEY,
     Checksum    TEXT NOT NULL,
     Data        BLOB NOT NULL
+  )
+`
+
+export const makeInventoryTable = `
+  CREATE TABLE IF NOT EXISTS Inventory (
+    ID      INTEGER PRIMARY KEY,
+    OwnerID TEXT NOT NULL,
+    Created DEFAULT CURRENT_TIMESTAMP,
+    ItemID  TEXT NOT NULL
   )
 `

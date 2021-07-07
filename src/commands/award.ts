@@ -5,6 +5,10 @@ import { getAdminRoles } from "../db/isAdmin";
 import { XP_LOG_CHANNEL } from "../index";
 import rank from "./rank";
 import { getLevel } from "../internals/utils";
+import { addInventory } from "../db/inventory";
+import { Chest } from "../internals/Chest";
+import { Medal, MedalType } from "../internals/Medal";
+import { Player } from "../internals/Player";
 
 export default async function(msg: Message, args: string[]) {
 
@@ -15,6 +19,33 @@ export default async function(msg: Message, args: string[]) {
   const member = msg.guild?.members.cache.get(userId) ||
     await msg.guild?.members.fetch(userId)
 
+  const logChannel = msg.guild?.channels.cache.get(XP_LOG_CHANNEL!) as TextChannel;
+  if (!logChannel)
+    throw new Error("XP log channel not found");
+
+  if (!member) {
+    return msg.channel.send("member does not exist");
+  }
+
+  const player = await Player.getPlayer(member);
+
+  if (Medal.isValidMedal(args[1])) {
+
+    const medal = new Medal(args[1] as MedalType);
+    const amount = parseInt(args[2]);
+    if (!amount) {
+      return msg.channel.send("Please provide valid number");
+    }
+
+    await medal.give(player, amount);
+
+    logChannel.send(
+      `${member} has been awarded **${medal.name}** and received **${medal.chest.name}**`
+    )
+
+    return;
+  }
+
   if (!userId)
     return msg.channel.send("You need to specify user id");
   else if (!amount)
@@ -23,8 +54,6 @@ export default async function(msg: Message, args: string[]) {
     return msg.channel.send("Please give valid amount");
   else if (!reason)
     return msg.channel.send("You need to give a reason");
-  else if (!member)
-    return msg.channel.send("Member does not exist");
 
   const adminRoles = await getAdminRoles();
   const authorMember = msg.guild?.members.cache.get(authorId);
@@ -34,9 +63,6 @@ export default async function(msg: Message, args: string[]) {
   if (!isAdmin)
     return msg.channel.send("Only admin can use this command");
 
-  const logChannel = msg.guild?.channels.cache.get(XP_LOG_CHANNEL!) as TextChannel;
-  if (!logChannel)
-    throw new Error("XP log channel not found");
 
   try {
 

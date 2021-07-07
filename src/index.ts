@@ -14,6 +14,7 @@ import {
   makeProfileTable, 
   makeTimerTable, 
   makeXPEntryTable,
+  makeInventoryTable,
 } from "./db/schema";
 import { energyMainLoop } from './internals/energy';
 import { Buff } from './internals/Buff';
@@ -48,6 +49,7 @@ db.run(makeChallengerTable);
 db.run(makeTimerTable);
 db.run(makeXPEntryTable);
 db.run(makeProfileTable);
+db.run(makeInventoryTable);
 
 setInterval(() => {
   energyMainLoop();
