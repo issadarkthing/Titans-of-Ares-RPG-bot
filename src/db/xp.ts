@@ -1,6 +1,6 @@
 import { dbRun } from "./promiseWrapper";
 
-export function award($userId: string, $amount: number) {
+export function addXP($userId: string, $amount: number) {
 
   const sql = `
     INSERT INTO Player(DiscordID, XP)

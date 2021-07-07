@@ -18,7 +18,7 @@ export class Chest extends Item {
   }
 
   get name() {
-    return `${capitalize(this.level)} Chest`
+    return `${capitalize(this.level)} Treasure Chest`
   }
 
   static fromMedal(medal: MedalType) {

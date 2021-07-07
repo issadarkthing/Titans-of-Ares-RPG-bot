@@ -1,15 +1,36 @@
 import { addInventory } from "../db/inventory";
 import { addMedal } from "../db/medal";
+import { addXP } from "../db/xp";
 import { Chest } from "./Chest";
 import { Player } from "./Player";
 
 export const medals = ["BronzeMedal", "SilverMedal", "GoldMedal"];
 export type MedalType = "BronzeMedal" | "SilverMedal" | "GoldMedal";
 
+const medalInfo = {
+  GoldMedal: {
+    name: "Gold Medal",
+    xp: 175,
+  },
+  SilverMedal: {
+    name: "Silver Medal",
+    xp: 125,
+  },
+  BronzeMedal: {
+    name: "Bronze Medal",
+    xp: 75,
+  }
+}
 
 export class Medal {
 
-  constructor(public medal: MedalType) {}
+  medal: MedalType;
+  data: { name: string, xp: number };
+
+  constructor(medal: MedalType) {
+    this.medal = medal;
+    this.data = medalInfo[this.medal];
+  }
   
   static isValidMedal(medal: string) {
     return medals.includes(medal);
@@ -17,25 +38,21 @@ export class Medal {
 
   // returns text friendly alternate name
   get name() {
-    switch (this.medal) {
-      case "GoldMedal":
-        return "Gold Medal";
-      case "SilverMedal":
-        return "Silver Medal";
-      case "BronzeMedal":
-        return "Bronze Medal";
-    }
+    return this.data.name;
+  }
+
+  get xp() {
+    return this.data.xp;
   }
 
   get chest() {
     return Chest.fromMedal(this.medal);
   }
 
-  async give(player: Player, amount: number) {
+  async give(player: Player) {
     const chest = Chest.fromMedal(this.medal);
-    await addMedal(player.id, this.medal, amount);
-    for (let i = 0; i < amount; i++) {
-      await addInventory(player.id, chest.id);
-    }
+    await addMedal(player.id, this.medal, 1);
+    await addXP(player.id, this.xp);
+    await addInventory(player.id, chest.id);
   }
 }
