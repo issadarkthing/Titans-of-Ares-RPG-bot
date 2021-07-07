@@ -1,4 +1,4 @@
-import { addInventory } from "../db/inventory";
+import { addInventory, removeInventory } from "../db/inventory";
 import { addMedal } from "../db/medal";
 import { addXP } from "../db/xp";
 import { Chest } from "./Chest";
@@ -50,9 +50,14 @@ export class Medal {
   }
 
   async give(player: Player) {
-    const chest = Chest.fromMedal(this.medal);
     await addMedal(player.id, this.medal, 1);
     await addXP(player.id, this.xp);
-    await addInventory(player.id, chest.id);
+    await addInventory(player.id, this.chest.id);
+  }
+
+  async revert(player: Player) {
+    await addMedal(player.id, this.medal, -1);
+    await addXP(player.id, -this.xp);
+    await removeInventory(player.id, this.chest.id);
   }
 }

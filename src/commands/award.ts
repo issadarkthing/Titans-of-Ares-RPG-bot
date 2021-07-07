@@ -26,16 +26,26 @@ export default async function(msg: Message, args: string[]) {
   if (Medal.isValidMedal(args[1])) {
 
     const medal = new Medal(args[1] as MedalType);
-    const amount = parseInt(args[2]) || 1;
-    if (!amount) {
-      return msg.channel.send("Please provide valid number");
+    const prevLevel = player.level;
+    const isRevert = args[2] === "revert";
+
+    if (isRevert) {
+      await medal.revert(player);
+      msg.channel.send("Executed successfully");
+      return;
     }
 
     await medal.give(player);
 
+    await player.sync();
+
     logChannel.send(oneLine`${member} has been awarded a **${medal.chest.name}** 
       and **${medal.xp} bonus xp** for getting a **${medal.name}**
       in the Monthly Challenge!`);
+
+    if (player.level > prevLevel) {
+      logChannel.send(`${player.name} is now on **level ${player.level}**`);
+    }
     
     msg.channel.send("Executed successfully");
     return;
@@ -62,7 +72,7 @@ export default async function(msg: Message, args: string[]) {
   try {
 
     const amountInt = parseInt(amount);
-    const name = member.displayName;
+    const name = player.name;
     await addXP(userId, amountInt);
     const action = amountInt >= 0 ? "Added" : "Deducted";
     const prePosition = amountInt >= 0 ? "to" : "from";
@@ -79,9 +89,7 @@ export default async function(msg: Message, args: string[]) {
 
 
     if (currentLevel > prevLevel) {
-      logChannel.send(
-        `${name} is now on **level ${currentLevel}**`
-      );
+      logChannel.send(`${name} is now on **level ${currentLevel}**`);
     }
 
     rank(msg, ["10"]);

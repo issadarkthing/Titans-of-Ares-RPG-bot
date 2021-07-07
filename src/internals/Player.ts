@@ -21,8 +21,7 @@ export interface IPlayer extends IFighter {
   coins: number;
   userID: string;
   challengerMaxLevel: number;
-  // needed for the stupid rankcord library
-  discriminator: string;
+  member: GuildMember;
   buff: BuffID | null;
   inventory: Item[];
   goldMedal: number;
@@ -43,7 +42,7 @@ export class Player extends Fighter {
   silverMedal: number;
   bronzeMedal: number;
   readonly id: string;
-  readonly discriminator: string;
+  readonly member: GuildMember;
 
   constructor(data: IPlayer) {
     super(data);
@@ -51,7 +50,7 @@ export class Player extends Fighter {
     this.points = data.points;
     this.coins = data.coins;
     this.id = data.userID;
-    this.discriminator = data.discriminator;
+    this.member = data.member;
     this.energy = data.energy;
     this.challengerMaxLevel = data.challengerMaxLevel;
     this.inventory = new Inventory(data.inventory);
@@ -79,6 +78,7 @@ export class Player extends Fighter {
 
     return new Player({
       name: member.displayName,
+      member,
       level,
       hp: stats.hp,
       strength: stats.strength,
@@ -91,7 +91,6 @@ export class Player extends Fighter {
       xp: totalXp,
       coins: player.Coin,
       userID: member.user.id,
-      discriminator: member.user.discriminator,
       energy: player.Energy,
       challengerMaxLevel: player.ChallengerMaxLevel,
       buff: player.Buff,
@@ -100,6 +99,27 @@ export class Player extends Fighter {
       silverMedal: player.SilverMedal,
       bronzeMedal: player.BronzeMedal,
     })
+  }
+
+  async sync() {
+    const data = (await getUser(this.id))!;
+    const inventory = await getInventory(this.id);
+
+    this.xp = await getTotalXp(this.id);
+    this.points = await getTotalPoints(this.id);
+    this.level = getLevel(this.xp);
+    this.coins = data.Coin;
+    this.energy = data.Energy;
+    this.challengerMaxLevel = data.ChallengerMaxLevel;
+    this.inventory = new Inventory(inventory);
+    this.goldMedal = data.GoldMedal;
+    this.silverMedal = data.SilverMedal;
+    this.bronzeMedal = data.BronzeMedal;
+    this.buff = data.Buff && new Buff(data.Buff);
+    if (this.buff) {
+      this.buff.use(this);
+      this.maxHp = this.hp;
+    }
   }
 
   async getRank() {
