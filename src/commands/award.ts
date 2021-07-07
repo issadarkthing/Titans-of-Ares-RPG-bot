@@ -1,14 +1,13 @@
 import { Message, TextChannel } from "discord.js";
-import { award } from "../db/awardUser";
+import { addXP } from "../db/xp";
 import { getTotalXp } from "../db/getTotalPoints";
 import { getAdminRoles } from "../db/isAdmin";
 import { XP_LOG_CHANNEL } from "../index";
 import rank from "./rank";
 import { getLevel } from "../internals/utils";
-import { addInventory } from "../db/inventory";
-import { Chest } from "../internals/Chest";
 import { Medal, MedalType } from "../internals/Medal";
 import { Player } from "../internals/Player";
+import { oneLine } from "common-tags";
 
 export default async function(msg: Message, args: string[]) {
 
@@ -37,11 +36,11 @@ export default async function(msg: Message, args: string[]) {
       return msg.channel.send("Please provide valid number");
     }
 
-    await medal.give(player, amount);
+    await medal.give(player);
 
-    logChannel.send(
-      `${member} has been awarded **${medal.name}** and received **${medal.chest.name}**`
-    )
+    logChannel.send(oneLine`${member} has been awarded a **${medal.chest.name}** 
+      and **${medal.xp} bonus xp** for getting a **${medal.name}**
+      in the Monthly Challenge!`);
     
     msg.channel.send("Executed successfully");
     return;
@@ -69,7 +68,7 @@ export default async function(msg: Message, args: string[]) {
 
     const amountInt = parseInt(amount);
     const name = member.displayName;
-    await award(userId, amountInt);
+    await addXP(userId, amountInt);
     const action = amountInt >= 0 ? "Added" : "Deducted";
     const prePosition = amountInt >= 0 ? "to" : "from";
     msg.channel.send("Executed successfully");
