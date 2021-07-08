@@ -27,7 +27,7 @@ export default async function(msg: Message, args: string[]) {
 
     const medal = new Medal(args[1] as MedalType);
     const prevLevel = player.level;
-    const isRevert = args[2] === "revert";
+    const isRevert = args[2].toLowerCase() === "revert";
 
     if (isRevert) {
       await medal.revert(player);

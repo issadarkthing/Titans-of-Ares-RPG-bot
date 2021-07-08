@@ -56,7 +56,7 @@ export function capitalize(str: string) {
   return str.charAt(0).toUpperCase() + str.slice(1);
 }
 
-// returns total xp needed to reach given level
+/** total xp needed to reach given level */
 export function absoluteXP(level: number) {
 
   let accXP = 0;
@@ -66,4 +66,9 @@ export function absoluteXP(level: number) {
     accXP += getLevelThreshold(--lvl);
 
   return accXP;
+}
+
+export function aggregate(items: string[]): { [key: string]: number } {
+
+  return {}
 }

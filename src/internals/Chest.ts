@@ -1,20 +1,21 @@
 import { MedalType } from "./Medal";
-import { Fighter } from "./Fighter";
 import { Item } from "./Item";
-import { capitalize } from "./utils";
+import { capitalize, random } from "./utils";
+import { Player } from "./Player";
+import { PetID } from "./Pet";
+import { Fragment } from "./Fragment";
 
 export type Level = "bronze" | "silver" | "gold";
+export type ChestID = `chest_${Level}`;
 
 export class Chest extends Item {
 
   private level: Level;
-  constructor(level: Level) {
+  id: ChestID;
+  constructor(id: ChestID) {
     super();
-    this.level = level;
-  }
-
-  get id() {
-    return `chest_${this.level}`
+    this.level = id.split("_")[1] as Level;
+    this.id = id;
   }
 
   get name() {
@@ -24,17 +25,50 @@ export class Chest extends Item {
   static fromMedal(medal: MedalType) {
     switch (medal) {
       case "GoldMedal":
-        return new Chest("gold");
+        return new Chest("chest_gold");
       case "SilverMedal":
-        return new Chest("silver");
+        return new Chest("chest_silver");
       case "BronzeMedal":
-        return new Chest("bronze");
+        return new Chest("chest_bronze");
       default:
         throw Error("invalid medal");
     }
   }
 
-  use(fighter: Fighter) {
-    throw new Error("not implemented");
+  private getFragmentCount() {
+    switch (this.level) {
+      case "bronze":
+        return random().pick([1, 2]);
+      case "silver":
+        return random().pick([2, 3]);
+      case "gold":
+        return 3;
+    }
+  }
+
+  private random() {
+    return random().pick([
+      PetID.Wisp,
+      PetID.Golem,
+      PetID.Gryphon,
+      PetID.Minotaur,
+      PetID.Manticore,
+    ]);
+  }
+
+  /** open up the chest and add the fragments to the player's inventory */
+  async use(player: Player) {
+
+    const fragments: Fragment[] = [];
+    const fragmentCount = this.getFragmentCount();
+    const petID = this.random();
+
+    for (let i = 0; i < fragmentCount; i++) {
+      const fragment = Fragment.fromPetID(petID);
+      fragments.push(fragment);
+      await fragment.save(player);
+    }
+
+    return fragments;
   }
 }

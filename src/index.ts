@@ -18,6 +18,7 @@ import {
 } from "./db/schema";
 import { energyMainLoop } from './internals/energy';
 import { Buff } from './internals/Buff';
+import { inventory } from "./commands/inventory";
 
 const sqlite3 = verbose();
 const PREFIX = process.env.PREFIX;
@@ -107,6 +108,9 @@ client.on('message', (msg) => {
       break;
     case 'battle':
       battle(msg, args);
+      break;
+    case 'inventory':
+      inventory(msg, args);
       break;
   }
 })

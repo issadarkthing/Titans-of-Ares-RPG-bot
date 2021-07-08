@@ -171,10 +171,7 @@ export class Player extends Fighter {
     const armor = numberFormat(this.armor);
     const critRate = numberFormat(this.critRate * 100);
     const critDamage = numberFormat(this.critDamage);
-    const itemsAcc = this.inventory.itemsCount();
-    const items = itemsAcc.reduce((acc, val) => {
-      return `${acc}\n\`x${val.count} ${val.name}\``
-    }, "").trim();
+
     const embed = new MessageEmbed()
       .setColor(GOLD)
       .setTitle(this.name)
@@ -185,8 +182,9 @@ export class Player extends Fighter {
         Crit Rate: \`${critRate}%\` Crit Damage: \`x${critDamage}\` 
         
         **Inventory**
-        Coins: \`${this.coins}\`
-        ${items}
+        \`${this.inventory.chests.length}\` Treasure Chests
+        \`${this.inventory.fragments.length}\` Pet Fragments
+        \`${this.coins}\` Coins
 
         **Energy**
         ${this.energy}/${MAX_ENERGY} ${energyTimer}

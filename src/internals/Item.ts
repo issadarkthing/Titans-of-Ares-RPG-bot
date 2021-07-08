@@ -1,16 +1,18 @@
 import { Player } from "./Player";
 import { Fighter } from "./Fighter";
+import { addInventory } from "../db/inventory";
 
 
 
 export abstract class Item {
 
   abstract get id(): string;
+  abstract name: string;
 
-  // this method should be destructive
+  /** may mutate the argument passed */
   abstract use(fighter: Fighter): void;
 
-  save(player: Player) {
-
+  async save(player: Player) {
+    await addInventory(player.id, this.id);
   }
 }
