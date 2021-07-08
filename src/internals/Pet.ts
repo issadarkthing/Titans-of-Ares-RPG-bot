@@ -1,4 +1,6 @@
 import { oneLine } from "common-tags";
+import { MessageEmbed } from "discord.js";
+import { CDN_LINK, GOLD } from "./utils";
 
 export enum PetID {
   Wisp      = "pet_wisp",
@@ -13,6 +15,7 @@ export abstract class Pet {
   abstract name: string;
   abstract description: string;
   abstract imageUrl: string;
+  abstract fragmentImageUrl: string;
   star = 0; // min: 0 max: 5
 
   static fromPetID(id: PetID) {
@@ -28,6 +31,17 @@ export abstract class Pet {
       case PetID.Manticore:
         return new Manticore();
     }
+  }
+
+  fragmentCard() {
+    
+    const embed = new MessageEmbed()
+      .setColor(GOLD)
+      .setTitle(`${this.name}'s Fragment`)
+      .setDescription(this.description)
+      .setThumbnail(this.fragmentImageUrl);
+
+    return embed;
   }
 
   // returns the cost of upgrading pet in form of fragments
@@ -47,21 +61,21 @@ export abstract class Pet {
   }
 }
 
-const cdnLink = "https://cdn.discordapp.com/attachments/";
-
 export class Wisp extends Pet {
   id = PetID.Wisp;
   name = "Will-O'-Wisp";
   description = oneLine`Heals 40% of your HP in round 2-5 randomly. Can only
   happen once each battle`;
-  imageUrl = cdnLink + "574852830125359126/862540067432431617/unknown.png";
+  imageUrl = CDN_LINK + "574852830125359126/862540067432431617/unknown.png";
+  fragmentImageUrl = CDN_LINK + "574852830125359126/862656523531321344/wisp.png";
 }
 
 export class Golem extends Pet {
   id = PetID.Golem;
   name = "Golem";
   description = oneLine`Critical hits get blocked and do normal damage to you`;
-  imageUrl = cdnLink + "574852830125359126/862541338754809886/unknown.png";
+  imageUrl = CDN_LINK + "574852830125359126/862541338754809886/unknown.png";
+  fragmentImageUrl = CDN_LINK + "574852830125359126/862667634313920512/golem.png";
 }
 
 export class Gryphon extends Pet {
@@ -69,7 +83,8 @@ export class Gryphon extends Pet {
   name = "Gryphon";
   description = oneLine`Saves you from 1 attack randomly round 1-5. Can only
   happen once each battle`;
-  imageUrl = cdnLink + "574852830125359126/862541562022068264/unknown.png";
+  imageUrl = CDN_LINK + "574852830125359126/862541562022068264/unknown.png";
+  fragmentImageUrl = CDN_LINK + "574852830125359126/862655845447630888/gryphon.png"
 }
 
 export class Minotaur extends Pet {
@@ -77,12 +92,14 @@ export class Minotaur extends Pet {
   name = "Minotaur";
   description = oneLine`Has a 20% chance every round to attack the opponent for
   50% of strength`;
-  imageUrl = cdnLink + "574852830125359126/862541876804059146/unknown.png";
+  imageUrl = CDN_LINK + "574852830125359126/862541876804059146/unknown.png";
+  fragmentImageUrl = CDN_LINK + "574852830125359126/862669333775777832/minotaur.png"
 }
 
 export class Manticore extends Pet {
   id = PetID.Manticore;
   name = "Manticore";
   description = "Your first attack will 100% crit";
-  imageUrl = cdnLink + "574852830125359126/862542055674216448/unknown.png";
+  imageUrl = CDN_LINK + "574852830125359126/862542055674216448/unknown.png";
+  fragmentImageUrl = CDN_LINK + "574852830125359126/862671084717604874/manticore.png";
 }

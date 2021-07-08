@@ -6,6 +6,7 @@ export const GREEN = "#008000";
 export const GOLD = "#ffd700";
 export const PLAYER_CRIT_GIF = "https://i.gifer.com/FSka.gif";
 export const CHALLENGER_CRIT_GIF = "https://i.pinimg.com/originals/40/96/d1/4096d1659e8c58bb51375133ab5f459e.gif";
+export const CDN_LINK = "https://cdn.discordapp.com/attachments/";
 
 // returns xp needed to get to the next level
 export function getLevelThreshold(level: number) {
@@ -70,5 +71,20 @@ export function absoluteXP(level: number) {
 
 export function aggregate(items: string[]): { [key: string]: number } {
 
-  return {}
+  const result: any = {};
+
+  for (const item of items) {
+    if (result[item]) {
+      result[item]++;
+      continue;
+    }
+
+    result[item] = 1;
+  }
+
+  return result;
+}
+
+export function aggregateBy<T>(items: T[], pred: (item: T) => string) {
+  return aggregate(items.map(pred));
 }

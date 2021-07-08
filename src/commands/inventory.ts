@@ -1,6 +1,7 @@
 import { Message, MessageEmbed } from "discord.js";
+import { Fragment, FragmentID } from "../internals/Fragment";
 import { Player } from "../internals/Player";
-import { GOLD } from "../internals/utils";
+import { aggregateBy, GOLD } from "../internals/utils";
 
 
 export async function inventory(msg: Message, args: string[]) {
@@ -12,7 +13,7 @@ export async function inventory(msg: Message, args: string[]) {
 
   if (index) {
 
-    const i = parseInt(index);
+    const i = parseInt(index) - 1;
     const [, subcmd] = args;
     if (!i)
       return msg.channel.send("Please give valid index");
@@ -24,14 +25,27 @@ export async function inventory(msg: Message, args: string[]) {
     if (subcmd.toLowerCase() === "use") {
       const item = inventory.getItem(accItem.id)!;
       const result = await item.use(player);
+
       if (result) {
-        const [fragment, count] = result;
-        msg.channel.send(`You got x${count} **${fragment.name}**!`);
+        const cards: MessageEmbed[] = [];
+        const fragment = Object.entries(aggregateBy(result, x => x.id))
+          .map(([id, count]) => { 
+            const fragment = new Fragment(id as FragmentID);
+            const pet = fragment.pet;
+            cards.push(pet.fragmentCard());
+            return `\`x${count}\` **${fragment.name}**`;
+          })
+          .join(" ");
+
+        msg.channel.send(`You got ${fragment}!`);
+        cards.forEach(x => msg.channel.send(x));
       }
 
     } else {
       return msg.channel.send("Invalid action")
     }
+
+    return;
   }
 
   const itemsList = acc.reduce((acc, v, i) => {

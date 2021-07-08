@@ -36,7 +36,6 @@ export default async function(msg: Message, args: string[]) {
     }
 
     await medal.give(player);
-
     await player.sync();
 
     logChannel.send(oneLine`${member} has been awarded a **${medal.chest.name}** 

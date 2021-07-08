@@ -4,6 +4,7 @@ import { capitalize, random } from "./utils";
 import { Player } from "./Player";
 import { PetID } from "./Pet";
 import { Fragment } from "./Fragment";
+import { removeInventory } from "../db/inventory";
 
 export type Level = "bronze" | "silver" | "gold";
 export type ChestID = `chest_${Level}`;
@@ -61,13 +62,15 @@ export class Chest extends Item {
 
     const fragments: Fragment[] = [];
     const fragmentCount = this.getFragmentCount();
-    const petID = this.random();
 
     for (let i = 0; i < fragmentCount; i++) {
+      const petID = this.random();
       const fragment = Fragment.fromPetID(petID);
       fragments.push(fragment);
       await fragment.save(player);
     }
+
+    await removeInventory(player.id, this.id);
 
     return fragments;
   }

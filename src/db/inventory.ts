@@ -19,7 +19,11 @@ export function addInventory($userID: string, $itemID: string) {
 export function removeInventory($ownerID: string, $itemID: string) {
   const sql = `
   DELETE FROM Inventory
-  WHERE OwnerID = $ownerID AND ItemID = $itemID
+  WHERE ID = (
+    SELECT ID 
+    FROM Inventory 
+    WHERE OwnerID = $ownerID AND ItemID = $itemID 
+    LIMIT 1)
   `
 
   return dbRun(sql, { $ownerID, $itemID });
