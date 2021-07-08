@@ -1,13 +1,17 @@
 import { MedalType } from "./Medal";
 import { Item } from "./Item";
-import { capitalize, random } from "./utils";
+import { capitalize, CDN_LINK, GREEN, random } from "./utils";
 import { Player } from "./Player";
 import { PetID } from "./Pet";
 import { Fragment } from "./Fragment";
 import { removeInventory } from "../db/inventory";
+import { MessageEmbed } from "discord.js";
 
 export type Level = "bronze" | "silver" | "gold";
 export type ChestID = `chest_${Level}`;
+
+const openingChestGif = CDN_LINK +
+  "574852830125359126/862679388146368582/chest-open.gif";
 
 export class Chest extends Item {
 
@@ -34,6 +38,15 @@ export class Chest extends Item {
       default:
         throw Error("invalid medal");
     }
+  }
+
+  openChestAnimation() {
+    const embed = new MessageEmbed()
+      .setColor(GREEN)
+      .setImage(openingChestGif)
+      .setTitle(`Opening ${this.name}`)
+
+    return embed;
   }
 
   private getFragmentCount() {

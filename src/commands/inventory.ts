@@ -1,8 +1,9 @@
 import { Message, MessageEmbed } from "discord.js";
+import { Chest } from "../internals/Chest";
 import { Fragment, FragmentID } from "../internals/Fragment";
 import { Player } from "../internals/Player";
 import { aggregateBy, GOLD } from "../internals/utils";
-
+import { sleep } from "../internals/battle";
 
 export async function inventory(msg: Message, args: string[]) {
 
@@ -15,7 +16,7 @@ export async function inventory(msg: Message, args: string[]) {
 
     const i = parseInt(index) - 1;
     const [, subcmd] = args;
-    if (!i)
+    if (Number.isNaN(i))
       return msg.channel.send("Please give valid index");
 
     const accItem = acc[i];
@@ -24,15 +25,26 @@ export async function inventory(msg: Message, args: string[]) {
 
     if (subcmd.toLowerCase() === "use") {
       const item = inventory.getItem(accItem.id)!;
-      const result = await item.use(player);
+      await player.sync();
 
-      if (result) {
+      if (item instanceof Chest) {
+        const result = await item.use(player);
+
+        const chestOpening = await msg.channel.send(item.openChestAnimation());
+        await sleep(4000);
+        await chestOpening.delete();
+
         const cards: MessageEmbed[] = [];
-        const fragment = Object.entries(aggregateBy(result, x => x.id))
+        const aggregated = aggregateBy(result, x => x.id);
+        const inventory = player.inventory.itemsCount();
+        const fragment = Object.entries(aggregated)
           .map(([id, count]) => { 
+
             const fragment = new Fragment(id as FragmentID);
             const pet = fragment.pet;
-            cards.push(pet.fragmentCard());
+            const ownedFragmentCount = 
+              inventory.find(x => x.id === fragment.id)!.count;
+            cards.push(pet.fragmentCard(ownedFragmentCount));
             return `\`x${count}\` **${fragment.name}**`;
           })
           .join(" ");

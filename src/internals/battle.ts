@@ -18,7 +18,7 @@ function isEven(num: number) {
   return num % 2 === 0;
 }
 
-function sleep(seconds: number) {
+export function sleep(seconds: number) {
   return new Promise<void>((resolve) => {
     return setTimeout(() => resolve(), seconds);
   });

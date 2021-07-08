@@ -33,13 +33,18 @@ export abstract class Pet {
     }
   }
 
-  fragmentCard() {
+  fragmentCard(fragmentCount: number) {
+    const fragmentNeeded = this.upgradeCost - fragmentCount;
+    const footerText = fragmentNeeded > 0 ? 
+      `You currently have ${fragmentNeeded}/8 fragment to summon this pet` 
+      : "You already have enough fragments to summon a pet";
     
     const embed = new MessageEmbed()
       .setColor(GOLD)
       .setTitle(`${this.name}'s Fragment`)
       .setDescription(this.description)
-      .setThumbnail(this.fragmentImageUrl);
+      .setThumbnail(this.fragmentImageUrl)
+      .setFooter(footerText);
 
     return embed;
   }
@@ -48,7 +53,7 @@ export abstract class Pet {
   get upgradeCost() {
     switch (this.star) {
       case 0:
-        return 10;
+        return 8;
       case 1:
         return 15;
       case 2:
@@ -57,6 +62,8 @@ export abstract class Pet {
         return 30;
       case 4:
         return 50;
+      default:
+        return 10;
     }
   }
 }
