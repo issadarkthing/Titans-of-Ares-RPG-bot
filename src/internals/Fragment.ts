@@ -1,14 +1,18 @@
+import { MessageEmbed } from "discord.js";
 import { removeInventory } from "../db/inventory";
 import { addPet, upgradePet } from "../db/pet";
 import { Item } from "./Item";
 import { Pet, PetID } from "./Pet";
 import { Player } from "./Player";
+import { CDN_LINK, GOLD } from "./utils";
 
 export type FragmentID = `fragment_${PetID}`;
 
 export class Fragment extends Item {
 
   readonly pet: Pet;
+  private summonGif = 
+    CDN_LINK + "852546444086214676/863007776983613460/giphy_1.gif";
 
   constructor(public id: FragmentID) {
     super();
@@ -25,9 +29,20 @@ export class Fragment extends Item {
     return 8;
   }
 
+  summonAnimation() {
+    const embed = new MessageEmbed()
+      .setColor(GOLD)
+      .setImage(this.summonGif)
+      .setTitle(`Summoning ${this.pet.name}`)
+
+    return embed;
+  }
+
   get name() {
     return `${this.pet.name}'s fragment`;
   }
+
+
 
   /** Merges fragments and remove the fragments from player's inventory. Adds
    * obtained pet to user's pet collection. If pet already exists, it will

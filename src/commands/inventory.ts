@@ -74,6 +74,9 @@ export async function inventory(msg: Message, args: string[]) {
         await player.sync();
 
         if (result === "obtain") {
+          const summonAnimation = await msg.channel.send(item.summonAnimation());
+          await sleep(8000);
+          await summonAnimation.delete();
           const fragmentCount = player.inventory.getItemCount(item.id);
           msg.channel.send(`${player.name} has obtained **${pet.name}**!`);
           msg.channel.send(pet.card(fragmentCount));
