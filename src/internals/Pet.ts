@@ -36,7 +36,7 @@ export abstract class Pet {
   fragmentCard(fragmentCount: number) {
     const fragmentNeeded = this.upgradeCost - fragmentCount;
     const footerText = fragmentNeeded > 0 ? 
-      `You currently have ${fragmentNeeded}/8 fragment to summon this pet` 
+      `You currently have ${fragmentNeeded}/8 fragments to summon this pet` 
       : "You already have enough fragments to summon a pet";
     
     const embed = new MessageEmbed()
