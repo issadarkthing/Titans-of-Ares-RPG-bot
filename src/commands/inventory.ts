@@ -32,7 +32,7 @@ export async function inventory(msg: Message, args: string[]) {
         await player.sync();
 
         const chestOpening = await msg.channel.send(item.openChestAnimation());
-        await sleep(4000);
+        await sleep(6000);
         await chestOpening.delete();
 
         const cards: MessageEmbed[] = [];
