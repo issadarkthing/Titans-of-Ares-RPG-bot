@@ -36,14 +36,12 @@ export async function inventory(msg: Message, args: string[]) {
 
         const cards: MessageEmbed[] = [];
         const aggregated = aggregateBy(result, x => x.id);
-        const inventory = player.inventory.itemsCount();
         const fragment = Object.entries(aggregated)
           .map(([id, count]) => { 
 
             const fragment = new Fragment(id as FragmentID);
             const pet = fragment.pet;
-            const ownedFragmentCount = 
-              inventory.find(x => x.id === fragment.id)?.count || 0;
+            const ownedFragmentCount = player.inventory.getItemCount(id);
             cards.push(pet.fragmentCard(ownedFragmentCount));
             return `\`x${count}\` **${fragment.name}**`;
           })
