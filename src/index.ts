@@ -15,10 +15,12 @@ import {
   makeTimerTable, 
   makeXPEntryTable,
   makeInventoryTable,
+  makePetTable,
 } from "./db/schema";
 import { energyMainLoop } from './internals/energy';
 import { Buff } from './internals/Buff';
 import { inventory } from "./commands/inventory";
+import { pet } from "./commands/pet";
 
 const sqlite3 = verbose();
 const PREFIX = process.env.PREFIX;
@@ -51,6 +53,7 @@ db.run(makeTimerTable);
 db.run(makeXPEntryTable);
 db.run(makeProfileTable);
 db.run(makeInventoryTable);
+db.run(makePetTable);
 
 setInterval(() => {
   energyMainLoop();
@@ -111,6 +114,9 @@ client.on('message', (msg) => {
       break;
     case 'inventory':
       inventory(msg, args);
+      break;
+    case 'pet':
+      pet(msg, args);
       break;
   }
 })

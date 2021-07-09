@@ -10,6 +10,8 @@ import { TimerType } from "../db/timer";
 import { Profile } from "./Profile";
 import { Inventory } from "./Inventory";
 import { getInventory, Item } from "../db/inventory";
+import { Pet } from "./Pet";
+import { getAllPets } from "../db/pet";
 
 export const CRIT_RATE = 0.1;
 export const CRIT_DAMAGE = 2;
@@ -27,6 +29,7 @@ export interface IPlayer extends IFighter {
   goldMedal: number;
   silverMedal: number;
   bronzeMedal: number;
+  pets: Pet[];
 }
 
 export class Player extends Fighter {
@@ -41,6 +44,7 @@ export class Player extends Fighter {
   goldMedal: number;
   silverMedal: number;
   bronzeMedal: number;
+  pets: Pet[];
   readonly id: string;
   readonly member: GuildMember;
 
@@ -57,6 +61,7 @@ export class Player extends Fighter {
     this.goldMedal = data.goldMedal;
     this.silverMedal = data.silverMedal;
     this.bronzeMedal = data.bronzeMedal;
+    this.pets = data.pets;
     this.buff = data.buff && new Buff(data.buff);
     if (this.buff) {
       this.buff.use(this);
@@ -71,6 +76,8 @@ export class Player extends Fighter {
     const level = getLevel(totalXp);
     const stats = getStats(level);
     const inventory = await getInventory(userId);
+    const pets = (await getAllPets(userId)).map(x => Pet.fromDB(x));
+
     let player = await getUser(userId);
     if (!player) {
       player = await createUser(userId);
@@ -98,12 +105,18 @@ export class Player extends Fighter {
       goldMedal: player.GoldMedal,
       silverMedal: player.SilverMedal,
       bronzeMedal: player.BronzeMedal,
+      pets,
     })
+  }
+
+  get activePet() {
+    return this.pets.find(x => x.active);
   }
 
   async sync() {
     const data = (await getUser(this.id))!;
     const inventory = await getInventory(this.id);
+    const pets = (await getAllPets(this.id)).map(x => Pet.fromDB(x));
 
     this.xp = await getTotalXp(this.id);
     this.points = await getTotalPoints(this.id);
@@ -116,6 +129,7 @@ export class Player extends Fighter {
     this.silverMedal = data.SilverMedal;
     this.bronzeMedal = data.BronzeMedal;
     this.buff = data.Buff && new Buff(data.Buff);
+    this.pets = pets;
     if (this.buff) {
       this.buff.use(this);
       this.maxHp = this.hp;

@@ -64,3 +64,14 @@ export const makeInventoryTable = `
     ItemID  TEXT NOT NULL
   )
 `
+
+export const makePetTable = `
+  CREATE TABLE IF NOT EXISTS Pet (
+    ID      INTEGER PRIMARY KEY,
+    OwnerID TEXT NOT NULL,
+    Created DEFAULT CURRENT_TIMESTAMP,
+    PetID   TEXT NOT NULL,
+    Star    DEFAULT 0,
+    Active  DEFAULT FALSE
+  )
+`

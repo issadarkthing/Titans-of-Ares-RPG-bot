@@ -2,8 +2,9 @@ import { Message, MessageEmbed } from "discord.js";
 import { Chest } from "../internals/Chest";
 import { Fragment, FragmentID } from "../internals/Fragment";
 import { Player } from "../internals/Player";
-import { aggregateBy, GOLD } from "../internals/utils";
+import { aggregateBy, GOLD, STAR } from "../internals/utils";
 import { sleep } from "../internals/battle";
+import { oneLine } from "common-tags";
 
 export async function inventory(msg: Message, args: string[]) {
 
@@ -40,15 +41,49 @@ export async function inventory(msg: Message, args: string[]) {
           .map(([id, count]) => { 
 
             const fragment = new Fragment(id as FragmentID);
-            const pet = fragment.pet;
+            const hasPet = player.pets.find(x => x.id === fragment.pet.id);
+            const pet = hasPet || fragment.pet;
             const ownedFragmentCount = player.inventory.getItemCount(id);
-            cards.push(pet.fragmentCard(ownedFragmentCount));
+            const action = hasPet ? "upgrade" : "summon";
+            cards.push(pet.fragmentCard(ownedFragmentCount, action));
             return `\`x${count}\` **${fragment.name}**`;
           })
           .join(" ");
 
         msg.channel.send(`You got ${fragment}!`);
         cards.forEach(x => msg.channel.send(x));
+
+      } else if (item instanceof Fragment) {
+        const pet = item.pet;
+        const ownedFragmentCount = inventory.getItemCount(item.id);
+        const ownedPet = player.pets.find(x => x.id === pet.id);
+
+        // if own the pet but does not have enough fragment to upgrade
+        if (ownedPet && ownedFragmentCount < ownedPet.upgradeCost) {
+          return msg.channel.send(oneLine`Insufficient fragments to upgrade
+            ${ownedPet.name} \`${ownedFragmentCount}/${ownedPet.upgradeCost}\``)
+
+          // if player does not own the pet but has less fragments than required
+          // fragment in order to obtain the pet
+        } else if (ownedFragmentCount < Fragment.minFragments) {
+          return msg.channel.send(oneLine`Insufficient fragments to summon
+            ${pet.name} \`${ownedFragmentCount}/${Fragment.minFragments}\``)
+        }
+
+        const result = await item.use(player);
+        await player.sync();
+
+        if (result === "obtain") {
+          msg.channel.send(`${player.name} has obtained **${pet.name}**!`);
+          msg.channel.send(pet.card);
+
+        } else if (result === "upgrade") {
+          const ownedPet = player.pets.find(x => x.id === pet.id)!;
+          msg.channel.send(
+            `${pet.name} is now **${ownedPet.star + 1}** ${STAR}!`
+          );
+
+        }
       }
 
     } else {

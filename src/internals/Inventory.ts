@@ -63,4 +63,8 @@ export class Inventory {
   getItem(id: string) {
     return this.all.find(x => x.id === id);
   }
+
+  getItemCount(id: string) {
+    return this.all.reduce((acc, item) => item.id === id ? acc + 1 : acc, 0);
+  }
 }

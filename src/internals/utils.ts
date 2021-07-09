@@ -4,9 +4,11 @@ import crypto from "crypto";
 export const RED = "#FF0000";
 export const GREEN = "#008000";
 export const GOLD = "#ffd700";
+export const BROWN = "#c66a10";
 export const PLAYER_CRIT_GIF = "https://i.gifer.com/FSka.gif";
 export const CHALLENGER_CRIT_GIF = "https://i.pinimg.com/originals/40/96/d1/4096d1659e8c58bb51375133ab5f459e.gif";
 export const CDN_LINK = "https://cdn.discordapp.com/attachments/";
+export const STAR = "⭐";
 
 // returns xp needed to get to the next level
 export function getLevelThreshold(level: number) {

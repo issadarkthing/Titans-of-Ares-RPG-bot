@@ -1,6 +1,8 @@
 import { oneLine } from "common-tags";
 import { MessageEmbed } from "discord.js";
-import { CDN_LINK, GOLD } from "./utils";
+import { Fragment } from "./Fragment";
+import { BROWN, CDN_LINK, GOLD, STAR } from "./utils";
+import { Pet as PetDB } from "../db/pet"
 
 export enum PetID {
   Wisp      = "pet_wisp",
@@ -17,6 +19,7 @@ export abstract class Pet {
   abstract imageUrl: string;
   abstract fragmentImageUrl: string;
   star = 0; // min: 0 max: 5
+  active = false;
 
   static fromPetID(id: PetID) {
     switch (id) {
@@ -33,10 +36,19 @@ export abstract class Pet {
     }
   }
 
-  fragmentCard(fragmentCount: number) {
-    const footerText = fragmentCount < this.upgradeCost ? 
-      `You currently have ${fragmentCount}/8 fragments to summon this pet` 
-      : "You have enough fragments to summon a pet";
+  static fromDB(petDB: PetDB) {
+    const pet = Pet.fromPetID(petDB.PetID);
+    pet.star = petDB.Star;
+    pet.active = petDB.Active === 1;
+    return pet;
+  }
+
+  fragmentCard(fragmentCount: number, action: "summon" | "upgrade") {
+    const requiredFragment = action === "summon" ? 
+      Fragment.minFragments : this.upgradeCost;
+
+    const footerText = oneLine`You currently have 
+    ${fragmentCount}/${requiredFragment} fragments to ${action} this pet`
     
     const embed = new MessageEmbed()
       .setColor(GOLD)
@@ -48,11 +60,23 @@ export abstract class Pet {
     return embed;
   }
 
-  // returns the cost of upgrading pet in form of fragments
+  get card() {
+
+    const embed = new MessageEmbed()
+      .setColor(BROWN)
+      .setTitle(this.name)
+      .setDescription(this.description)
+      .setThumbnail(this.imageUrl)
+      .addField("Level", `\`${this.star}\` ${STAR}`)
+
+    return embed;
+  }
+
+  /** the cost of upgrading pet (+1) in form of fragments */
   get upgradeCost() {
     switch (this.star) {
       case 0:
-        return 8;
+        return 10;
       case 1:
         return 15;
       case 2:
