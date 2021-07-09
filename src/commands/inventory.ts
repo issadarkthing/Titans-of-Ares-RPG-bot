@@ -25,10 +25,10 @@ export async function inventory(msg: Message, args: string[]) {
 
     if (subcmd.toLowerCase() === "use") {
       const item = inventory.getItem(accItem.id)!;
-      await player.sync();
 
       if (item instanceof Chest) {
         const result = await item.use(player);
+        await player.sync();
 
         const chestOpening = await msg.channel.send(item.openChestAnimation());
         await sleep(4000);
