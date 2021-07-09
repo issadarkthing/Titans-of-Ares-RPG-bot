@@ -74,8 +74,9 @@ export async function inventory(msg: Message, args: string[]) {
         await player.sync();
 
         if (result === "obtain") {
+          const fragmentCount = player.inventory.getItemCount(item.id);
           msg.channel.send(`${player.name} has obtained **${pet.name}**!`);
-          msg.channel.send(pet.card);
+          msg.channel.send(pet.card(fragmentCount));
 
         } else if (result === "upgrade") {
           const ownedPet = player.pets.find(x => x.id === pet.id)!;

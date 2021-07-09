@@ -17,7 +17,8 @@ export async function pet(msg: Message, args: string[]) {
     if (!pet)
       return msg.channel.send("Please give valid index");
 
-    return msg.channel.send(pet.card);
+    const fragmentCount = player.inventory.getItemCount(`fragment_${pet.id}`);
+    return msg.channel.send(pet.card(fragmentCount));
   }
 
   const petsList = player.pets

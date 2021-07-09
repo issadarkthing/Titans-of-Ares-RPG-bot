@@ -3,6 +3,7 @@ import { MessageEmbed } from "discord.js";
 import { Fragment } from "./Fragment";
 import { BROWN, CDN_LINK, GOLD, STAR } from "./utils";
 import { Pet as PetDB } from "../db/pet"
+import { Player } from "./Player";
 
 export enum PetID {
   Wisp      = "pet_wisp",
@@ -18,7 +19,13 @@ export abstract class Pet {
   abstract description: string;
   abstract imageUrl: string;
   abstract fragmentImageUrl: string;
-  star = 0; // min: 0 max: 5
+  abstract get passiveStatDescription(): string;
+  /** apply passive attribute */
+  abstract use(player: Player): void;
+  /** passive multiplier */
+  abstract get multiplier(): number;
+  /** represents pet level */
+  star = 0;
   active = false;
 
   static fromPetID(id: PetID) {
@@ -60,14 +67,16 @@ export abstract class Pet {
     return embed;
   }
 
-  get card() {
+  card(fragmentCount: number) {
 
     const embed = new MessageEmbed()
       .setColor(BROWN)
       .setTitle(this.name)
-      .setDescription(this.description)
       .setThumbnail(this.imageUrl)
-      .addField("Level", `\`${this.star}\` ${STAR}`)
+      .addField("Active Skill", this.description)
+      .addField("Level", `\`${this.star}\` ${STAR}`, true)
+      .addField("Passive Stat", this.passiveStatDescription, true)
+      .addField("Fragments", `\`${fragmentCount}/${this.upgradeCost}\``, true)
 
     return embed;
   }
@@ -98,6 +107,18 @@ export class Wisp extends Pet {
   happen once each battle`;
   imageUrl = CDN_LINK + "574852830125359126/862540067432431617/unknown.png";
   fragmentImageUrl = CDN_LINK + "574852830125359126/862656523531321344/wisp.png";
+
+  get passiveStatDescription() {
+    return `\`+${this.multiplier * 100}%\` HP from base stats`;
+  }
+
+  get multiplier() {
+    return this.star * 0.1;
+  }
+
+  use(player: Player) {
+    player.hp += player.hp * this.multiplier;
+  }
 }
 
 export class Golem extends Pet {
@@ -106,6 +127,18 @@ export class Golem extends Pet {
   description = oneLine`Critical hits get blocked and do normal damage to you`;
   imageUrl = CDN_LINK + "574852830125359126/862541338754809886/unknown.png";
   fragmentImageUrl = CDN_LINK + "574852830125359126/862667634313920512/golem.png";
+
+  get passiveStatDescription() {
+    return `\`+${this.multiplier * 100}%\` armor from base stats`;
+  }
+
+  get multiplier() {
+    return this.star * 0.1;
+  }
+
+  use(player: Player) {
+    player.armor += player.armor * this.multiplier;
+  }
 }
 
 export class Gryphon extends Pet {
@@ -115,6 +148,18 @@ export class Gryphon extends Pet {
   happen once each battle`;
   imageUrl = CDN_LINK + "574852830125359126/862541562022068264/unknown.png";
   fragmentImageUrl = CDN_LINK + "574852830125359126/862655845447630888/gryphon.png"
+
+  get passiveStatDescription() {
+    return `\`+${this.multiplier * 100}%\` speed from base stats`;
+  }
+
+  get multiplier() {
+    return this.star * 0.2;
+  }
+
+  use(player: Player) {
+    player.speed += player.speed * this.multiplier;
+  }
 }
 
 export class Minotaur extends Pet {
@@ -124,6 +169,18 @@ export class Minotaur extends Pet {
   50% of strength`;
   imageUrl = CDN_LINK + "574852830125359126/862541876804059146/unknown.png";
   fragmentImageUrl = CDN_LINK + "574852830125359126/862669333775777832/minotaur.png"
+
+  get passiveStatDescription() {
+    return `\`+${this.multiplier * 100}%\` strength from base stats`;
+  }
+
+  get multiplier() {
+    return this.star * 0.05;
+  }
+
+  use(player: Player) {
+    player.strength += player.strength * this.multiplier;
+  }
 }
 
 export class Manticore extends Pet {
@@ -132,4 +189,16 @@ export class Manticore extends Pet {
   description = "Your first attack will 100% crit";
   imageUrl = CDN_LINK + "574852830125359126/862542055674216448/unknown.png";
   fragmentImageUrl = CDN_LINK + "574852830125359126/862671084717604874/manticore.png";
+
+  get passiveStatDescription() {
+    return `\`+${this.multiplier}\` Crit Damage`;
+  }
+
+  get multiplier() {
+    return this.star * 0.2;
+  }
+
+  use(player: Player) {
+    player.critDamage += player.critDamage * this.multiplier;
+  }
 }
