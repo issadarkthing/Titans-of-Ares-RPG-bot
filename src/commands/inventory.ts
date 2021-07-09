@@ -43,7 +43,7 @@ export async function inventory(msg: Message, args: string[]) {
             const fragment = new Fragment(id as FragmentID);
             const pet = fragment.pet;
             const ownedFragmentCount = 
-              inventory.find(x => x.id === fragment.id)!.count;
+              inventory.find(x => x.id === fragment.id)?.count || 0;
             cards.push(pet.fragmentCard(ownedFragmentCount));
             return `\`x${count}\` **${fragment.name}**`;
           })
