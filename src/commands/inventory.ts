@@ -6,6 +6,7 @@ import { aggregateBy, GOLD, STAR } from "../internals/utils";
 import { sleep } from "../internals/battle";
 import { oneLine } from "common-tags";
 import { ButtonHandler } from "../internals/ButtonHandler";
+import { PREFIX } from "..";
 
 export async function inventory(msg: Message, args: string[]) {
 
@@ -119,6 +120,8 @@ export async function inventory(msg: Message, args: string[]) {
   const embed = new MessageEmbed()
     .setColor(GOLD)
     .addField("Inventory", itemsList || "None")
+    .addField("\u200b", oneLine`use command \`${PREFIX}inventory <number>\` 
+      to inspect item in the inventory.`);
 
   msg.channel.send(embed);
 }

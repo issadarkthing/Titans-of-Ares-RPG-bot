@@ -23,7 +23,7 @@ import { inventory } from "./commands/inventory";
 import { pet } from "./commands/pet";
 
 const sqlite3 = verbose();
-const PREFIX = process.env.PREFIX;
+export const PREFIX = process.env.PREFIX;
 const OLD_BOT_ID = process.env.OLD_BOT_ID;
 export const RANK_CHANNEL = process.env.RANK_CHANNEL;
 export const XP_LOG_CHANNEL = process.env.XP_LOG_CHANNEL;
