@@ -63,7 +63,7 @@ export default async function (
 
   let players = await Promise.all(playersPromise);
 
-  players.sort((a, b) => b.points - a.points);
+  players.sort((a, b) => b.xp - a.xp);
   players = players.slice(0, parseInt(limit) || 10);
 
   const files = await Promise.all(players.map(x => x.getProfile()));
