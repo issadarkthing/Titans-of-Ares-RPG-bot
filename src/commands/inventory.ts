@@ -2,7 +2,7 @@ import { Message, MessageEmbed } from "discord.js";
 import { Chest } from "../internals/Chest";
 import { Fragment, FragmentID } from "../internals/Fragment";
 import { Player } from "../internals/Player";
-import { aggregateBy, GOLD } from "../internals/utils";
+import { aggregateBy, GOLD, STAR } from "../internals/utils";
 import { sleep } from "../internals/battle";
 import { oneLine } from "common-tags";
 import { ButtonHandler } from "../internals/ButtonHandler";
@@ -63,7 +63,7 @@ export async function inventory(msg: Message, args: string[]) {
 
         const pet = item.pet;
         const ownedFragmentCount = inventory.getItemCount(item.id);
-        const ownedPet = player.pets.find(x => x.id === pet.id);
+        let ownedPet = player.pets.find(x => x.id === pet.id);
 
         // if own the pet but does not have enough fragment to upgrade
         if (ownedPet && ownedFragmentCount < ownedPet.upgradeCost) {
@@ -79,21 +79,24 @@ export async function inventory(msg: Message, args: string[]) {
 
         const result = await item.use(player);
         await player.sync();
+          
+        ownedPet = player.pets.find(x => x.id === pet.id)!;
+        const fragmentCount = player.inventory.getItemCount(item.id);
 
         if (result === "obtain") {
           const summonAnimation = await msg.channel.send(item.summonAnimation());
           await sleep(8000);
           await summonAnimation.delete();
-          const fragmentCount = player.inventory.getItemCount(item.id);
           msg.channel.send(`${player.name} has obtained **${pet.name}**!`);
-          msg.channel.send(pet.card(fragmentCount));
+          msg.channel.send(ownedPet.card(fragmentCount));
 
         } else if (result === "upgrade") {
           const ownedPet = player.pets.find(x => x.id === pet.id)!;
           const upgradeAnimation = await msg.channel.send(item.upgradeAnimation())
           await sleep(8000);
           await upgradeAnimation.delete();
-          msg.channel.send(`${pet.name} is now **${ownedPet.star}** !`);
+          msg.channel.send(`${pet.name} is now **${ownedPet.star}** ${STAR}!`);
+          msg.channel.send(ownedPet.card(fragmentCount));
 
         }
       })

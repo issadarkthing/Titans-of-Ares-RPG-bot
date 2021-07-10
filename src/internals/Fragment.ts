@@ -54,7 +54,7 @@ export class Fragment extends Item {
     const embed = new MessageEmbed()
       .setColor(GOLD)
       .setImage(this.upgradeGif)
-      .setTitle(`Summoning ${this.pet.name}`)
+      .setTitle(`Upgrading ${this.pet.name}`)
 
     return embed;
   }
