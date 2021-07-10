@@ -10,8 +10,8 @@ import { ButtonHandler } from "../internals/ButtonHandler";
 export async function inventory(msg: Message, args: string[]) {
 
   const player = await Player.getPlayer(msg.member!);
-  const inventory = player.inventory;
-  const acc = inventory.itemsCount();
+  const inv = player.inventory;
+  const acc = inv.itemsCount();
   const [index] = args;
 
   if (index) {
@@ -24,7 +24,7 @@ export async function inventory(msg: Message, args: string[]) {
     if (!accItem)
       return msg.channel.send(`No item found at index ${i}`);
 
-    const item = inventory.getItem(accItem.id)!;
+    const item = inv.getItem(accItem.id)!;
 
     const button = new ButtonHandler(msg, item.show(accItem.count), player.id);
 
@@ -62,7 +62,7 @@ export async function inventory(msg: Message, args: string[]) {
       button.addButton("🟢", "use the item", async () => {
 
         const pet = item.pet;
-        const ownedFragmentCount = inventory.getItemCount(item.id);
+        const ownedFragmentCount = inv.getItemCount(item.id);
         let ownedPet = player.pets.find(x => x.id === pet.id);
 
         // if own the pet but does not have enough fragment to upgrade
@@ -103,6 +103,9 @@ export async function inventory(msg: Message, args: string[]) {
 
     }
 
+    button.addButton("↩️", "return to inventory list", () => {
+      inventory(msg, []);
+    })
     button.addCloseButton();
     button.run();
 
