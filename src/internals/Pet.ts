@@ -24,8 +24,10 @@ export abstract class Pet {
   abstract use(player: Player): void;
   /** passive multiplier */
   abstract get multiplier(): number;
-  /** represents pet level */
-  star = 0;
+  /** represents pet level.
+   * -1 represents this pet has not been obtained yet
+   * */
+  star = -1;
   active = false;
 
   static fromPetID(id: PetID) {
@@ -43,6 +45,16 @@ export abstract class Pet {
     }
   }
 
+  static get all() {
+    return [
+      new Wisp(),
+      new Golem(),
+      new Gryphon(),
+      new Minotaur(),
+      new Manticore(),
+    ];
+  }
+
   static fromDB(petDB: PetDB) {
     const pet = Pet.fromPetID(petDB.PetID);
     pet.star = petDB.Star;
@@ -50,7 +62,9 @@ export abstract class Pet {
     return pet;
   }
 
-  fragmentCard(fragmentCount: number, action: "summon" | "upgrade") {
+  fragmentCard(fragmentCount: number) {
+
+    const action = this.star === -1 ? "summon" : "upgrade";
     const requiredFragment = action === "summon" ? 
       Fragment.minFragments : this.upgradeCost;
 
@@ -68,16 +82,23 @@ export abstract class Pet {
     return embed;
   }
 
-  card(fragmentCount: number) {
+  card(fragmentCount: number, showPossession = false) {
 
     const embed = new MessageEmbed()
       .setColor(BROWN)
       .setTitle(this.name)
       .setThumbnail(this.imageUrl)
       .addField("Active Skill", this.description)
-      .addField("Level", `\`${this.star}\` ${STAR}`, true)
-      .addField("Passive Stat", this.passiveStatDescription, true)
       .addField("Fragments", `\`${fragmentCount}/${this.upgradeCost}\``, true)
+
+    if (showPossession) {
+      embed.addField("Possession", this.star !== -1 ? "yes" : "no", true)
+    }
+
+    if (this.star !== -1) {
+      embed.addField("Level", `\`${this.star}\` ${STAR}`, true)
+      embed.addField("Passive Stat", this.passiveStatDescription, true)
+    }
 
     return embed;
   }
@@ -96,7 +117,7 @@ export abstract class Pet {
       case 4:
         return 50;
       default:
-        return 10;
+        return 8;
     }
   }
 }

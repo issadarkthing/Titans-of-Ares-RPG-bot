@@ -45,11 +45,10 @@ export async function inventory(msg: Message, args: string[]) {
           .map(([id, count]) => { 
 
             const fragment = new Fragment(id as FragmentID);
-            const hasPet = player.pets.find(x => x.id === fragment.pet.id);
-            const pet = hasPet || fragment.pet;
+            const ownedPet = player.pets.find(x => x.id === fragment.pet.id);
+            const pet = ownedPet || fragment.pet;
             const ownedFragmentCount = player.inventory.getItemCount(id);
-            const action = hasPet ? "upgrade" : "summon";
-            cards.push(pet.fragmentCard(ownedFragmentCount, action));
+            cards.push(pet.fragmentCard(ownedFragmentCount));
             return `\`x${count}\` **${fragment.name}**`;
           })
           .join(" ");
@@ -120,7 +119,7 @@ export async function inventory(msg: Message, args: string[]) {
   const embed = new MessageEmbed()
     .setColor(GOLD)
     .addField("Inventory", itemsList || "None")
-    .addField("\u200b", oneLine`use command \`${PREFIX}inventory <number>\` 
+    .addField("\u200b", oneLine`Use command \`${PREFIX}inventory <number>\` 
       to inspect item in the inventory.`);
 
   msg.channel.send(embed);
