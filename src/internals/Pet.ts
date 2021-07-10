@@ -60,8 +60,9 @@ export abstract class Pet {
     const embed = new MessageEmbed()
       .setColor(GOLD)
       .setTitle(`${this.name}'s Fragment`)
-      .setDescription(this.description)
       .setThumbnail(this.fragmentImageUrl)
+      .addField("Active Skill", this.description)
+      .addField("\u200b", "\u200b")
       .setFooter(footerText);
 
     return embed;
