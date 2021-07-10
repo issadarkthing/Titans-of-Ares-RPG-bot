@@ -9,6 +9,35 @@ import { DateTime } from "luxon";
 import { addBuff } from "../db/player";
 import { oneLine } from "common-tags";
 import { createEntry, getXPEntry, resetXPEntry, setXPEntry } from "../db/xpEntry";
+import assert from "assert";
+
+const rgx = /^Registered\sDay:\s(?<day>\d+)\s.*Progress:\s(?<value>\d+,?\d*)\s(?<valueType>\w+).*$/;
+
+const tests = `
+Registered Day: 7 Progress: 6641 steps
+Registered Day: 8 Progress: 1 yoga
+Registered Day: 8 Progress: 1 strength
+Registered Day: 8 Added Progress: 10,7 cyclingkm New Progress: 10,7 cyclingkm
+Registered Day: 7 Added Progress: 14,81 cyclingkm New Progress: 17,810001 cyclingkm
+`;
+
+const result = [
+  {value: "6641", valueType: "steps"},
+  {value: "1", valueType: "yoga"},
+  {value: "1", valueType: "strength"},
+  {value: "10,7", valueType: "cyclingkm"},
+  {value: "17,810001", valueType: "cyclingkm"},
+]
+
+const lines = tests.split("\n").filter(x => !!x);
+
+for (let i = 0; i < lines.length; i++) {
+  const matches = lines[i].match(rgx)!;
+  const { value, valueType } = matches.groups!;
+  assert.strictEqual(value, result[i].value);
+  assert.strictEqual(valueType, result[i].valueType);
+}
+
 
 export async function xpLog(msg: Message) {
 
@@ -16,7 +45,6 @@ export async function xpLog(msg: Message) {
   if (!member) return;
 
   const lines = msg.content.split("\n");
-  const rgx = /^Registered\sDay:\s(?<day>\d+)\s.*Progress:\s(?<value>\d+,?\d*)\s(?<valueType>\w+).*$/;
 
   for (const line of lines) {
 
