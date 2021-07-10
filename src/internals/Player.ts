@@ -1,6 +1,6 @@
 import { getLevel, getStats, GOLD, numberFormat } from "./utils";
 import { GuildMember, MessageEmbed } from "discord.js";
-import { IFighter, Fighter } from "./Fighter";
+import { IFighter, Fighter, BaseStats } from "./Fighter";
 import { setCoin } from "../db/coin";
 import { createUser, getTotalPoints, getTotalXp, getUser, getUsers } from "../db/player";
 import { stripIndents } from "common-tags";
@@ -47,6 +47,7 @@ export class Player extends Fighter {
   pets: Pet[];
   readonly id: string;
   readonly member: GuildMember;
+  readonly baseStats: BaseStats;
 
   constructor(data: IPlayer) {
     super(data);
@@ -63,6 +64,15 @@ export class Player extends Fighter {
     this.bronzeMedal = data.bronzeMedal;
     this.pets = data.pets;
     this.buff = data.buff && new Buff(data.buff);
+    this.baseStats = {
+      hp: this.hp,
+      strength: this.strength,
+      speed: this.speed,
+      armor: this.armor,
+      critRate: this.critRate,
+      critDamage: this.critDamage,
+    }
+
     if (this.buff) {
       this.buff.use(this);
       this.maxHp = this.hp;

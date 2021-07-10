@@ -13,6 +13,16 @@ export interface IFighter {
   imageUrl: string;
 }
 
+/** stats that are not affected by any buff or boost */
+export interface BaseStats {
+  hp: number;
+  strength: number;
+  speed: number;
+  armor: number;
+  critRate: number;
+  critDamage: number;
+}
+
 // Fighter implements battle fight
 export class Fighter {
 
