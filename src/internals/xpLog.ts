@@ -16,7 +16,7 @@ export async function xpLog(msg: Message) {
   if (!member) return;
 
   const lines = msg.content.split("\n");
-  const rgx = /^Registered\sDay:\s(?<day>\d+)\s.*Progress:\s(?<value>\d+)\s(?<valueType>\w+)$/;
+  const rgx = /^Registered\sDay:\s(?<day>\d+)\s.*Progress:\s(?<value>\d+,?\d*)\s(?<valueType>\w+).*$/;
 
   for (const line of lines) {
 
