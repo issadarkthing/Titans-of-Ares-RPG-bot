@@ -11,7 +11,7 @@ import { oneLine } from "common-tags";
 import { createEntry, getXPEntry, resetXPEntry, setXPEntry } from "../db/xpEntry";
 import assert from "assert";
 
-const rgx = /^Registered\sDay:\s(?<day>\d+)\s.*Progress:\s(?<value>\d+,?\d*)\s(?<valueType>\w+).*$/;
+const rgx = /^Registered\sDay:\s(?<day>\d+)\s.*Progress:\s(?<value>\d+[,|\.]?\d*)\s(?<valueType>\w+).*$/;
 
 const tests = `
 Registered Day: 7 Progress: 6641 steps
@@ -19,6 +19,9 @@ Registered Day: 8 Progress: 1 yoga
 Registered Day: 8 Progress: 1 strength
 Registered Day: 8 Added Progress: 10,7 cyclingkm New Progress: 10,7 cyclingkm
 Registered Day: 7 Added Progress: 14,81 cyclingkm New Progress: 17,810001 cyclingkm
+Registered Day: 7 Added Progress: 14.81 cyclingkm New Progress: 17.810001 cyclingkm
+Registered Day: 7 Added Progress: 14.81 cyclingkm New Progress: 7.8 cyclingkm
+Registered Day: 7 Added Progress: 14.81 cyclingkm New Progress: 0.5 cyclingkm
 `;
 
 const result = [
@@ -27,6 +30,9 @@ const result = [
   {value: "1", valueType: "strength"},
   {value: "10,7", valueType: "cyclingkm"},
   {value: "17,810001", valueType: "cyclingkm"},
+  {value: "17.810001", valueType: "cyclingkm"},
+  {value: "7.8", valueType: "cyclingkm"},
+  {value: "0.5", valueType: "cyclingkm"},
 ]
 
 const lines = tests.split("\n").filter(x => !!x);
