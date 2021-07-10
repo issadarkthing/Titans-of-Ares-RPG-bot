@@ -2,9 +2,10 @@ import { Message, MessageEmbed } from "discord.js";
 import { Chest } from "../internals/Chest";
 import { Fragment, FragmentID } from "../internals/Fragment";
 import { Player } from "../internals/Player";
-import { aggregateBy, GOLD, STAR } from "../internals/utils";
+import { aggregateBy, GOLD } from "../internals/utils";
 import { sleep } from "../internals/battle";
 import { oneLine } from "common-tags";
+import { ButtonHandler } from "../internals/ButtonHandler";
 
 export async function inventory(msg: Message, args: string[]) {
 
@@ -16,7 +17,6 @@ export async function inventory(msg: Message, args: string[]) {
   if (index) {
 
     const i = parseInt(index) - 1;
-    const [, subcmd] = args;
     if (Number.isNaN(i))
       return msg.channel.send("Please give valid index");
 
@@ -24,10 +24,13 @@ export async function inventory(msg: Message, args: string[]) {
     if (!accItem)
       return msg.channel.send(`No item found at index ${i}`);
 
-    if (subcmd.toLowerCase() === "use") {
-      const item = inventory.getItem(accItem.id)!;
+    const item = inventory.getItem(accItem.id)!;
 
-      if (item instanceof Chest) {
+    const button = new ButtonHandler(msg, item.show(accItem.count), player.id);
+
+    if (item instanceof Chest) {
+      button.addButton("🟢", "use the item", async () => {
+
         const result = await item.use(player);
         await player.sync();
 
@@ -52,8 +55,12 @@ export async function inventory(msg: Message, args: string[]) {
 
         msg.channel.send(`You got ${fragment}!`);
         cards.forEach(x => msg.channel.send(x));
+      })
 
-      } else if (item instanceof Fragment) {
+    } else if (item instanceof Fragment) {
+
+      button.addButton("🟢", "use the item", async () => {
+
         const pet = item.pet;
         const ownedFragmentCount = inventory.getItemCount(item.id);
         const ownedPet = player.pets.find(x => x.id === pet.id);
@@ -83,16 +90,18 @@ export async function inventory(msg: Message, args: string[]) {
 
         } else if (result === "upgrade") {
           const ownedPet = player.pets.find(x => x.id === pet.id)!;
-          msg.channel.send(
-            `${pet.name} is now **${ownedPet.star + 1}** ${STAR}!`
-          );
+          const upgradeAnimation = await msg.channel.send(item.upgradeAnimation())
+          await sleep(8000);
+          await upgradeAnimation.delete();
+          msg.channel.send(`${pet.name} is now **${ownedPet.star}** !`);
 
         }
-      }
+      })
 
-    } else {
-      return msg.channel.send("Invalid action")
     }
+
+    button.addCloseButton();
+    button.run();
 
     return;
   }
@@ -103,7 +112,7 @@ export async function inventory(msg: Message, args: string[]) {
 
   const embed = new MessageEmbed()
     .setColor(GOLD)
-    .addField("Inventory", itemsList || "None");
+    .addField("Inventory", itemsList || "None")
 
   msg.channel.send(embed);
 }

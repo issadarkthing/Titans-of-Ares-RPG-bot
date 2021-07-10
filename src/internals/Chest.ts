@@ -1,40 +1,56 @@
 import { MedalType } from "./Medal";
 import { Item } from "./Item";
-import { capitalize, CDN_LINK, GREEN, random } from "./utils";
+import { BROWN, capitalize, CDN_LINK, GREEN, random } from "./utils";
 import { Player } from "./Player";
 import { PetID } from "./Pet";
 import { Fragment } from "./Fragment";
 import { removeInventory } from "../db/inventory";
 import { MessageEmbed } from "discord.js";
+import { oneLine, stripIndents } from "common-tags";
 
 export type Level = "bronze" | "silver" | "gold";
 export type ChestID = `chest_${Level}`;
 
-const openingChestGif = CDN_LINK +
-  "574852830125359126/862679388146368582/chest-open.gif";
+const openingChestGif = CDN_LINK + "574852830125359126/862679388146368582/chest-open.gif";
 
-export class Chest extends Item {
+export abstract class Chest extends Item {
 
-  private level: Level;
-  id: ChestID;
-  constructor(id: ChestID) {
-    super();
-    this.level = id.split("_")[1] as Level;
-    this.id = id;
+  protected abstract level: Level;
+  protected abstract getFragmentCount(): number;
+  abstract imageUrl: string;
+
+  get id() {
+    return `chest_${this.level}`;
   }
 
   get name() {
     return `${capitalize(this.level)} Treasure Chest`
   }
 
+  get description() {
+    return oneLine`This is a ${capitalize(this.level)} Treasure Chest awarded by
+    the Monthly Challenge. You can open it for Pet Fragments.`
+  }
+
+  static fromChestID(chestID: ChestID) {
+    switch (chestID) {
+      case "chest_gold":
+        return new GoldChest();
+      case "chest_silver":
+        return new SilverChest();
+      case "chest_bronze":
+        return new BronzeChest();
+    }
+  }
+
   static fromMedal(medal: MedalType) {
     switch (medal) {
       case "GoldMedal":
-        return new Chest("chest_gold");
+        return new GoldChest();
       case "SilverMedal":
-        return new Chest("chest_silver");
+        return new SilverChest();
       case "BronzeMedal":
-        return new Chest("chest_bronze");
+        return new BronzeChest();
       default:
         throw Error("invalid medal");
     }
@@ -49,17 +65,6 @@ export class Chest extends Item {
     return embed;
   }
 
-  private getFragmentCount() {
-    switch (this.level) {
-      case "bronze":
-        return random().pick([1, 2]);
-      case "silver":
-        return random().pick([2, 3]);
-      case "gold":
-        return 3;
-    }
-  }
-
   private random() {
     return random().pick([
       PetID.Wisp,
@@ -68,6 +73,18 @@ export class Chest extends Item {
       PetID.Minotaur,
       PetID.Manticore,
     ]);
+  }
+
+  show(count: number) {
+
+    const embed = new MessageEmbed()
+      .setColor(BROWN)
+      .setThumbnail(this.imageUrl)
+      .setTitle(this.name)
+      .setDescription(this.description)
+      .addField("Count", `\`x${count}\``)
+
+    return embed;
   }
 
   /** open up the chest and add the fragments to the player's inventory */
@@ -86,5 +103,32 @@ export class Chest extends Item {
     await removeInventory(player.id, this.id);
 
     return fragments;
+  }
+}
+
+class GoldChest extends Chest {
+  level = "gold" as Level;
+  imageUrl = CDN_LINK + "768053872400007218/863093260175540234/c8zixtnh-900.jpg";
+
+  protected getFragmentCount() {
+    return 3;
+  }
+}
+
+class SilverChest extends Chest {
+  level = "silver" as Level;
+  imageUrl = CDN_LINK + "768053872400007218/863093874058592286/magic-chest-3d-model-low-poly-max-obj-mtl-3ds-fbx-tga_1.png";
+
+  protected getFragmentCount() {
+    return random().pick([2, 3]);
+  }
+}
+
+class BronzeChest extends Chest {
+  level = "bronze" as Level;
+  imageUrl = CDN_LINK + "768053872400007218/863093260418416670/magic-chest-3d-model-low-poly-max-obj-mtl-3ds-fbx-tga.png";
+
+  protected getFragmentCount() {
+    return random().pick([1, 2]);
   }
 }

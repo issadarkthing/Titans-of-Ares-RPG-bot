@@ -19,7 +19,7 @@ export class Inventory {
       const category = item.ItemID.split("_")[0];
       switch (category) {
         case "chest":
-          this.chests.push(new Chest(itemID as ChestID));
+          this.chests.push(Chest.fromChestID(itemID as ChestID));
           break;
         case "fragment":
           this.fragments.push(new Fragment(itemID as FragmentID));
