@@ -25,7 +25,7 @@ export async function inventory(msg: Message, args: string[]) {
     if (!accItem)
       return msg.channel.send(`No item found at index ${i}`);
 
-    const item = inv.getItem(accItem.id)!;
+    const item = inv.all.get(accItem.id)!;
 
     const button = new ButtonHandler(msg, item.show(accItem.count), player.id);
 
@@ -45,9 +45,9 @@ export async function inventory(msg: Message, args: string[]) {
           .map(([id, count]) => { 
 
             const fragment = new Fragment(id as FragmentID);
-            const ownedPet = player.pets.find(x => x.id === fragment.pet.id);
+            const ownedPet = player.pets.get(fragment.pet.id);
             const pet = ownedPet || fragment.pet;
-            const ownedFragmentCount = player.inventory.getItemCount(id);
+            const ownedFragmentCount = player.inventory.all.count(id);
             cards.push(pet.fragmentCard(ownedFragmentCount));
             return `\`x${count}\` **${fragment.name}**`;
           })
@@ -62,8 +62,8 @@ export async function inventory(msg: Message, args: string[]) {
       button.addButton("🟢", "use the item", async () => {
 
         const pet = item.pet;
-        const ownedFragmentCount = inv.getItemCount(item.id);
-        let ownedPet = player.pets.find(x => x.id === pet.id);
+        const ownedFragmentCount = inv.all.count(item.id);
+        let ownedPet = player.pets.get(pet.id);
 
         // if own the pet but does not have enough fragment to upgrade
         if (ownedPet && ownedFragmentCount < ownedPet.upgradeCost) {
@@ -80,8 +80,8 @@ export async function inventory(msg: Message, args: string[]) {
         const result = await item.use(player);
         await player.sync();
           
-        ownedPet = player.pets.find(x => x.id === pet.id)!;
-        const fragmentCount = player.inventory.getItemCount(item.id);
+        ownedPet = player.pets.get(pet.id)!;
+        const fragmentCount = player.inventory.all.count(item.id);
 
         if (result === "obtain") {
           const summonAnimation = await msg.channel.send(item.summonAnimation());
@@ -91,7 +91,7 @@ export async function inventory(msg: Message, args: string[]) {
           msg.channel.send(ownedPet.card(fragmentCount));
 
         } else if (result === "upgrade") {
-          const ownedPet = player.pets.find(x => x.id === pet.id)!;
+          const ownedPet = player.pets.get(pet.id)!;
           const upgradeAnimation = await msg.channel.send(item.upgradeAnimation())
           await sleep(8000);
           await upgradeAnimation.delete();

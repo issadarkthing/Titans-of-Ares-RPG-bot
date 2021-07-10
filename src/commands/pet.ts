@@ -19,7 +19,7 @@ export async function pet(msg: Message, args: string[]) {
     const allPets = [...ownedPets, ...notOwnedPets];
 
     for (const pet of allPets) {
-      const fragmentCount = player.inventory.getItemCount(`fragment_${pet.id}`);
+      const fragmentCount = player.inventory.all.count(`fragment_${pet.id}`);
       msg.channel.send(pet.card(fragmentCount, true));
     }
 
@@ -33,7 +33,7 @@ export async function pet(msg: Message, args: string[]) {
     if (!pet)
       return msg.channel.send("Please give valid index");
 
-    const fragmentCount = player.inventory.getItemCount(`fragment_${pet.id}`);
+    const fragmentCount = player.inventory.all.count(`fragment_${pet.id}`);
     return msg.channel.send(pet.card(fragmentCount, true));
 
   }
