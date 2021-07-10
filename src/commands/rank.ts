@@ -39,7 +39,6 @@ export default async function (
   const channel = msg.guild?.channels.resolve(RANK_CHANNEL!);
   if (!channel) throw Error("No rank channel");
 
-  const limit = args[0];
 
   if (!(channel instanceof TextChannel)) {
     return;
@@ -64,7 +63,7 @@ export default async function (
   let players = await Promise.all(playersPromise);
 
   players.sort((a, b) => b.xp - a.xp);
-  players = players.slice(0, parseInt(limit) || 10);
+  players = players.slice(0, 10);
 
   const files = await Promise.all(players.map(x => x.getProfile()));
   channel.stopTyping();
