@@ -84,15 +84,18 @@ export abstract class Pet {
 
   card(fragmentCount: number, showPossession = false) {
 
+    const action = this.star === -1 ? "summon" : "upgrade";
+
     const embed = new MessageEmbed()
       .setColor(BROWN)
       .setTitle(this.name)
       .setThumbnail(this.imageUrl)
       .addField("Active Skill", this.description)
-      .addField("Fragments", `\`${fragmentCount}/${this.upgradeCost}\``, true)
+      .addField(`Fragments to ${action}`, 
+        `\`${fragmentCount}/${this.upgradeCost}\``, true)
 
     if (showPossession) {
-      embed.addField("Possession", this.star !== -1 ? "yes" : "no", true)
+      embed.addField("Summoned", this.star !== -1 ? "yes" : "no", true)
     }
 
     if (this.star !== -1) {

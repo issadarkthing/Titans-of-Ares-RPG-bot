@@ -45,10 +45,10 @@ export async function pet(msg: Message, args: string[]) {
   const embed = new MessageEmbed()
     .setColor(BROWN)
     .setTitle("Pet")
-    .setDescription("Showing all pets you own")
+    .setDescription("Showing all pets you summoned")
     .addField("---", petsList || "none")
     .addField("\u200b", stripIndents`
-      Use command \`${PREFIX}pet all\` to show all pets available and that are available to summon/upgrade
+      Use command \`-pet all\` to show all existing pets and how many fragments you need to summon or upgrade them
       You can summon or upgrade pets from inventory using \`${PREFIX}inventory\``)
 
   msg.channel.send(embed);
