@@ -31,33 +31,4 @@ export class Inventory {
   get all() {
     return List.from([...this.chests, ...this.fragments]);
   }
-
-  itemsCount() {
-
-    type Acc = {
-      id: string;
-      name: string;
-      count: number;
-    }
-
-    const aggregate = new Map<string, Acc>();
-
-    this.all.forEach(item => {
-
-      const acc = aggregate.get(item.id);
-      if (acc) {
-        aggregate.set(item.id, { 
-          id: item.id, 
-          name: item.name, 
-          count: acc.count + 1, 
-        })
-
-        return;
-      }
-
-      aggregate.set(item.id, { id: item.id, name: item.name, count: 1 });
-    })
-
-    return [...aggregate.values()];
-  }
 }

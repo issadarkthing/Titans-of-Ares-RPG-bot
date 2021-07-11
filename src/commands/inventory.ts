@@ -12,7 +12,7 @@ export async function inventory(msg: Message, args: string[]) {
 
   const player = await Player.getPlayer(msg.member!);
   const inv = player.inventory;
-  const acc = inv.itemsCount();
+  const acc = inv.all.aggregate();
   const [index] = args;
 
   if (index) {
@@ -25,7 +25,7 @@ export async function inventory(msg: Message, args: string[]) {
     if (!accItem)
       return msg.channel.send(`No item found at index ${i}`);
 
-    const item = inv.all.get(accItem.id)!;
+    const item = inv.all.get(accItem.value.id)!;
 
     const button = new ButtonHandler(msg, item.show(accItem.count), player.id);
 
@@ -113,7 +113,7 @@ export async function inventory(msg: Message, args: string[]) {
   }
 
   const itemsList = acc.reduce((acc, v, i) => {
-    return acc + `\n${i + 1}. \`x${v.count} ${v.name}\``;
+    return acc + `\n${i + 1}. \`x${v.count} ${v.value.name}\``;
   }, "").trim();
 
   const embed = new MessageEmbed()

@@ -29,7 +29,7 @@ export async function pet(msg: Message, args: string[]) {
     if (Number.isNaN(parseInt(index)))
       return msg.channel.send("Please give valid number");
 
-    const pet = player.pets[parseInt(index) - 1];
+    const pet = player.pets.get(parseInt(index) - 1);
     if (!pet)
       return msg.channel.send("Please give valid index");
 
