@@ -1,9 +1,10 @@
 import { oneLine } from "common-tags";
 import { MessageEmbed } from "discord.js";
 import { Fragment } from "./Fragment";
-import { BROWN, CDN_LINK, GOLD, STAR } from "./utils";
+import { BROWN, CDN_LINK, GOLD, random, STAR } from "./utils";
 import { Pet as PetDB } from "../db/pet"
 import { Player } from "./Player";
+import { DateTime } from "luxon";
 
 export enum PetID {
   Wisp      = "pet_wisp",
@@ -20,6 +21,8 @@ export abstract class Pet {
   abstract imageUrl: string;
   abstract fragmentImageUrl: string;
   abstract get passiveStatDescription(): string;
+  /** returns true if pet is spawn in that particular round */
+  abstract isSpawn(round: number): boolean;
   /** apply passive attribute */
   abstract use(player: Player): void;
   /** passive multiplier */
@@ -29,6 +32,7 @@ export abstract class Pet {
    * */
   star = -1;
   active = false;
+  createdAt = DateTime.now();
 
   static fromPetID(id: PetID) {
     switch (id) {
@@ -59,6 +63,7 @@ export abstract class Pet {
     const pet = Pet.fromPetID(petDB.PetID);
     pet.star = petDB.Star;
     pet.active = petDB.Active === 1;
+    pet.createdAt = DateTime.fromSQL(petDB.Created, { zone: "gmt" });
     return pet;
   }
 
@@ -101,6 +106,8 @@ export abstract class Pet {
     if (this.star !== -1) {
       embed.addField("Level", `\`${this.star}\` ${STAR}`, true)
       embed.addField("Passive Stat", this.passiveStatDescription, true)
+      embed.addField("Status", this.active ? "active" : "inactive", true)
+      embed.addField("Creation Time", this.createdAt.toRelative(), true)
     }
 
     return embed;
@@ -132,6 +139,7 @@ export class Wisp extends Pet {
   happen once each battle`;
   imageUrl = CDN_LINK + "574852830125359126/862540067432431617/unknown.png";
   fragmentImageUrl = CDN_LINK + "574852830125359126/862656523531321344/wisp.png";
+  private hasSpawn = false;
 
   get passiveStatDescription() {
     return `\`+${this.multiplier * 100}%\` HP from base stats`;
@@ -139,6 +147,21 @@ export class Wisp extends Pet {
 
   get multiplier() {
     return this.star * 0.1;
+  }
+
+  isSpawn(round: number) {
+    if (this.hasSpawn) return false;
+
+    if (round >= 2 && round <= 5) {
+      const x = random().bool();
+
+      if (x) {
+        this.hasSpawn = x;
+        return x;
+      }
+    }
+
+    return false;
   }
 
   use(player: Player) {
@@ -161,6 +184,10 @@ export class Golem extends Pet {
     return this.star * 0.1;
   }
 
+  isSpawn(round: number) {
+    return true;
+  }
+
   use(player: Player) {
     player.armor += player.armor * this.multiplier;
   }
@@ -173,6 +200,7 @@ export class Gryphon extends Pet {
   happen once each battle`;
   imageUrl = CDN_LINK + "574852830125359126/862541562022068264/unknown.png";
   fragmentImageUrl = CDN_LINK + "574852830125359126/862655845447630888/gryphon.png"
+  private hasSpawn = false;
 
   get passiveStatDescription() {
     return `\`+${this.multiplier * 100}%\` speed from base stats`;
@@ -180,6 +208,22 @@ export class Gryphon extends Pet {
 
   get multiplier() {
     return this.star * 0.2;
+  }
+
+  isSpawn(round: number) {
+
+    if (this.hasSpawn) return false;
+    
+    if (round >= 1 && round <= 5) {
+      const x = random().bool();
+
+      if (x) {
+        this.hasSpawn = x;
+        return x;
+      }
+    }
+
+    return false;
   }
 
   use(player: Player) {
@@ -203,6 +247,10 @@ export class Minotaur extends Pet {
     return this.star * 0.05;
   }
 
+  isSpawn(round: number) {
+    return random().bool(0.2);
+  }
+
   use(player: Player) {
     player.strength += player.strength * this.multiplier;
   }
@@ -221,6 +269,10 @@ export class Manticore extends Pet {
 
   get multiplier() {
     return this.star * 0.2;
+  }
+
+  isSpawn(round: number) {
+    return round === 1;
   }
 
   use(player: Player) {

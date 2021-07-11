@@ -1,4 +1,4 @@
-import { getLevel, getStats, GOLD, numberFormat } from "./utils";
+import { getLevel, getStats, GOLD, numberFormat, STAR } from "./utils";
 import { GuildMember, MessageEmbed } from "discord.js";
 import { IFighter, Fighter, BaseStats } from "./Fighter";
 import { setCoin } from "../db/coin";
@@ -199,6 +199,8 @@ export class Player extends Fighter {
     const armor = numberFormat(this.armor);
     const critRate = numberFormat(this.critRate * 100);
     const critDamage = numberFormat(this.critDamage);
+    const petName = this.activePet ? 
+      `${this.activePet.name} \`${this.activePet.star} ${STAR}\`` : "None"
 
     const embed = new MessageEmbed()
       .setColor(GOLD)
@@ -219,6 +221,9 @@ export class Player extends Fighter {
 
         **Buffs**
         ${this.buff?.getName() || "None"} ${buffTimer || ""}
+
+        **Pet**
+        ${petName}
       `);
 
     return embed;

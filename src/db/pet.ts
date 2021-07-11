@@ -52,3 +52,29 @@ export function upgradePet($ownerID: string, $petID: string, $star = 1) {
 
   return dbRun(sql, { $ownerID, $petID, $star });
 }
+
+export function setInactivePet($ownerID: string) {
+
+  // set all pet inactive
+  const sql = `
+  UPDATE Pet
+  SET Active = 0
+  WHERE OwnerID = $ownerID
+  `
+
+  return dbRun(sql, { $ownerID });
+}
+
+export async function setActivePet($ownerID: string, $petID: string) {
+
+  await setInactivePet($ownerID);
+
+  // set selected pet active
+  const sql = `
+  UPDATE Pet
+  SET Active = 1
+  WHERE OwnerID = $ownerID AND PetID = $petID
+  `
+
+  return dbRun(sql, { $ownerID, $petID });
+}

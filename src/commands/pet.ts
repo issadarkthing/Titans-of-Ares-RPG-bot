@@ -1,6 +1,8 @@
 import { stripIndents } from "common-tags";
 import { Message, MessageEmbed } from "discord.js";
 import { PREFIX } from "..";
+import { setActivePet, setInactivePet } from "../db/pet";
+import { ButtonHandler } from "../internals/ButtonHandler";
 import { Pet } from "../internals/Pet";
 import { Player } from "../internals/Player";
 import { BROWN, STAR } from "../internals/utils";
@@ -34,8 +36,28 @@ export async function pet(msg: Message, args: string[]) {
       return msg.channel.send("Please give valid index");
 
     const fragmentCount = player.inventory.all.count(`fragment_${pet.id}`);
-    return msg.channel.send(pet.card(fragmentCount, true));
+    const petCard = pet.card(fragmentCount, true);
+    const button = new ButtonHandler(msg, petCard, player.id);
 
+    button.addButton("🟢", "activate this pet", () => {
+      setActivePet(player.id, pet.id);
+      msg.channel.send(`**${pet.name}** is now your active pet!`);
+    })
+
+    button.addButton("🔴", "dismantle active pet", () => {
+      if (!player.activePet)
+        return msg.channel.send("You currently have no active pet");
+
+      setInactivePet(player.id);
+      msg.channel.send(
+        `**${player.activePet?.name}** has been removed as your active pet!`
+      );
+    })
+
+    button.addCloseButton();
+    await button.run();
+
+    return;
   }
 
   const petsList = player.pets
