@@ -41,7 +41,7 @@ function bar(progress: number, maxProgress: number) {
 export async function battle(
   msg: Message,
   player: Player,
-  challenger: Challenger
+  challenger: Challenger,
 ) {
   let done = false;
   let round = 0;
@@ -62,7 +62,12 @@ export async function battle(
       : 1;
 
   const attack = async (p1: Fighter, p2: Fighter) => {
-    const [isCrit, attackRate, damageReduction, damageDone] = p1.attack(p2);
+    const isCrit = p1.isCriticalHit();
+    const attackRate = isCrit ? CRIT_RATE * p1.strength : p1.strength;
+    const damageReduction = p1.getArmorReduction(attackRate);
+    const damageDone = (attackRate - damageReduction);
+    p2.hp -= damageDone;
+
     const critText = isCrit ? " (x2 critical hit)" : "";
 
     embed = new MessageEmbed()

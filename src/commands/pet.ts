@@ -39,12 +39,12 @@ export async function pet(msg: Message, args: string[]) {
     const petCard = pet.card(fragmentCount, true);
     const button = new ButtonHandler(msg, petCard, player.id);
 
-    button.addButton("🟢", "activate this pet", () => {
+    button.addButton("🔵", "activate this pet", () => {
       setActivePet(player.id, pet.id);
       msg.channel.send(`**${pet.name}** is now your active pet!`);
     })
 
-    button.addButton("🔴", "dismantle active pet", () => {
+    button.addButton("🔴", "deactivate current active pet", () => {
       if (!player.activePet)
         return msg.channel.send("You currently have no active pet");
 
@@ -70,6 +70,7 @@ export async function pet(msg: Message, args: string[]) {
     .setDescription("Showing all pets you summoned")
     .addField("---", petsList || "none")
     .addField("\u200b", stripIndents`
+      You can inspect your summoned pet by using \`-pet <number>\`
       Use command \`-pet all\` to show all existing pets and how many fragments you need to summon or upgrade them
       You can summon or upgrade pets from inventory using \`${PREFIX}inventory\``)
 

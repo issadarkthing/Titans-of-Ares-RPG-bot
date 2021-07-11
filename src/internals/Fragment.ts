@@ -11,7 +11,7 @@ export type FragmentID = `fragment_${PetID}`;
 
 export class Fragment extends Item {
 
-  readonly pet: Pet;
+  pet: Pet;
   private summonGif = 
     CDN_LINK + "852546444086214676/863007776983613460/giphy_1.gif";
   private upgradeGif =
@@ -25,6 +25,12 @@ export class Fragment extends Item {
 
   static fromPetID(petID: PetID) {
     return new Fragment(`fragment_${petID}` as FragmentID);
+  }
+
+  static fromPet(pet: Pet) {
+    const fragment = Fragment.fromPetID(pet.id);
+    fragment.pet = pet;
+    return fragment;
   }
 
   /** mininum fragments in order to obtain the pet */
@@ -61,12 +67,15 @@ export class Fragment extends Item {
 
   show(count: number) {
 
+    const action = this.pet.star === -1 ? "summon" : "upgrade";
+    const required = this.pet.upgradeCost;
+
     const embed = new MessageEmbed()
       .setColor(BROWN)
       .setTitle(this.name)
       .setThumbnail(this.pet.fragmentImageUrl)
       .setDescription(this.description)
-      .addField("Count", `\`x${count}\``)
+      .addField(`Fragments to ${action}`, `\`${count}/${required}\``)
 
     return embed;
   }

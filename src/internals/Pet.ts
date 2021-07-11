@@ -99,15 +99,18 @@ export abstract class Pet {
       .addField(`Fragments to ${action}`, 
         `\`${fragmentCount}/${this.upgradeCost}\``, true)
 
-    if (showPossession) {
-      embed.addField("Summoned", this.star !== -1 ? "yes" : "no", true)
-    }
 
     if (this.star !== -1) {
       embed.addField("Level", `\`${this.star}\` ${STAR}`, true)
+
+      if (showPossession) {
+        embed.addField("Summoned", this.star !== -1 ? "yes" : "no", true)
+      }
+
       embed.addField("Passive Stat", this.passiveStatDescription, true)
       embed.addField("Status", this.active ? "active" : "inactive", true)
-      embed.addField("Creation Time", this.createdAt.toRelative(), true)
+      embed.addField("Summoned On", 
+        this.createdAt.toLocaleString(DateTime.DATE_MED), true)
     }
 
     return embed;

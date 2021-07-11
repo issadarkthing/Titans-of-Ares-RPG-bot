@@ -27,10 +27,17 @@ export async function inventory(msg: Message, args: string[]) {
 
     const item = inv.all.get(accItem.value.id)!;
 
+    if (item instanceof Fragment) {
+      const pet = player.pets.get(item.pet.id);
+      if (pet) {
+        item.pet = pet;
+      }
+    }
+
     const button = new ButtonHandler(msg, item.show(accItem.count), player.id);
 
     if (item instanceof Chest) {
-      button.addButton("🟢", "use the item", async () => {
+      button.addButton("🔵", "use the item", async () => {
 
         const result = await item.use(player);
         await player.sync();
@@ -59,7 +66,7 @@ export async function inventory(msg: Message, args: string[]) {
 
     } else if (item instanceof Fragment) {
 
-      button.addButton("🟢", "use the item", async () => {
+      button.addButton("🔵", "use the item", async () => {
 
         const pet = item.pet;
         const ownedFragmentCount = inv.all.count(item.id);
@@ -88,7 +95,7 @@ export async function inventory(msg: Message, args: string[]) {
           await sleep(8000);
           await summonAnimation.delete();
           msg.channel.send(`${player.name} has obtained **${pet.name}**!`);
-          msg.channel.send(ownedPet.card(fragmentCount));
+          msg.channel.send(ownedPet.card(fragmentCount, true));
 
         } else if (result === "upgrade") {
           const ownedPet = player.pets.get(pet.id)!;
@@ -96,7 +103,7 @@ export async function inventory(msg: Message, args: string[]) {
           await sleep(8000);
           await upgradeAnimation.delete();
           msg.channel.send(`${pet.name} is now **${ownedPet.star}** ${STAR}!`);
-          msg.channel.send(ownedPet.card(fragmentCount));
+          msg.channel.send(ownedPet.card(fragmentCount, true));
 
         }
       })
