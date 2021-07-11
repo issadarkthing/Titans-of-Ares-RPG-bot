@@ -29,7 +29,6 @@ export class Fighter {
   name: string;
   level: number;
   hp: number;
-  protected maxHp: number;
   strength: number;
   speed: number;
   armor: number;
@@ -41,7 +40,6 @@ export class Fighter {
     this.name = data.name;
     this.level = data.level;
     this.hp = data.hp;
-    this.maxHp = data.hp;
     this.strength = data.strength;
     this.speed = data.speed;
     this.armor = data.armor;
@@ -50,16 +48,13 @@ export class Fighter {
     this.imageUrl = data.imageUrl;
   }
 
-  getMaxHP() {
-    return this.maxHp;
-  }
-
   isCriticalHit() {
     return random().bool(this.critRate);
   }
 
-  // Attack mutates the challenger hp to simulate attack. It also accounts for
-  // critical hit. This method returns true if the attack was a critical hit.
+  /** Attack mutates the challenger hp to simulate attack. It also accounts for
+  * critical hit. This method returns true if the attack was a critical hit.
+  */
   attack(challenger: Fighter) {
     const isCrit = this.isCriticalHit();
     const attackRate = isCrit ? CRIT_RATE * this.strength : this.strength;

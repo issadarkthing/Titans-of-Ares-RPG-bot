@@ -46,9 +46,9 @@ export class Player extends Fighter {
   silverMedal: number;
   bronzeMedal: number;
   pets: List<Pet>;
+  baseStats: BaseStats;
   readonly id: string;
   readonly member: GuildMember;
-  readonly baseStats: BaseStats;
 
   constructor(data: IPlayer) {
     super(data);
@@ -74,10 +74,7 @@ export class Player extends Fighter {
       critDamage: this.critDamage,
     }
 
-    if (this.buff) {
-      this.buff.use(this);
-      this.maxHp = this.hp;
-    }
+    this.buff?.use(this);
   }
 
   static async getPlayer(member: GuildMember): Promise<Player> {
@@ -141,10 +138,16 @@ export class Player extends Fighter {
     this.bronzeMedal = data.BronzeMedal;
     this.buff = data.Buff && new Buff(data.Buff);
     this.pets = List.from(pets);
-    if (this.buff) {
-      this.buff.use(this);
-      this.maxHp = this.hp;
+    this.baseStats = {
+      hp: this.hp,
+      strength: this.strength,
+      speed: this.speed,
+      armor: this.armor,
+      critRate: this.critRate,
+      critDamage: this.critDamage,
     }
+
+    this.buff?.use(this);
   }
 
   async getRank() {

@@ -47,6 +47,8 @@ export async function battle(
   let round = 0;
   let embed = new MessageEmbed();
   const message = await msg.channel.send("Battle start");
+  const playerMaxHP = player.hp;
+  const challengerMaxHP = challenger.hp;
 
   // This determines whichever moves first. If the player has higher speed, it
   // returns 0, i.e, player moves first by default. Otherwise, it returns 1
@@ -62,14 +64,6 @@ export async function battle(
   const attack = async (p1: Fighter, p2: Fighter) => {
     const [isCrit, attackRate, damageReduction, damageDone] = p1.attack(p2);
     const critText = isCrit ? " (x2 critical hit)" : "";
-
-    const p1MaxHP = numberFormat(p1.getMaxHP());
-    const p1HealthBar = bar(p1.hp, p1.getMaxHP());
-    const p1RemainingHp = p1.hp >= 0 ? numberFormat(p1.hp) : 0;
-
-    const p2MaxHP = numberFormat(p2.getMaxHP());
-    const p2HealthBar = bar(p2.hp, p2.getMaxHP());
-    const p2RemainingHp = p2.hp >= 0 ? numberFormat(p2.hp) : 0;
 
     embed = new MessageEmbed()
       .setColor(RED)
@@ -90,6 +84,15 @@ export async function battle(
     };
 
     if (p1.name === player.name) {
+      const p1MaxHP = numberFormat(playerMaxHP);
+      const p1HealthBar = bar(p1.hp, playerMaxHP);
+      const p1RemainingHp = p1.hp >= 0 ? numberFormat(p1.hp) : 0;
+
+      const p2MaxHP = numberFormat(challengerMaxHP);
+      const p2HealthBar = bar(p2.hp, challengerMaxHP);
+      const p2RemainingHp = p2.hp >= 0 ? numberFormat(p2.hp) : 0;
+
+
       embed.addField(
         `${p1.name}'s remaining HP`,
         `${p1HealthBar} \`${p1RemainingHp}/${p1MaxHP}\``
@@ -98,7 +101,16 @@ export async function battle(
         `${p2.name}'s remaining HP`,
         `${p2HealthBar} \`${p2RemainingHp}/${p2MaxHP}\``
       );
+
     } else {
+      const p1MaxHP = numberFormat(challengerMaxHP);
+      const p1HealthBar = bar(p1.hp, challengerMaxHP);
+      const p1RemainingHp = p1.hp >= 0 ? numberFormat(p1.hp) : 0;
+
+      const p2MaxHP = numberFormat(playerMaxHP);
+      const p2HealthBar = bar(p2.hp, playerMaxHP);
+      const p2RemainingHp = p2.hp >= 0 ? numberFormat(p2.hp) : 0;
+
       embed.addField(
         `${p2.name}'s remaining HP`,
         `${p2HealthBar} \`${p2RemainingHp}/${p2MaxHP}\``
