@@ -52,7 +52,7 @@ export class Buff {
     return `${this.type}_${this.level}` as BuffID;
   }
 
-  getName() {
+  get name() {
 
     const buffLevelName = [
       "Common",
@@ -74,34 +74,34 @@ export class Buff {
     const levelName = buffLevelName[this.level - 1];
 
     if (this.type === "critDamage") {
-      return `${levelName} ${typeName} buff \`+x${this.getValue()}\``;
+      return `${levelName} ${typeName} buff \`+x${this.value}\``;
     } else {
-      return `${levelName} ${typeName} buff \`+${this.getValue() * 100}%\``;
+      return `${levelName} ${typeName} buff \`+${this.value * 100}%\``;
     }
 
   }
 
   // returns buff value based on type
-  getValue() {
+  private get value() {
     return buffs[this.type][this.level - 1];
   }
 
   use(player: Player) {
     switch (this.type) {
       case "critDamage":
-        player.critDamage += this.getValue();
+        player.critDamage += this.value;
         break;
       case "critRate":
-        player.critRate += this.getValue();
+        player.critRate += this.value;
         break;
       case "speed":
-        player.speed += this.getValue() * player.speed;
+        player.speed += this.value * player.speed;
         break;
       case "strength":
-        player.strength += this.getValue() * player.strength;
+        player.strength += this.value * player.strength;
         break;
       case "hp":
-        player.hp += this.getValue() * player.hp;
+        player.hp += this.value * player.hp;
         break;
     }
   }

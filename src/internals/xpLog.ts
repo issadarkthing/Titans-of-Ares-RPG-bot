@@ -104,7 +104,7 @@ export async function xpLog(msg: Message) {
       addBuff(player.id, buff.id);
 
       logChannel.send(
-        oneLine`Ares has granted ${member} a 2 hour ${buff.getName()}
+        oneLine`Ares has granted ${member} a 2 hour ${buff.name}
         for getting 10 points in the monthly challenge today!`
       );
     }

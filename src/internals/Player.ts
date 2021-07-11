@@ -220,7 +220,7 @@ export class Player extends Fighter {
         ${this.energy}/${MAX_ENERGY} ${energyTimer}
 
         **Buffs**
-        ${this.buff?.getName() || "None"} ${buffTimer || ""}
+        ${this.buff?.name || "None"} ${buffTimer || ""}
 
         **Pet**
         ${petName}
