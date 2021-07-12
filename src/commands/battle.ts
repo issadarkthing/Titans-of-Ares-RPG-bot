@@ -1,5 +1,5 @@
 import { Collection, Message, MessageReaction, User } from "discord.js";
-import { battle as battleSimulator } from "../internals/battle";
+import { Battle } from "../internals/battle";
 import { Player } from "../internals/Player";
 import { Challenger } from "../internals/Challenger";
 import { hasTimer, setEnergy, setTimer, TimerType } from "../db/timer";
@@ -9,7 +9,7 @@ import { oneLine } from "common-tags";
 
 const emojis = ["◀️", "⏺️", "▶️"];
 
-export async function battle(msg: Message, _: string[]) {
+export async function battle(msg: Message, args: string[]) {
 
   let question;
 
@@ -78,7 +78,8 @@ export async function battle(msg: Message, _: string[]) {
     const selectedLevel = player.challengerMaxLevel + index;
     msg.channel.send(`Starting challenge level ${selectedLevel}`);
     const challenger = await Challenger.getChallenger(selectedLevel);
-    await battleSimulator(msg, player, challenger);
+    const battle = new Battle(msg, player, challenger);
+    await battle.run();
 
   } catch (e) {
     if (e instanceof Collection) {

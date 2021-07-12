@@ -19,6 +19,12 @@ export function getXp(point: number) {
   return point * 2;
 }
 
+export function sleep(ms: number) {
+  return new Promise<void>((resolve) => {
+    return setTimeout(() => resolve(), ms);
+  });
+}
+
 export function getLevel(xp: number) {
 
   let level = 1;

@@ -3,7 +3,7 @@ import { Chest } from "../internals/Chest";
 import { Fragment, FragmentID } from "../internals/Fragment";
 import { Player } from "../internals/Player";
 import { aggregateBy, GOLD, STAR } from "../internals/utils";
-import { sleep } from "../internals/battle";
+import { sleep } from "../internals/utils";
 import { oneLine } from "common-tags";
 import { ButtonHandler } from "../internals/ButtonHandler";
 import { PREFIX } from "..";
