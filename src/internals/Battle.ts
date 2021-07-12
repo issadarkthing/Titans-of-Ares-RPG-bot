@@ -65,6 +65,10 @@ export class Battle {
 
   async attack(p1: Fighter, p2: Fighter) {
 
+    if (p1 instanceof Player) {
+      this.playerRound++;
+    }
+
     const isCrit = p1.isCriticalHit();
     const attackRate = isCrit ? p1.critDamage * p1.strength : p1.strength;
     const damageReduction = p1.getArmorReduction(attackRate);
@@ -82,32 +86,22 @@ export class Battle {
       .addField("Damage Done", `\`${damageDone}\``, true)
       .addField("Round", this.round + 1, true);
 
-    const createCritEmbed = async (url: string) => {
-      const critEmbed = new MessageEmbed()
-        .setTitle(`${p1.name} Critical Attack`)
-        .setColor(RED)
-        .setImage(url);
-
-      await this.battleMsg?.edit(critEmbed);
-    };
-
     const player = p1 instanceof Player ? p1 : p2;
     const challenger = p2 instanceof Challenger ? p2 : p1;
-
-    if (p1 instanceof Player) {
-      this.playerRound++;
-    }
 
     this.progressBar(player.name, player.hp, this.playerMaxHP);
     this.progressBar(challenger.name, challenger.hp, this.challengerMaxHP);
 
     if (isCrit) {
-      if (p1.name === this.player.name) {
-        await createCritEmbed(PLAYER_CRIT_GIF);
-      } else {
-        await createCritEmbed(CHALLENGER_CRIT_GIF);
-      }
 
+      const critGIF = p1 instanceof Player ? PLAYER_CRIT_GIF : CHALLENGER_CRIT_GIF;
+
+      const critEmbed = new MessageEmbed()
+        .setTitle(`${p1.name} Critical Attack`)
+        .setColor(RED)
+        .setImage(critGIF);
+
+      await this.battleMsg?.edit(critEmbed);
       await sleep(4000);
     }
 
