@@ -30,7 +30,7 @@ export class Battle {
     return num % 2 === 0;
   }
 
-  private bar(progress: number, maxProgress: number) {
+  private progressBar(progress: number, maxProgress: number) {
     if (progress < 0) progress = 0;
 
     const maxFill = 20;
@@ -91,11 +91,11 @@ export class Battle {
 
       if (p1.name === this.player.name) {
         const p1MaxHP = numberFormat(playerMaxHP);
-        const p1HealthBar = this.bar(p1.hp, playerMaxHP);
+        const p1HealthBar = this.progressBar(p1.hp, playerMaxHP);
         const p1RemainingHp = p1.hp >= 0 ? numberFormat(p1.hp) : 0;
 
         const p2MaxHP = numberFormat(challengerMaxHP);
-        const p2HealthBar = this.bar(p2.hp, challengerMaxHP);
+        const p2HealthBar = this.progressBar(p2.hp, challengerMaxHP);
         const p2RemainingHp = p2.hp >= 0 ? numberFormat(p2.hp) : 0;
 
 
@@ -110,11 +110,11 @@ export class Battle {
 
       } else {
         const p1MaxHP = numberFormat(challengerMaxHP);
-        const p1HealthBar = this.bar(p1.hp, challengerMaxHP);
+        const p1HealthBar = this.progressBar(p1.hp, challengerMaxHP);
         const p1RemainingHp = p1.hp >= 0 ? numberFormat(p1.hp) : 0;
 
         const p2MaxHP = numberFormat(playerMaxHP);
-        const p2HealthBar = this.bar(p2.hp, playerMaxHP);
+        const p2HealthBar = this.progressBar(p2.hp, playerMaxHP);
         const p2RemainingHp = p2.hp >= 0 ? numberFormat(p2.hp) : 0;
 
         embed.addField(

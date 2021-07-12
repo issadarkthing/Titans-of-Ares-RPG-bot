@@ -1,4 +1,4 @@
-import { CRIT_RATE } from "./battle";
+import { CRIT_RATE } from "./Battle";
 import { random } from "./utils";
 
 export interface IFighter {

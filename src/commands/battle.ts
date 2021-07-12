@@ -1,5 +1,5 @@
 import { Collection, Message, MessageReaction, User } from "discord.js";
-import { Battle } from "../internals/battle";
+import { Battle } from "../internals/Battle";
 import { Player } from "../internals/Player";
 import { Challenger } from "../internals/Challenger";
 import { hasTimer, setEnergy, setTimer, TimerType } from "../db/timer";
