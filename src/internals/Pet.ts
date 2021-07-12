@@ -22,6 +22,8 @@ export abstract class Pet {
   abstract description: string;
   abstract imageUrl: string;
   abstract fragmentImageUrl: string;
+  /** image used when pet is intercepting during battle */
+  abstract petInterceptionUrl: string;
   abstract get passiveStatDescription(): string;
   /** returns true if pet is spawn in that particular round */
   abstract isSpawn(round: number): boolean;
@@ -119,6 +121,16 @@ export abstract class Pet {
     return embed;
   }
 
+  interceptCard(message: string) {
+    const embed = new MessageEmbed()
+      .setColor(GOLD)
+      .setTitle("Pet Interception")
+      .setDescription(message)
+      .setImage(this.petInterceptionUrl)
+
+    return embed;
+  }
+
   /** the cost of upgrading pet (+1) in form of fragments */
   get upgradeCost() {
     switch (this.star) {
@@ -139,6 +151,7 @@ export class Wisp extends Pet {
   happen once each battle`;
   imageUrl = CDN_LINK + "574852830125359126/862540067432431617/unknown.png";
   fragmentImageUrl = CDN_LINK + "574852830125359126/862656523531321344/wisp.png";
+  petInterceptionUrl = CDN_LINK + "852530378916888626/863778345182429214/Blue-Flame-Illustration.gif";
   private hasSpawn = false;
 
   get passiveStatDescription() {
@@ -175,13 +188,14 @@ export class Golem extends Pet {
   description = oneLine`Critical hits get blocked and do normal damage to you`;
   imageUrl = CDN_LINK + "574852830125359126/862541338754809886/unknown.png";
   fragmentImageUrl = CDN_LINK + "574852830125359126/862667634313920512/golem.png";
+  petInterceptionUrl = CDN_LINK + "852530378916888626/864139662870970388/ezgif-7-4cc290f06da8.gif";
 
   get passiveStatDescription() {
-    return `\`+${this.multiplier * 100}%\` armor from base stats`;
+    return `\`+${this.multiplier}\` armor`;
   }
 
   get multiplier() {
-    return this.star * 0.1;
+    return this.star * 20;
   }
 
   isSpawn(round: number) {
@@ -189,7 +203,7 @@ export class Golem extends Pet {
   }
 
   use(player: Player) {
-    player.armor += player.armor * this.multiplier;
+    player.armor += this.multiplier;
   }
 }
 
@@ -200,6 +214,7 @@ export class Gryphon extends Pet {
   happen once each battle`;
   imageUrl = CDN_LINK + "574852830125359126/862541562022068264/unknown.png";
   fragmentImageUrl = CDN_LINK + "574852830125359126/862655845447630888/gryphon.png"
+  petInterceptionUrl = CDN_LINK + "852530378916888626/863778076403826718/Gryphon.gif";
   private hasSpawn = false;
 
   get passiveStatDescription() {
@@ -227,7 +242,7 @@ export class Gryphon extends Pet {
   }
 
   use(player: Player) {
-    player.speed += player.speed * this.multiplier;
+    player.speed += player.baseStats.speed * this.multiplier;
   }
 }
 
@@ -237,7 +252,8 @@ export class Minotaur extends Pet {
   description = oneLine`Has a 20% chance every round to attack the opponent for
   50% of strength`;
   imageUrl = CDN_LINK + "574852830125359126/862541876804059146/unknown.png";
-  fragmentImageUrl = CDN_LINK + "574852830125359126/862669333775777832/minotaur.png"
+  fragmentImageUrl = CDN_LINK + "574852830125359126/862669333775777832/minotaur.png";
+  petInterceptionUrl = CDN_LINK + "852530378916888626/863779984009855006/Minotaur.gif";
 
   get passiveStatDescription() {
     return `\`+${this.multiplier * 100}%\` strength from base stats`;
@@ -252,7 +268,7 @@ export class Minotaur extends Pet {
   }
 
   use(player: Player) {
-    player.strength += player.strength * this.multiplier;
+    player.strength += player.baseStats.strength * this.multiplier;
   }
 }
 
@@ -262,6 +278,7 @@ export class Manticore extends Pet {
   description = "Your first attack will 100% crit";
   imageUrl = CDN_LINK + "574852830125359126/862542055674216448/unknown.png";
   fragmentImageUrl = CDN_LINK + "574852830125359126/862671084717604874/manticore.png";
+  petInterceptionUrl = CDN_LINK + "852530378916888626/863777473112178688/Manticore.gif";
 
   get passiveStatDescription() {
     return `\`+${this.multiplier}\` Crit Damage`;
@@ -284,15 +301,14 @@ export class Dragon extends Pet {
   id = PetID.Dragon;
   name = "Dragon";
   description = oneLine`Has a 20% chance for a flame breath every round, dealing
-  100/200/500/1000/2000 damage regardless of armor and burns the enemy for
-  4%/6%/10%/20%/40% of their HP.  Can only happen once each battle`;
-  imageUrl = CDN_LINK 
-    + "574852830125359126/863997311532007475/8edc1273be7f8b1c4be3d72af3358e9b.png";
-  fragmentImageUrl = CDN_LINK +
-    "574852830125359126/863999076475469834/dragon.png";
+  \`100/200/500/1000/2000\` damage regardless of armor and burns the enemy for
+  \`4%/6%/10%/20%/40%\` of their HP.  Can only happen once each battle`;
+  imageUrl = CDN_LINK + "574852830125359126/863997311532007475/8edc1273be7f8b1c4be3d72af3358e9b.png";
+  fragmentImageUrl = CDN_LINK + "574852830125359126/863999076475469834/dragon.png";
+  petInterceptionUrl = CDN_LINK + "574852830125359126/864027308796805120/dragon.gif"
 
   get passiveStatDescription() {
-    return `+${this.multiplier * 100}% all stats (Strength, HP, Armor, Speed)`;
+    return `\`+${this.multiplier * 100}%\` all stats\n(Strength, HP, Armor, Speed)`;
   }
 
   get multiplier() {
@@ -306,11 +322,38 @@ export class Dragon extends Pet {
     }
   }
 
+  /** damage done during battle */ 
+  get damage() {
+    switch (this.star) {
+      case 1: return 100;
+      case 2: return 200;
+      case 3: return 500;
+      case 4: return 1000;
+      case 5: return 2000;
+      default: return 50;
+    }
+  }
+
+  /** burn damage percentage */ 
+  get burn() {
+    switch (this.star) {
+      case 1: return 0.04;
+      case 2: return 0.06;
+      case 3: return 0.1;
+      case 4: return 0.2;
+      case 5: return 0.4;
+      default: return 5;
+    }
+  }
+
   isSpawn(round: number) {
     return random().bool(0.2);
   }
 
-  use(player: Player): void {
-    throw new Error("Method not implemented.");
+  use(player: Player) {
+    player.strength += player.strength * this.multiplier;
+    player.hp += player.hp * this.multiplier;
+    player.armor += player.armor * this.multiplier;
+    player.speed += player.speed * this.multiplier;
   }
 }

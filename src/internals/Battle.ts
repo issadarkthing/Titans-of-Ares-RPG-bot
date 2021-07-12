@@ -12,12 +12,16 @@ import {
 } from "./utils";
 import { Fighter } from "./Fighter";
 import { sleep } from "./utils";
+import { Dragon, Golem, Gryphon, Manticore, Minotaur, Wisp } from "./Pet";
+import { oneLine } from "common-tags";
 
 
 export class Battle {
 
   private round = 0;
   private playerRound = 0;
+  private challengerRound = 0;
+  private PET_INTERCEPT = 6_000; // 6 seconds
   private battleMsg?: Message;
   private battleEmbed?: MessageEmbed;
   private playerMaxHP: number;
@@ -53,9 +57,9 @@ export class Battle {
   /** adds progress bar to battleEmbed */ 
   private progressBar(name: string, hp: number, maxHP: number) {
 
-    const maxHPStr = numberFormat(maxHP);
+    const maxHPStr = Math.round(maxHP);
     const healthBar = this.bar(hp, maxHP);
-    const remainingHP = hp >= 0 ? numberFormat(hp) : 0;
+    const remainingHP = hp >= 0 ? Math.round(hp) : 0;
 
     this.battleEmbed?.addField(
       `${name}'s remaining HP`,
@@ -67,12 +71,105 @@ export class Battle {
 
     if (p1 instanceof Player) {
       this.playerRound++;
+    } else {
+      this.challengerRound++;
     }
 
-    const isCrit = p1.isCriticalHit();
+    let isCrit = p1.isCriticalHit();
+
+    const pet = this.player.activePet;
+    // offensive
+    if (pet && p1 instanceof Player) {
+
+      if (pet instanceof Wisp) {
+        const isSpawn = pet.isSpawn(this.playerRound);
+        if (isSpawn) {
+          let healed = this.playerMaxHP * 0.4;
+          const isOverHeal = healed + p1.hp > this.playerMaxHP;
+          if (isOverHeal) {
+            healed = this.playerMaxHP - p1.hp;
+          }
+
+          p1.hp += healed;
+          await this.battleMsg?.edit(pet.interceptCard(
+            `${this.player.name} is being healed \`(+${numberFormat(healed)} hp)\``
+          ));
+          await sleep(this.PET_INTERCEPT);
+        }
+
+      } else if (pet instanceof Minotaur) {
+        const isSpawn = pet.isSpawn(this.playerRound);
+        if (isSpawn) {
+          const dmg = p1.strength * 0.5;
+          p2.hp -= dmg;
+          await this.battleMsg?.edit(pet.interceptCard(
+            oneLine`${this.player.name} has been favoured! 
+            ${pet.name} attacks with \`${Math.round(dmg)} strength\``
+          ))
+          await sleep(this.PET_INTERCEPT);
+
+        }
+
+      } else if (pet instanceof Manticore) {
+        const isSpawn = pet.isSpawn(this.playerRound);
+        if (isSpawn) {
+          isCrit = true;
+          await this.battleMsg?.edit(pet.interceptCard(
+            `${pet.name} has scared the opponent! \`100%\` critical hit`
+          ))
+          await sleep(this.PET_INTERCEPT);
+        }
+
+      } else if (pet instanceof Dragon) {
+        const isSpawn = pet.isSpawn(this.playerRound);
+        if (isSpawn) {
+          const burn = p2.hp * pet.burn;
+          const damage = pet.damage;
+          p2.hp -= burn;
+          p2.hp -= damage;
+          await this.battleMsg?.edit(pet.interceptCard(
+            oneLine`Dragon is using Flame Breath dealing \`${Math.round(damage)}\` damage and 
+            burns \`${pet.burn * 100}% (${burn})\` enemy's hp`
+          ))
+          await sleep(this.PET_INTERCEPT);
+
+        }
+
+      }
+
+      // defensive
+    } else if (pet && p1 instanceof Challenger) {
+
+      if (pet instanceof Golem) {
+        if (isCrit) {
+          const isSpawn = pet.isSpawn(this.challengerRound);
+
+          if (isSpawn) {
+            isCrit = false;
+            await this.battleMsg?.edit(pet.interceptCard(
+              `Critical hit has been blocked!`
+            ))
+            await sleep(this.PET_INTERCEPT);
+          }
+        }
+
+      } else if (pet instanceof Gryphon) {
+        const isSpawn = pet.isSpawn(this.challengerRound);
+
+        if (isSpawn) {
+
+          await this.battleMsg?.edit(pet.interceptCard(
+            `${this.player.name} has been saved from ${this.challenger.name}'s attack!`
+          ))
+          await sleep(this.PET_INTERCEPT);
+          return;
+        }
+      }
+    }
+
     const attackRate = isCrit ? p1.critDamage * p1.strength : p1.strength;
-    const damageReduction = p1.getArmorReduction(attackRate);
-    const damageDone = (attackRate - damageReduction);
+    const damageReduction = p2.getArmorReduction(attackRate);
+    const damageDone = attackRate - damageReduction;
     p2.hp -= damageDone;
 
     const critText = isCrit ? ` (x${p1.critDamage} critical hit)` : "";
@@ -81,9 +178,9 @@ export class Battle {
       .setColor(RED)
       .setThumbnail(p1.imageUrl)
       .addField("Attacking Player", p1.name)
-      .addField("Attack Rate", `\`${attackRate}${critText}\``, true)
-      .addField("Damage Reduction", `\`${damageReduction}\``, true)
-      .addField("Damage Done", `\`${damageDone}\``, true)
+      .addField("Attack Rate", `\`${Math.round(attackRate)}${critText}\``, true)
+      .addField("Damage Reduction", `\`${Math.round(damageReduction)}\``, true)
+      .addField("Damage Done", `\`${Math.round(damageDone)}\``, true)
       .addField("Round", this.round + 1, true);
 
     const player = p1 instanceof Player ? p1 : p2;

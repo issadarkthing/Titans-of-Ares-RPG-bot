@@ -34,6 +34,10 @@ export class List<T extends Identifiable> {
     return this.values.map(fn);
   }
 
+  toArray() {
+    return this.values;
+  }
+
   filter(fn: (x: T, i: number) => boolean) {
     return this.values.filter(fn);
   }

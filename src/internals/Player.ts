@@ -75,6 +75,7 @@ export class Player extends Fighter {
     }
 
     this.buff?.use(this);
+    this.activePet?.use(this);
   }
 
   static async getPlayer(member: GuildMember): Promise<Player> {
@@ -192,11 +193,11 @@ export class Player extends Fighter {
   async getStats() {
     const energyTimer = await showTimeLeft(TimerType.Energy, this.id);
     const buffTimer = await this.buff?.getTimeLeft(this);
-    const xp = numberFormat(this.xp);
-    const hp = numberFormat(this.hp);
-    const strength = numberFormat(this.strength);
-    const speed = numberFormat(this.speed);
-    const armor = numberFormat(this.armor);
+    const xp = Math.round(this.xp);
+    const hp = Math.round(this.hp);
+    const strength = Math.round(this.strength);
+    const speed = Math.round(this.speed);
+    const armor = Math.round(this.armor);
     const critRate = numberFormat(this.critRate * 100);
     const critDamage = numberFormat(this.critDamage);
     const petName = this.activePet ? 

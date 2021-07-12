@@ -2,11 +2,11 @@ import { MedalType } from "./Medal";
 import { Item } from "./Item";
 import { BROWN, capitalize, CDN_LINK, GREEN, random } from "./utils";
 import { Player } from "./Player";
-import { PetID } from "./Pet";
+import { Pet } from "./Pet";
 import { Fragment } from "./Fragment";
 import { removeInventory } from "../db/inventory";
 import { MessageEmbed } from "discord.js";
-import { oneLine, stripIndents } from "common-tags";
+import { oneLine } from "common-tags";
 
 export type Level = "bronze" | "silver" | "gold";
 export type ChestID = `chest_${Level}`;
@@ -66,13 +66,7 @@ export abstract class Chest extends Item {
   }
 
   private random() {
-    return random().pick([
-      PetID.Wisp,
-      PetID.Golem,
-      PetID.Gryphon,
-      PetID.Minotaur,
-      PetID.Manticore,
-    ]);
+    return random().pick(Pet.all.map(x => x.id));
   }
 
   show(count: number) {

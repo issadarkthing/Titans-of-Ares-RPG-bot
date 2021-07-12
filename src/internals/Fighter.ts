@@ -67,7 +67,7 @@ export class Fighter {
 
   getArmorReduction(attack: number) {
     const armor = 100 / (100 + this.armor);
-    const damageDone = attack * Math.round(armor);
+    const damageDone = attack * armor;
     return attack - damageDone;
   }
 }
