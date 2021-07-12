@@ -91,8 +91,8 @@ export class Battle {
       await this.battleMsg?.edit(critEmbed);
     };
 
-    let player = p1 instanceof Player ? p1 : p2;
-    let challenger = p2 instanceof Challenger ? p2 : p1;
+    const player = p1 instanceof Player ? p1 : p2;
+    const challenger = p2 instanceof Challenger ? p2 : p1;
 
     if (p1 instanceof Player) {
       this.playerRound++;

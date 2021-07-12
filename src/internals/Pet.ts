@@ -5,6 +5,7 @@ import { BROWN, CDN_LINK, GOLD, random, STAR } from "./utils";
 import { Pet as PetDB } from "../db/pet"
 import { Player } from "./Player";
 import { DateTime } from "luxon";
+import { List } from "./List";
 
 export enum PetID {
   Wisp      = "pet_wisp",
@@ -12,6 +13,7 @@ export enum PetID {
   Gryphon   = "pet_gryphon",
   Minotaur  = "pet_minotaur",
   Manticore = "pet_manticore",
+  Dragon    = "pet_dragon",
 }
 
 export abstract class Pet {
@@ -36,27 +38,24 @@ export abstract class Pet {
 
   static fromPetID(id: PetID) {
     switch (id) {
-      case PetID.Wisp:
-        return new Wisp();
-      case PetID.Golem:
-        return new Golem();
-      case PetID.Gryphon:
-        return new Gryphon();
-      case PetID.Minotaur:
-        return new Minotaur();
-      case PetID.Manticore:
-        return new Manticore();
+      case PetID.Wisp: return new Wisp();
+      case PetID.Golem: return new Golem();
+      case PetID.Gryphon: return new Gryphon();
+      case PetID.Minotaur: return new Minotaur();
+      case PetID.Manticore: return new Manticore();
+      case PetID.Dragon: return new Dragon();
     }
   }
 
   static get all() {
-    return [
+    return List.from([
       new Wisp(),
       new Golem(),
       new Gryphon(),
       new Minotaur(),
       new Manticore(),
-    ];
+      new Dragon(),
+    ]);
   }
 
   static fromDB(petDB: PetDB) {
@@ -65,6 +64,10 @@ export abstract class Pet {
     pet.active = petDB.Active === 1;
     pet.createdAt = DateTime.fromSQL(petDB.Created, { zone: "gmt" });
     return pet;
+  }
+
+  get fragment() {
+    return Fragment.fromPetID(this.id);
   }
 
   fragmentCard(fragmentCount: number) {
@@ -119,18 +122,12 @@ export abstract class Pet {
   /** the cost of upgrading pet (+1) in form of fragments */
   get upgradeCost() {
     switch (this.star) {
-      case 0:
-        return 10;
-      case 1:
-        return 15;
-      case 2:
-        return 20;
-      case 3:
-        return 30;
-      case 4:
-        return 50;
-      default:
-        return 8;
+      case 0: return 10;
+      case 1: return 15;
+      case 2: return 20;
+      case 3: return 30;
+      case 4: return 50;
+      default: return 8;
     }
   }
 }
@@ -280,5 +277,40 @@ export class Manticore extends Pet {
 
   use(player: Player) {
     player.critDamage += player.critDamage * this.multiplier;
+  }
+}
+
+export class Dragon extends Pet {
+  id = PetID.Dragon;
+  name = "Dragon";
+  description = oneLine`Has a 20% chance for a flame breath every round, dealing
+  100/200/500/1000/2000 damage regardless of armor and burns the enemy for
+  4%/6%/10%/20%/40% of their HP.  Can only happen once each battle`;
+  imageUrl = CDN_LINK 
+    + "574852830125359126/863997311532007475/8edc1273be7f8b1c4be3d72af3358e9b.png";
+  fragmentImageUrl = CDN_LINK +
+    "574852830125359126/863999076475469834/dragon.png";
+
+  get passiveStatDescription() {
+    return `+${this.multiplier * 100}% all stats (Strength, HP, Armor, Speed)`;
+  }
+
+  get multiplier() {
+    switch (this.star) {
+      case 1: return 0.01;
+      case 2: return 0.03;
+      case 3: return 0.1;
+      case 4: return 0.3;
+      case 5: return 0.5;
+      default: return 0;
+    }
+  }
+
+  isSpawn(round: number) {
+    return random().bool(0.2);
+  }
+
+  use(player: Player): void {
+    throw new Error("Method not implemented.");
   }
 }
