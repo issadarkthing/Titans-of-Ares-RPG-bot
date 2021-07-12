@@ -1,5 +1,6 @@
-import { CRIT_RATE } from "./Battle";
 import { random } from "./utils";
+
+export const CRIT_RATE = 2;
 
 export interface IFighter {
   name: string;

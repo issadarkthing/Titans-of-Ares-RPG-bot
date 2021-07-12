@@ -13,7 +13,6 @@ import {
 import { Fighter } from "./Fighter";
 import { sleep } from "./utils";
 
-export const CRIT_RATE = 2;
 
 export class Battle {
 
@@ -37,12 +36,12 @@ export class Battle {
     return num % 2 === 0;
   }
 
-  private progressBar(progress: number, maxProgress: number) {
+  private bar(progress: number, maxProgress: number) {
     if (progress < 0) progress = 0;
 
     const maxFill = 20;
     const fill = "█";
-    const path = "░";
+    const path = " ";
     const fillProgress = Math.round((progress * maxFill) / maxProgress);
 
     return Array(maxFill)
@@ -51,15 +50,28 @@ export class Battle {
       .join("");
   }
 
+  /** adds progress bar to battleEmbed */ 
+  private progressBar(name: string, hp: number, maxHP: number) {
+
+    const maxHPStr = numberFormat(maxHP);
+    const healthBar = this.bar(hp, maxHP);
+    const remainingHP = hp >= 0 ? numberFormat(hp) : 0;
+
+    this.battleEmbed?.addField(
+      `${name}'s remaining HP`,
+      `\`${healthBar}\` \`${remainingHP}/${maxHPStr}\``
+    );
+  }
+
   async attack(p1: Fighter, p2: Fighter) {
 
     const isCrit = p1.isCriticalHit();
-    const attackRate = isCrit ? CRIT_RATE * p1.strength : p1.strength;
+    const attackRate = isCrit ? p1.critDamage * p1.strength : p1.strength;
     const damageReduction = p1.getArmorReduction(attackRate);
     const damageDone = (attackRate - damageReduction);
     p2.hp -= damageDone;
 
-    const critText = isCrit ? " (x2 critical hit)" : "";
+    const critText = isCrit ? ` (x${p1.critDamage} critical hit)` : "";
 
     this.battleEmbed = new MessageEmbed()
       .setColor(RED)
@@ -79,44 +91,15 @@ export class Battle {
       await this.battleMsg?.edit(critEmbed);
     };
 
+    let player = p1 instanceof Player ? p1 : p2;
+    let challenger = p2 instanceof Challenger ? p2 : p1;
+
     if (p1 instanceof Player) {
       this.playerRound++;
-      const p1MaxHP = numberFormat(this.playerMaxHP);
-      const p1HealthBar = this.progressBar(p1.hp, this.playerMaxHP);
-      const p1RemainingHp = p1.hp >= 0 ? numberFormat(p1.hp) : 0;
-
-      const p2MaxHP = numberFormat(this.challengerMaxHP);
-      const p2HealthBar = this.progressBar(p2.hp, this.challengerMaxHP);
-      const p2RemainingHp = p2.hp >= 0 ? numberFormat(p2.hp) : 0;
-
-
-      this.battleEmbed.addField(
-        `${p1.name}'s remaining HP`,
-        `${p1HealthBar} \`${p1RemainingHp}/${p1MaxHP}\``
-      );
-      this.battleEmbed.addField(
-        `${p2.name}'s remaining HP`,
-        `${p2HealthBar} \`${p2RemainingHp}/${p2MaxHP}\``
-      );
-
-    } else {
-      const p1MaxHP = numberFormat(this.challengerMaxHP);
-      const p1HealthBar = this.progressBar(p1.hp, this.challengerMaxHP);
-      const p1RemainingHp = p1.hp >= 0 ? numberFormat(p1.hp) : 0;
-
-      const p2MaxHP = numberFormat(this.playerMaxHP);
-      const p2HealthBar = this.progressBar(p2.hp, this.playerMaxHP);
-      const p2RemainingHp = p2.hp >= 0 ? numberFormat(p2.hp) : 0;
-
-      this.battleEmbed.addField(
-        `${p2.name}'s remaining HP`,
-        `${p2HealthBar} \`${p2RemainingHp}/${p2MaxHP}\``
-      );
-      this.battleEmbed.addField(
-        `${p1.name}'s remaining HP`,
-        `${p1HealthBar} \`${p1RemainingHp}/${p1MaxHP}\``
-      );
     }
+
+    this.progressBar(player.name, player.hp, this.playerMaxHP);
+    this.progressBar(challenger.name, challenger.hp, this.challengerMaxHP);
 
     if (isCrit) {
       if (p1.name === this.player.name) {
