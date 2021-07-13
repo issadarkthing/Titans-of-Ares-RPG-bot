@@ -125,7 +125,7 @@ export async function inventory(msg: Message, args: string[]) {
           const embed = new MessageEmbed()
             .setColor(BROWN)
             .addField("Select which pet fragments you want to convert to", 
-              oneLine`This will replace \`x2\` or \`x3\` Gryphon's fragment with
+              oneLine`This will replace \`x2\` or \`x3\` ${item.pet.name}'s fragment with
               the selected fragment depending on the ratio`)
 
           const choiceButton = new ButtonHandler(msg, embed, player.id);
