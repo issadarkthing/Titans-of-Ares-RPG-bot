@@ -10,6 +10,10 @@ export const CHALLENGER_CRIT_GIF = "https://i.pinimg.com/originals/40/96/d1/4096
 export const CDN_LINK = "https://cdn.discordapp.com/attachments/";
 export const STAR = "⭐";
 
+export const NUMBER_BUTTONS = [
+  "0️⃣", "1️⃣", "2️⃣", "3️⃣", "4️⃣", "5️⃣", "6️⃣", "7️⃣", "8️⃣", "9️⃣",
+]
+
 // returns xp needed to get to the next level
 export function getLevelThreshold(level: number) {
   return (10 + (level * 0.5));

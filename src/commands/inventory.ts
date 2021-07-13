@@ -2,11 +2,13 @@ import { Message, MessageEmbed } from "discord.js";
 import { Chest } from "../internals/Chest";
 import { Fragment, FragmentID } from "../internals/Fragment";
 import { Player } from "../internals/Player";
-import { aggregateBy, GOLD, STAR } from "../internals/utils";
+import { aggregateBy, BROWN, GOLD, NUMBER_BUTTONS, STAR } from "../internals/utils";
 import { sleep } from "../internals/utils";
 import { oneLine } from "common-tags";
 import { ButtonHandler } from "../internals/ButtonHandler";
 import { PREFIX } from "..";
+import { Pet, PetID } from "../internals/Pet";
+import { addInventory, removeInventory } from "../db/inventory";
 
 export async function inventory(msg: Message, args: string[]) {
 
@@ -82,6 +84,9 @@ export async function inventory(msg: Message, args: string[]) {
         } else if (ownedFragmentCount < Fragment.minFragments) {
           return msg.channel.send(oneLine`Insufficient fragments to summon
             ${pet.name} \`${ownedFragmentCount}/${Fragment.minFragments}\``)
+
+        } else if (ownedPet && ownedPet.star >= 5) {
+          return msg.channel.send("Your pet is already at max star");
         }
 
         const result = await item.use(player);
@@ -108,6 +113,60 @@ export async function inventory(msg: Message, args: string[]) {
         }
       })
 
+      button.addButton("⚪", "convert this fragment to other fragment of choice", () => {
+
+          const ownedFragmentCount = inv.all.count(item.id);
+          if (ownedFragmentCount < 2) {
+            return msg.channel.send(
+              "Two fragments needed to convert to another pet fragment"
+            )
+          }
+
+          const embed = new MessageEmbed()
+            .setColor(BROWN)
+            .addField("Select which pet fragments you want to convert to", 
+              oneLine`This will replace \`x2\` or \`x3\` Gryphon's fragment with
+              the selected fragment depending on the ratio`)
+
+          const choiceButton = new ButtonHandler(msg, embed, player.id);
+
+          Pet.all.forEach((pet, i) => {
+
+            const isDragon = pet.id === PetID.Dragon;
+            const button = NUMBER_BUTTONS[i + 1];
+            const label = isDragon ? 
+              `${pet.fragment.name} - Ratio 3:1` : 
+              `${pet.fragment.name} - Ratio 2:1`;
+            choiceButton.addButton(button, label, async () => {
+
+              if (isDragon && ownedFragmentCount < 3) {
+                return msg.channel.send("Dragon requires 3 fragments");
+              }
+
+              await removeInventory(player.id, item.id);
+              await removeInventory(player.id, item.id);
+              
+              if (isDragon) {
+                await removeInventory(player.id, item.id);
+              }
+
+              const convertAnimation = item.convertAnimation(pet.fragment.name);
+              const animation = await msg.channel.send(convertAnimation);
+
+              await sleep(8000);
+              await animation.delete();
+
+              await addInventory(player.id, pet.fragment.id);
+              msg.channel.send(oneLine`
+                Successfully converted \`x${isDragon ? 3 : 2}\` **${item.name}**
+                into \`x1\` **${pet.fragment.name}**!`)
+            })
+
+          })
+
+          choiceButton.addCloseButton();
+          choiceButton.run();
+      })
     }
 
     button.addButton("↩️", "return to inventory list", () => {

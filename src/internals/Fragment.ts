@@ -16,6 +16,8 @@ export class Fragment extends Item {
     CDN_LINK + "852546444086214676/863007776983613460/giphy_1.gif";
   private upgradeGif =
     CDN_LINK + "852546444086214676/863011578663272448/giphy_5.gif";
+  private convertAnimationGif =
+    CDN_LINK + "852530378916888626/864407783918403624/ezgif-3-cce177c40b9b.gif";
 
   constructor(public id: FragmentID) {
     super();
@@ -61,6 +63,15 @@ export class Fragment extends Item {
       .setColor(GOLD)
       .setImage(this.upgradeGif)
       .setTitle(`Upgrading ${this.pet.name}`)
+
+    return embed;
+  }
+
+  convertAnimation(name: string) {
+    const embed = new MessageEmbed()
+      .setColor(GOLD)
+      .setImage(this.convertAnimationGif)
+      .setTitle(`Converting ${this.name} to ${name}`)
 
     return embed;
   }

@@ -152,7 +152,7 @@ export abstract class Pet {
 export class Wisp extends Pet {
   id = PetID.Wisp;
   name = "Will-O'-Wisp";
-  description = oneLine`Heals 40% of your HP in round 2-5 randomly. Can only
+  description = oneLine`Heals 40% of your max HP in round 2-5 randomly. Can only
   happen once each battle`;
   imageUrl = CDN_LINK + "574852830125359126/862540067432431617/unknown.png";
   fragmentImageUrl = CDN_LINK + "574852830125359126/862656523531321344/wisp.png";
@@ -306,11 +306,12 @@ export class Dragon extends Pet {
   id = PetID.Dragon;
   name = "Dragon";
   description = oneLine`Has a 20% chance for a flame breath every round, dealing
-  \`100/200/500/1000/2000\` damage regardless of armor and burns the enemy for
-  \`4%/6%/10%/20%/40%\` of their HP.  Can only happen once each battle`;
+  \`50/100/200/500/1000/2000\` damage regardless of armor and burns the enemy for
+  \`2%/4%/6%/10%/20%/40%\` of their max HP.  Can only happen once each battle`;
   imageUrl = CDN_LINK + "574852830125359126/863997311532007475/8edc1273be7f8b1c4be3d72af3358e9b.png";
   fragmentImageUrl = CDN_LINK + "574852830125359126/863999076475469834/dragon.png";
   petInterceptionUrl = CDN_LINK + "574852830125359126/864027308796805120/dragon.gif"
+  private hasSpawn = false;
 
   get passiveStatDescription() {
     return `\`+${this.multiplier * 100}%\` all stats\n(Strength, HP, Armor, Speed)`;
@@ -347,12 +348,20 @@ export class Dragon extends Pet {
       case 3: return 0.1;
       case 4: return 0.2;
       case 5: return 0.4;
-      default: return 5;
+      default: return 0.02;
     }
   }
 
   isSpawn(round: number) {
-    return random().bool(0.2);
+    if (this.hasSpawn) return false;
+
+    const spawn = random().bool(0.2);
+    if (spawn) {
+      this.hasSpawn = spawn;
+      return spawn;
+    }
+
+    return false
   }
 
   use(player: Player) {

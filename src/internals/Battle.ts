@@ -102,10 +102,10 @@ export class Battle {
         if (isSpawn) {
           const dmg = p1.strength * 0.5;
           const damageReduction = p2.getArmorReduction(dmg);
-          p2.hp -= damageReduction;
+          p2.hp -= dmg - damageReduction;
           await this.battleMsg?.edit(pet.interceptCard(
-            stripIndents`${this.player.name} has been favoured! 
-            ${pet.name} attacks with \`${Math.round(dmg)} strength\``
+            oneLine`${this.player.name}'s ${pet.name} attacks for
+            \`${Math.round(dmg)}\` damage!`
           ))
           await sleep(this.PET_INTERCEPT);
 
@@ -124,13 +124,13 @@ export class Battle {
       } else if (pet instanceof Dragon) {
         const isSpawn = pet.isSpawn(this.playerRound);
         if (isSpawn) {
-          const burn = p2.hp * pet.burn;
+          const burn = this.challengerMaxHP * pet.burn;
           const damage = pet.damage;
           p2.hp -= burn;
           p2.hp -= damage;
           await this.battleMsg?.edit(pet.interceptCard(
             oneLine`Dragon is using Flame Breath dealing \`${Math.round(damage)}\` damage and 
-            burns \`${pet.burn * 100}% (${burn})\` enemy's hp`
+            burns \`${pet.burn * 100}% (${Math.round(burn)})\` enemy's hp`
           ))
           await sleep(this.PET_INTERCEPT);
 

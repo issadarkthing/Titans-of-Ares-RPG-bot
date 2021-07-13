@@ -3,7 +3,7 @@ import { Message, MessageEmbed, MessageReaction, User } from "discord.js";
 interface Button {
   emoji: string;
   label: string;
-  callback: () => void;
+  callback: (emoji?: string) => void;
 }
 
 export class ButtonHandler {
@@ -35,7 +35,7 @@ export class ButtonHandler {
     }).join("\n");
   }
 
-  addButton(emoji: string, label: string, cb: () => void) {
+  addButton(emoji: string, label: string, cb: (emoji?: string) => void) {
     this.buttons.push({ 
       emoji,
       label,
@@ -70,7 +70,7 @@ export class ButtonHandler {
       const reaction = collected.first()!;
       const cb = this.getCB(reaction.emoji.name)!;
       await this.msgCollector.delete();
-      cb();
+      cb(reaction.emoji.name);
 
     } catch {
       this.msgCollector?.delete();
