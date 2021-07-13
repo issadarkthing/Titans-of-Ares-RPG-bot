@@ -13,7 +13,7 @@ import {
 import { Fighter } from "./Fighter";
 import { sleep } from "./utils";
 import { Dragon, Golem, Gryphon, Manticore, Minotaur, Wisp } from "./Pet";
-import { oneLine } from "common-tags";
+import { oneLine, stripIndents } from "common-tags";
 
 
 export class Battle {
@@ -92,7 +92,7 @@ export class Battle {
 
           p1.hp += healed;
           await this.battleMsg?.edit(pet.interceptCard(
-            `${this.player.name} is being healed \`(+${numberFormat(healed)} hp)\``
+            `${this.player.name} is being healed \`(+${Math.round(healed)} hp)\``
           ));
           await sleep(this.PET_INTERCEPT);
         }
@@ -101,9 +101,10 @@ export class Battle {
         const isSpawn = pet.isSpawn(this.playerRound);
         if (isSpawn) {
           const dmg = p1.strength * 0.5;
-          p2.hp -= dmg;
+          const damageReduction = p2.getArmorReduction(dmg);
+          p2.hp -= damageReduction;
           await this.battleMsg?.edit(pet.interceptCard(
-            oneLine`${this.player.name} has been favoured! 
+            stripIndents`${this.player.name} has been favoured! 
             ${pet.name} attacks with \`${Math.round(dmg)} strength\``
           ))
           await sleep(this.PET_INTERCEPT);
