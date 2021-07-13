@@ -2,7 +2,7 @@ import { MedalType } from "./Medal";
 import { Item } from "./Item";
 import { BROWN, capitalize, CDN_LINK, GREEN, random } from "./utils";
 import { Player } from "./Player";
-import { Pet } from "./Pet";
+import { Pet, PetID } from "./Pet";
 import { Fragment } from "./Fragment";
 import { removeInventory } from "../db/inventory";
 import { MessageEmbed } from "discord.js";
@@ -66,7 +66,7 @@ export abstract class Chest extends Item {
   }
 
   private random() {
-    return random().pick(Pet.all.map(x => x.id));
+    return Pet.all.weightedRandom(x => x.id === PetID.Dragon ? 5 : 19);
   }
 
   show(count: number) {
@@ -88,8 +88,8 @@ export abstract class Chest extends Item {
     const fragmentCount = this.getFragmentCount();
 
     for (let i = 0; i < fragmentCount; i++) {
-      const petID = this.random();
-      const fragment = Fragment.fromPetID(petID);
+      const pet = this.random();
+      const fragment = pet.fragment;
       fragments.push(fragment);
       await fragment.save(player);
     }

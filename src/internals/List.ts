@@ -1,10 +1,11 @@
+import { random } from "./utils";
 
 interface Identifiable {
   id: string;
 }
 
 
-/** Utility array super class which provides extra helper methods */
+/** Utility array like data structure which provides extra helper methods */
 export class List<T extends Identifiable> {
 
   private values: T[];
@@ -30,8 +31,27 @@ export class List<T extends Identifiable> {
     return this.values.find(pred);
   }
 
+  random() {
+    return random().pick(this.values);
+  }
+
+  /** @param {value} fn callback that returns the weight of item */
+  weightedRandom(fn: (id: T) => number) {
+    const items: { value: T, weight: number }[] = [];
+    for (const item of this) {
+      items.push({ value: item, weight: fn(item) });
+    }
+    const samples = items.flatMap<T>(x => Array(x.weight).fill(x.value));
+    return random().pick(samples);
+  }
+
   map<V>(fn: (x: T, i: number) => V) {
     return this.values.map(fn);
+  }
+
+  /** same as Array#map but returns List instance back instead of Array */
+  mapList<V extends T>(fn: (x: T, i: number) => V) {
+    return List.from(this.values.map(fn));
   }
 
   toArray() {
@@ -55,14 +75,10 @@ export class List<T extends Identifiable> {
     return this.values.reduce(fn);
   }
 
+  /** aggregates values inside List */
   aggregate() {
 
-    type Acc = {
-      value: T,
-      count: number,
-    };
-
-    const aggregate = new Map<string, Acc>();
+    const aggregate = new Map<string, { value: T, count: number }>();
 
     this.forEach(v => {
       const acc = aggregate.get(v.id);
