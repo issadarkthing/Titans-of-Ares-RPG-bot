@@ -68,6 +68,10 @@ export abstract class Pet {
     return pet;
   }
 
+  static random() {
+    return Pet.all.weightedRandom(x => x.id === PetID.Dragon ? 5 : 19);
+  } 
+
   get fragment() {
     return Fragment.fromPetID(this.id);
   }

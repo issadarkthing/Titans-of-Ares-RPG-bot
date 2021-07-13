@@ -1,7 +1,7 @@
 import { Message, TextChannel } from "discord.js";
 import { xpLogTriggers, XP_LOG_CHANNEL } from "../index";
 import { getChallengeId, getConvertTable } from "../db/monthlyChallenge";
-import { getLevel, getXp } from "../internals/utils";
+import { getLevel, getXp, random } from "../internals/utils";
 import { Player } from "../internals/Player";
 import { Buff, BUFF_LIMIT, XP_THRESHOLD } from "../internals/Buff";
 import { getTimer, setTimer, TimerType } from "../db/timer";
@@ -10,6 +10,9 @@ import { addBuff } from "../db/player";
 import { oneLine } from "common-tags";
 import { createEntry, getXPEntry, resetXPEntry, setXPEntry } from "../db/xpEntry";
 import assert from "assert";
+import { addXPReward, getXPReward, resetXPReward, XP_REWARD } from "../db/fragmentReward";
+import { Pet } from "./Pet";
+import { addInventory } from "../db/inventory";
 
 const rgx = /^Registered\sDay:\s(?<day>\d+)\s.*Progress:\s(?<value>\d+[,|\.]?\d*)\s(?<valueType>\w+).*$/;
 
@@ -58,7 +61,7 @@ export async function xpLog(msg: Message) {
     if (!matches || !matches.groups) return;
 
     const { value, valueType } = matches.groups;
-    const challengeId = await getChallengeId(msg.channel.id);
+    const challengeId = await getChallengeId("859483633534238762");
     const tag = `${valueType}-${challengeId}`;
     const convertTable = await getConvertTable();
     const multiplier = convertTable.get(tag);
@@ -83,6 +86,25 @@ export async function xpLog(msg: Message) {
 
     logChannel.send(`${name} has earned \`${xp} xp\`!`);
 
+    // fragment reward
+    await addXPReward(player.id, xp);
+    const xpReward = await getXPReward(player.id);
+    if (xpReward >= XP_REWARD) {
+      await resetXPReward(player.id);
+
+      const gotFragment = random().bool(0.25);
+      if (gotFragment) {
+        const pet = Pet.random();
+        const fragment = pet.fragment;
+        await addInventory(player.id, fragment.id);
+
+        logChannel?.send(
+          `${member} has earned **${fragment.name}** for earning \`${XP_REWARD} XP\` cummulatively!`
+        )
+      }
+    }
+
+    // workout buff
     const timer = await getTimer(TimerType.Buff, member.id);
     const day = parseInt(matches.groups.day);
     let xpEntry = await getXPEntry(challengeId, day, member.id);

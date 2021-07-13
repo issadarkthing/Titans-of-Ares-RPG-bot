@@ -40,7 +40,7 @@ export class Battle {
     return num % 2 === 0;
   }
 
-  private bar(progress: number, maxProgress: number) {
+  static bar(progress: number, maxProgress: number) {
     if (progress < 0) progress = 0;
 
     const maxFill = 20;
@@ -58,7 +58,7 @@ export class Battle {
   private progressBar(name: string, hp: number, maxHP: number) {
 
     const maxHPStr = Math.round(maxHP);
-    const healthBar = this.bar(hp, maxHP);
+    const healthBar = Battle.bar(hp, maxHP);
     const remainingHP = hp >= 0 ? Math.round(hp) : 0;
 
     this.battleEmbed?.addField(

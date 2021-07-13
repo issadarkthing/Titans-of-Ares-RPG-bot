@@ -75,3 +75,10 @@ export const makePetTable = `
     Active  DEFAULT FALSE
   )
 `
+
+export const makeFragmentRewardTable = `
+  CREATE TABLE IF NOT EXISTS FragmentReward (
+    DiscordID TEXT UNIQUE PRIMARY KEY,
+    XP        DEFAULT 0
+  )
+`

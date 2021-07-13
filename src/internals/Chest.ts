@@ -65,10 +65,6 @@ export abstract class Chest extends Item {
     return embed;
   }
 
-  private random() {
-    return Pet.all.weightedRandom(x => x.id === PetID.Dragon ? 5 : 19);
-  }
-
   show(count: number) {
 
     const embed = new MessageEmbed()
@@ -88,7 +84,7 @@ export abstract class Chest extends Item {
     const fragmentCount = this.getFragmentCount();
 
     for (let i = 0; i < fragmentCount; i++) {
-      const pet = this.random();
+      const pet = Pet.random();
       const fragment = pet.fragment;
       fragments.push(fragment);
       await fragment.save(player);
