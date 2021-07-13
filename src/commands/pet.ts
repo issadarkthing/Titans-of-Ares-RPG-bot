@@ -70,9 +70,10 @@ export async function pet(msg: Message, args: string[]) {
     .setDescription("Showing all pets you summoned")
     .addField("---", petsList || "none")
     .addField("\u200b", stripIndents`
-      You can inspect your summoned pet by using \`-pet <number>\`
-      Use command \`-pet all\` to show all existing pets and how many fragments you need to summon or upgrade them
-      You can summon or upgrade pets from inventory using \`${PREFIX}inventory\``)
+      You can inspect your summoned pet by using \`${PREFIX}pet <number>\`
+      Use command \`${PREFIX}pet all\` to show all existing pets and how many fragments you need to summon or upgrade them
+      You can summon or upgrade pets from inventory using \`${PREFIX}inventory\`
+      You can convert pet fragments from the inventory using \`${PREFIX}inventory\``)
 
   msg.channel.send(embed);
 }

@@ -117,6 +117,7 @@ client.on('message', (msg) => {
     case 'inventory':
       inventory(msg, args);
       break;
+    case 'pets':
     case 'pet':
       pet(msg, args);
       break;
