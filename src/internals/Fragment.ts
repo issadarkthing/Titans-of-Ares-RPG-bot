@@ -37,7 +37,7 @@ export class Fragment extends Item {
 
   /** mininum fragments in order to obtain the pet */
   static get minFragments() {
-    return 8;
+    return 5;
   }
 
   get name() {
