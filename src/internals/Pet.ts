@@ -99,14 +99,15 @@ export abstract class Pet {
   card(fragmentCount: number, showPossession = false) {
 
     const action = this.star === -1 ? "summon" : "upgrade";
+    const fragmentCostText = this.star === 5 ? 
+      "max" : `\`${fragmentCount}/${this.upgradeCost}\``;
 
     const embed = new MessageEmbed()
       .setColor(BROWN)
       .setTitle(this.name)
       .setThumbnail(this.imageUrl)
       .addField("Active Skill", this.description)
-      .addField(`Fragments to ${action}`, 
-        `\`${fragmentCount}/${this.upgradeCost}\``, true)
+      .addField(`Fragments to ${action}`, fragmentCostText, true)
 
 
     if (this.star !== -1) {
@@ -138,12 +139,12 @@ export abstract class Pet {
   /** the cost of upgrading pet (+1) in form of fragments */
   get upgradeCost() {
     switch (this.star) {
-      case 0: return 10;
-      case 1: return 15;
-      case 2: return 20;
-      case 3: return 30;
-      case 4: return 50;
-      default: return 8;
+      case 0: return 6;
+      case 1: return 6;
+      case 2: return 8;
+      case 3: return 8;
+      case 4: return 10;
+      default: return 5;
     }
   }
 }
@@ -218,7 +219,7 @@ export class Gryphon extends Pet {
   happen once each battle`;
   imageUrl = CDN_LINK + "574852830125359126/862541562022068264/unknown.png";
   fragmentImageUrl = CDN_LINK + "574852830125359126/862655845447630888/gryphon.png"
-  petInterceptionUrl = CDN_LINK + "852530378916888626/863778076403826718/Gryphon.gif";
+  petInterceptionUrl = CDN_LINK + "852530378916888626/864399592762114078/GryphonCompressed.gif";
   private hasSpawn = false;
 
   get passiveStatDescription() {
@@ -257,7 +258,7 @@ export class Minotaur extends Pet {
   50% of strength`;
   imageUrl = CDN_LINK + "574852830125359126/862541876804059146/unknown.png";
   fragmentImageUrl = CDN_LINK + "574852830125359126/862669333775777832/minotaur.png";
-  petInterceptionUrl = CDN_LINK + "852530378916888626/863779984009855006/Minotaur.gif";
+  petInterceptionUrl = CDN_LINK + "852530378916888626/864399618660892682/Minotaurcompressed.gif";
 
   get passiveStatDescription() {
     return `\`+${this.multiplier * 100}%\` strength from base stats`;
@@ -282,7 +283,7 @@ export class Manticore extends Pet {
   description = "Your first attack will 100% crit";
   imageUrl = CDN_LINK + "574852830125359126/862542055674216448/unknown.png";
   fragmentImageUrl = CDN_LINK + "574852830125359126/862671084717604874/manticore.png";
-  petInterceptionUrl = CDN_LINK + "852530378916888626/863777473112178688/Manticore.gif";
+  petInterceptionUrl = CDN_LINK + "852530378916888626/864399340067880960/ManticoreCompressed.gif";
 
   get passiveStatDescription() {
     return `\`+${this.multiplier}\` Crit Damage`;
