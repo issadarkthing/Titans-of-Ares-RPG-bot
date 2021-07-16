@@ -96,6 +96,7 @@ client.on('message', (msg) => {
 
   const cmd = command.replace(PREFIX, '').toLowerCase();
   switch (cmd) {
+    case 'p':
     case 'profile':
       profile(msg, args);
       break;
@@ -114,6 +115,7 @@ client.on('message', (msg) => {
     case 'battle':
       battle(msg, args);
       break;
+    case 'inv':
     case 'inventory':
       inventory(msg, args);
       break;
