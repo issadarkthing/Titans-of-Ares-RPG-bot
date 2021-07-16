@@ -68,6 +68,10 @@ export abstract class Pet {
     return pet;
   }
 
+  /** gets random pet based off weightage 
+   *  dragon - 5% 
+   *  others - 19%
+   * */
   static random() {
     return Pet.all.weightedRandom(x => x.id === PetID.Dragon ? 5 : 19);
   } 
