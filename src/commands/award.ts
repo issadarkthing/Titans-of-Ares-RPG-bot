@@ -8,26 +8,52 @@ import { Medal, MedalType } from "../internals/Medal";
 import { Player } from "../internals/Player";
 import { oneLine } from "common-tags";
 import { logChannel } from "../index";
+import { Pet } from "../internals/Pet";
+import { addInventory, removeInventory } from "../db/inventory";
+import { Fragment, FragmentID } from "../internals/Fragment";
+
+// award <id> <xp|medal|fragment> <amount|medalType> <reason | revert>
 
 export default async function(msg: Message, args: string[]) {
 
   const userId = args[0];
-  const amount = args[1];
-  const reason = args.slice(2).join(" ");
-  const authorId = msg.author.id;
-  const member = await msg.guild?.members.fetch(userId);
+  if (!userId)
+    return msg.channel.send("You need to specify user id");
 
+  const awardType = args[1];
+  if (!awardType)
+    return msg.channel.send("You need to give award type");
+
+  const amount = args[2];
+  if (!amount)
+    return msg.channel.send("You need to give valid amount or medal type");
+
+  const reason = args.slice(3).join(" ");
+
+  const member = msg.guild?.members.cache.get(userId);
   if (!member) {
     return msg.channel.send("member does not exist");
   }
 
+  const adminRoles = await getAdminRoles();
+  const authorMember = msg.member;
+  const isAdmin = authorMember?.roles.cache
+    .some(role => adminRoles.includes(role.id));
+  
+  if (!isAdmin)
+    return msg.channel.send("Only admin can use this command");
+
   const player = await Player.getPlayer(member);
 
-  if (Medal.isValidMedal(args[1])) {
+  if (awardType === "medal") {
 
-    const medal = new Medal(args[1] as MedalType);
+    if (!Medal.isValidMedal(amount)) {
+      return msg.channel.send("invalid medal type");
+    }
+
+    const medal = new Medal(amount as MedalType);
     const prevLevel = player.level;
-    const isRevert = args[2].toLowerCase() === "revert";
+    const isRevert = args[3]?.toLowerCase() === "revert";
 
     if (isRevert) {
       await medal.revert(player);
@@ -46,36 +72,20 @@ export default async function(msg: Message, args: string[]) {
       logChannel.send(`${player.name} is now on **level ${player.level}**`);
     }
     
-    msg.channel.send("Executed successfully");
     return;
-  }
 
-  if (!userId)
-    return msg.channel.send("You need to specify user id");
-  else if (!amount)
-    return msg.channel.send("You need to specify amount");
-  else if (isNaN(parseInt(amount)))
-    return msg.channel.send("Please give valid amount");
-  else if (!reason)
-    return msg.channel.send("You need to give a reason");
-
-  const adminRoles = await getAdminRoles();
-  const authorMember = msg.guild?.members.cache.get(authorId);
-  const isAdmin = authorMember?.roles.cache
-    .some(role => adminRoles.includes(role.id));
-  
-  if (!isAdmin)
-    return msg.channel.send("Only admin can use this command");
-
-
-  try {
+  } else if (awardType === "xp") {
+    if (!reason)
+      return msg.channel.send("You need to give a reason");
 
     const amountInt = parseInt(amount);
+    if (!amountInt)
+      return msg.channel.send("Please give valid amount");
+
     const name = player.name;
     await addXP(userId, amountInt);
     const action = amountInt >= 0 ? "Added" : "Deducted";
     const prePosition = amountInt >= 0 ? "to" : "from";
-    msg.channel.send("Executed successfully");
 
     const totalXp = await getTotalXp(userId);
     const prevXp = totalXp - amountInt;
@@ -92,9 +102,45 @@ export default async function(msg: Message, args: string[]) {
     }
 
     rank(msg, ["10"]);
+    return;
 
-  } catch (e) {
-    console.log(e);
-    msg.channel.send("There was an error occured");
+  } else if (awardType === "fragment") {
+
+    const amountInt = parseInt(amount);
+    if (!amountInt)
+      return msg.channel.send("Please give valid amount");
+
+    const isRevert = args[4]?.toLowerCase() === "revert";
+
+    if (isRevert) {
+      const pet = args[3];
+      const fragment = new Fragment(`fragment_pet_${pet}` as FragmentID);
+      if (!fragment.pet) {
+        return msg.channel.send("invalid pet name");
+      }
+
+      for (let i = 0; i < amountInt; i++) {
+        removeInventory(player.id, fragment.id);
+      }
+
+      msg.channel.send("Executed successfully");
+      return;
+    }
+
+    if (!reason)
+      return msg.channel.send("You need to give a reason");
+
+    for (let i = 0; i < amountInt; i++) {
+      const fragment = Pet.random().fragment;
+      addInventory(player.id, fragment.id);
+
+      logChannel.send(
+        `${player.member} has received **${fragment.name}**! Reason: ${reason}`
+      );
+    }
+
+    return;
   }
+
+  msg.channel.send("Executed successfully");
 }
