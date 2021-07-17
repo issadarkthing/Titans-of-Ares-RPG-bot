@@ -146,6 +146,7 @@ export class Player extends Fighter {
     this.goldMedal = data.GoldMedal;
     this.silverMedal = data.SilverMedal;
     this.bronzeMedal = data.BronzeMedal;
+    this.fragmentReward = data.FragmentReward;
     this.buff = data.Buff && new Buff(data.Buff);
     this.pets = List.from(pets);
     this.baseStats = {
