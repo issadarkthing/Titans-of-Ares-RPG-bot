@@ -7,6 +7,16 @@ interface XPReward {
   XP: number;
 }
 
+export function setFragmentReward($userID: string, $upperLimit: number) {
+  const sql = `
+  UPDATE Player
+  SET FragmentReward = $upperLimit
+  WHERE DiscordID = $userID
+  `
+
+  return dbRun(sql, { $userID, $upperLimit });
+}
+
 export async function addXPReward($userID: string, $xp: number) {
   const sql = `
   INSERT INTO FragmentReward (DiscordID, XP)

@@ -21,6 +21,7 @@ export const makePlayerTable = `
       SilveMedal         DEFAULT 0,
       BronzeMedal        DEFAULT 0,
       Buff               TEXT,
+      FragmentReward     DEFAULT 500,
       PRIMARY KEY("DiscordID")
     )
 `;

@@ -30,6 +30,7 @@ export interface IPlayer extends IFighter {
   goldMedal: number;
   silverMedal: number;
   bronzeMedal: number;
+  fragmentReward: number;
   pets: List<Pet>;
 }
 
@@ -47,6 +48,12 @@ export class Player extends Fighter {
   bronzeMedal: number;
   pets: List<Pet>;
   baseStats: BaseStats;
+  /** Represents upper xp limit the user needed to passed in order to get
+   *  rewarded for a fragment. If for example the player's xp decrements, the
+   *  fragmentReward will remain the same so that the player cannot get rewarded
+   *  for the same limit again. This prevents from user to earn multiple reward.
+   * */
+  fragmentReward: number;
   readonly id: string;
   readonly member: GuildMember;
 
@@ -63,6 +70,7 @@ export class Player extends Fighter {
     this.goldMedal = data.goldMedal;
     this.silverMedal = data.silverMedal;
     this.bronzeMedal = data.bronzeMedal;
+    this.fragmentReward = data.fragmentReward;
     this.pets = data.pets;
     this.buff = data.buff && new Buff(data.buff);
     this.baseStats = {
@@ -115,6 +123,7 @@ export class Player extends Fighter {
       silverMedal: player.SilverMedal,
       bronzeMedal: player.BronzeMedal,
       pets: List.from(pets),
+      fragmentReward: player.FragmentReward,
     })
   }
 

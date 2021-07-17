@@ -100,3 +100,33 @@ export function aggregate(items: string[]): { [key: string]: number } {
 export function aggregateBy<T>(items: T[], pred: (item: T) => string) {
   return aggregate(items.map(pred));
 }
+
+
+/** To determine the upper limit of step based levelling
+ *
+ *  For example, user will be rewarded for every 500 xp (step).
+ *  If a user has a total xp of 7599 (current). We can determine
+ *  the upper limit (threshold) that a user needed in order to get rewarded.
+ *  In this example, the user needs 8000 xp to get their next reward.
+ * */
+export function upperLimit(current: number, step: number) {
+
+  let acc = step;
+
+  for (let i = step; i < current; i += 500)
+    acc += step;
+
+  return acc;
+}
+
+/** To determine how many upper limits have been passed.
+ *
+ *  For example, user will be rewarded for every 500 xp (step).
+ *  If a user has a total xp of 7599 (current). We can determine
+ *  how many limits have the user passed based on the total xp and the
+ *  step. In this example, the user has passed the limit of 15 times.
+ * */
+export function totalLevelPassed(current: number, step: number) {
+  const threshold = upperLimit(current, step) - step;
+  return threshold / step;
+}
