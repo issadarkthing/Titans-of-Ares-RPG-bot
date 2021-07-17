@@ -17,11 +17,12 @@ export class FragmentReward {
 
   static async reward(player: Player) {
     const fragment = Pet.random().fragment;
-
-    await setFragmentReward(player.id, FragmentReward.upperLimit(player.xp));
     await addInventory(player.id, fragment.id);
-
     return fragment;
+  }
+
+  static setUpperLimit(player: Player) {
+    return setFragmentReward(player.id, FragmentReward.upperLimit(player.xp));
   }
 
   /** 20% chance to earn fragment reward */

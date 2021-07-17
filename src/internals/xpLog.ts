@@ -81,10 +81,16 @@ export async function xpLog(msg: Message) {
     logChannel.send(`${name} has earned \`${xp} xp\`!`);
 
     // fragment reward
-    if (player.xp >= player.fragmentReward && FragmentReward.random()) {
-      const fragment = await FragmentReward.reward(player);
-      logChannel.send(oneLine`${member} has earned **${fragment.name}** for
-        earning \`${XP_REWARD} XP\` cummulatively!`)
+    if (player.xp >= player.fragmentReward) {
+
+      if (FragmentReward.random()) {
+        const fragment = await FragmentReward.reward(player);
+        logChannel.send(oneLine`${member} has earned **${fragment.name}** for
+          earning \`${XP_REWARD} XP\` cummulatively!`)
+      } 
+
+      // set new upper limit
+      FragmentReward.setUpperLimit(player);
     }
 
     // workout buff
