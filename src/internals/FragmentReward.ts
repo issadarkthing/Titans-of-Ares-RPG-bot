@@ -52,8 +52,15 @@ export async function rewardAll() {
     const player = await Player.getPlayer(member);
     const rewards = FragmentReward.totalLevelPassed(player.xp);
     for (let i = 0; i < rewards; i++) {
-      const fragment = await FragmentReward.reward(player);
-      console.log(`${player.name} received ${fragment.name}`);
+      const getsReward = FragmentReward.random();
+      if (getsReward) {
+        const fragment = await FragmentReward.reward(player);
+        console.log(`${player.name} received ${fragment.name}`);
+
+      } else {
+        console.log(`${player.name} missed the fragment reward`)
+
+      }
     }
 
     await FragmentReward.setUpperLimit(player);
