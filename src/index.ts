@@ -16,7 +16,6 @@ import {
   makeXPEntryTable,
   makeInventoryTable,
   makePetTable,
-  makeFragmentRewardTable,
 } from "./db/schema";
 import { energyMainLoop } from './internals/energy';
 import { Buff } from './internals/Buff';
@@ -55,7 +54,6 @@ db.run(makeXPEntryTable);
 db.run(makeProfileTable);
 db.run(makeInventoryTable);
 db.run(makePetTable);
-db.run(makeFragmentRewardTable);
 
 setInterval(() => {
   energyMainLoop();

@@ -1,19 +1,17 @@
-import { Message, TextChannel } from "discord.js";
-import { logChannel, xpLogTriggers, XP_LOG_CHANNEL } from "../index";
-import { getChallengeId, getConvertTable } from "../db/monthlyChallenge";
-import { getLevel, getXp, random } from "../internals/utils";
-import { Player } from "../internals/Player";
-import { Buff, BUFF_LIMIT, XP_THRESHOLD } from "../internals/Buff";
-import { getTimer, setTimer, TimerType } from "../db/timer";
-import { DateTime } from "luxon";
-import { addBuff } from "../db/player";
-import { oneLine } from "common-tags";
-import { createEntry, getXPEntry, resetXPEntry, setXPEntry } from "../db/xpEntry";
 import assert from "assert";
-import { addXPReward, getXPReward, resetXPReward, XP_REWARD } from "../db/fragmentReward";
-import { Pet } from "./Pet";
-import { addInventory } from "../db/inventory";
-import { FragmentReward } from "../FragmentReward";
+import { oneLine } from "common-tags";
+import { Message } from "discord.js";
+import { DateTime } from "luxon";
+import { XP_REWARD } from "../db/fragmentReward";
+import { getChallengeId, getConvertTable } from "../db/monthlyChallenge";
+import { addBuff } from "../db/player";
+import { getTimer, setTimer, TimerType } from "../db/timer";
+import { createEntry, getXPEntry, resetXPEntry, setXPEntry } from "../db/xpEntry";
+import { FragmentReward } from "./FragmentReward";
+import { logChannel, xpLogTriggers } from "../index";
+import { Buff, BUFF_LIMIT, XP_THRESHOLD } from "../internals/Buff";
+import { Player } from "../internals/Player";
+import { getLevel, getXp } from "../internals/utils";
 
 const rgx = /^Registered\sDay:\s(?<day>\d+)\s.*Progress:\s(?<value>\d+[,|\.]?\d*)\s(?<valueType>\w+).*$/;
 

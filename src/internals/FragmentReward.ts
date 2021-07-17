@@ -1,8 +1,8 @@
-import { setFragmentReward, XP_REWARD } from "./db/fragmentReward";
-import { addInventory } from "./db/inventory";
-import { Pet } from "./internals/Pet";
-import { Player } from "./internals/Player";
-import { random, totalLevelPassed, upperLimit } from "./internals/utils";
+import { setFragmentReward, XP_REWARD } from "../db/fragmentReward";
+import { addInventory } from "../db/inventory";
+import { Pet } from "./Pet";
+import { Player } from "./Player";
+import { random, totalLevelPassed, upperLimit } from "../internals/utils";
 
 
 export class FragmentReward {
