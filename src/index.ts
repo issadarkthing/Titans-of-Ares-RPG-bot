@@ -23,25 +23,13 @@ import { inventory } from "./commands/inventory";
 import { pet } from "./commands/pet";
 
 const sqlite3 = verbose();
-export const PREFIX = process.env.PREFIX;
-const OLD_BOT_ID = process.env.OLD_BOT_ID;
-export const RANK_CHANNEL = process.env.RANK_CHANNEL;
-export const XP_LOG_CHANNEL = process.env.XP_LOG_CHANNEL;
-export const DB = process.env.DB;
-export const SERVER_ID = process.env.SERVER_ID;
+export const PREFIX = process.env.PREFIX!;
+export const OLD_BOT_ID = process.env.OLD_BOT_ID!;
+export const RANK_CHANNEL = process.env.RANK_CHANNEL!;
+export const XP_LOG_CHANNEL = process.env.XP_LOG_CHANNEL!;
+export const DB = process.env.DB!;
+export const SERVER_ID = process.env.SERVER_ID!;
 export const DEV_ID = process.env.DEV_ID!;
-
-if (!PREFIX) {
-  throw new Error('No command prefix');
-} else if (!RANK_CHANNEL) {
-  throw new Error('No rank channel');
-} else if (!XP_LOG_CHANNEL) {
-  throw new Error('No xp log channel');
-} else if (!DB) {
-  throw new Error('No DB specified');
-} else if (!SERVER_ID) {
-  throw new Error('No guild id');
-}
 
 export const db = new sqlite3.Database(path.resolve(__dirname, DB));
 export const client = new Client();
