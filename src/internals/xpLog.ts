@@ -85,8 +85,9 @@ export async function xpLog(msg: Message) {
 
       if (FragmentReward.random()) {
         const fragment = await FragmentReward.reward(player);
-        logChannel.send(oneLine`${member} has earned **${fragment.name}** for
-          earning \`${XP_REWARD} XP\` cummulatively!`)
+        logChannel.send(oneLine`${player.name} has been awarded a
+          **${fragment.name}** by Ares himself for great effort in working out.
+          Keep up the good work!`);
       } 
 
       // set new upper limit
