@@ -78,12 +78,13 @@ export class Battle {
     let isCrit = p1.isCriticalHit();
 
     const pet = this.player.activePet;
+
     // offensive
     if (pet && p1 instanceof Player) {
-      const isSpawn = pet.isSpawn(this.playerRound);
 
-      if (isSpawn) {
-        if (pet instanceof Wisp) {
+      if (pet instanceof Wisp) {
+        const isSpawn = pet.isSpawn(this.playerRound);
+        if (isSpawn) {
           let healed = this.playerMaxHP * 0.4;
           const isOverHeal = healed + p1.hp > this.playerMaxHP;
           if (isOverHeal) {
@@ -94,9 +95,12 @@ export class Battle {
           await this.battleMsg?.edit(pet.interceptCard(
             `${this.player.name} is being healed \`(+${Math.round(healed)} hp)\``
           ));
+          await sleep(this.PET_INTERCEPT);
+        }
 
-        } else if (pet instanceof Minotaur) {
-
+      } else if (pet instanceof Minotaur) {
+        const isSpawn = pet.isSpawn(this.playerRound);
+        if (isSpawn) {
           const dmg = p1.strength * 0.5;
           const damageReduction = p2.getArmorReduction(dmg);
           p2.hp -= dmg - damageReduction;
@@ -104,14 +108,23 @@ export class Battle {
             oneLine`${this.player.name}'s ${pet.name} attacks for
             \`${Math.round(dmg)}\` damage!`
           ))
+          await sleep(this.PET_INTERCEPT);
 
-        } else if (pet instanceof Manticore) {
+        }
+
+      } else if (pet instanceof Manticore) {
+        const isSpawn = pet.isSpawn(this.playerRound);
+        if (isSpawn) {
           isCrit = true;
           await this.battleMsg?.edit(pet.interceptCard(
             `${pet.name} has scared the opponent! \`100%\` critical hit`
           ))
+          await sleep(this.PET_INTERCEPT);
+        }
 
-        } else if (pet instanceof Dragon) {
+      } else if (pet instanceof Dragon) {
+        const isSpawn = pet.isSpawn(this.playerRound);
+        if (isSpawn) {
           const burn = this.challengerMaxHP * pet.burn;
           const damage = pet.damage;
           p2.hp -= burn;
@@ -120,26 +133,33 @@ export class Battle {
             oneLine`Dragon is using Flame Breath dealing \`${Math.round(damage)}\` damage and 
             burns \`${pet.burn * 100}% (${Math.round(burn)})\` enemy's hp`
           ))
+          await sleep(this.PET_INTERCEPT);
+
         }
-          
-        await sleep(this.PET_INTERCEPT);
+
       }
 
       // defensive
     } else if (pet && p1 instanceof Challenger) {
-      const isSpawn = pet.isSpawn(this.challengerRound);
-      
-      if (isSpawn) {
-        if (pet instanceof Golem) {
-          if (isCrit) {
+
+      if (pet instanceof Golem) {
+        if (isCrit) {
+          const isSpawn = pet.isSpawn(this.challengerRound);
+
+          if (isSpawn) {
             isCrit = false;
             await this.battleMsg?.edit(pet.interceptCard(
               `Critical hit has been blocked!`
             ))
             await sleep(this.PET_INTERCEPT);
           }
+        }
 
-        } else if (pet instanceof Gryphon) {
+      } else if (pet instanceof Gryphon) {
+        const isSpawn = pet.isSpawn(this.challengerRound);
+
+        if (isSpawn) {
+
           await this.battleMsg?.edit(pet.interceptCard(
             `${this.player.name} has been saved from ${this.challenger.name}'s attack!`
           ))
@@ -206,11 +226,14 @@ export class Battle {
       : 1;
 
     while (!done) {
+
       if (this.isEven(this.round + moveFirst)) {
         await this.attack(this.player, this.challenger);
+
       } else {
         await this.attack(this.challenger, this.player);
       }
+
 
       if (this.player.hp <= 0 || this.challenger.hp <= 0) break;
 

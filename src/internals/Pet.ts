@@ -162,6 +162,7 @@ export class Wisp extends Pet {
   fragmentImageUrl = CDN_LINK + "574852830125359126/862656523531321344/wisp.png";
   petInterceptionUrl = CDN_LINK + "852530378916888626/863778345182429214/Blue-Flame-Illustration.gif";
   private hasSpawn = false;
+  spawnAt = random().integer(2, 5);
 
   get passiveStatDescription() {
     return `\`+${this.multiplier * 100}%\` HP from base stats`;
@@ -174,13 +175,9 @@ export class Wisp extends Pet {
   isSpawn(round: number) {
     if (this.hasSpawn) return false;
 
-    if (round >= 2 && round <= 5) {
-      const x = random().bool();
-
-      if (x) {
-        this.hasSpawn = x;
-        return x;
-      }
+    if (this.spawnAt === round) {
+      this.hasSpawn = true;
+      return true;
     }
 
     return false;
