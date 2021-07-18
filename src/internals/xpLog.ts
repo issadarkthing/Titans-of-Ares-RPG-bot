@@ -60,8 +60,9 @@ export async function xpLog(msg: Message) {
     if (!matches || !matches.groups) return;
 
     const { value, valueType } = matches.groups;
-    // TODO: change this value
-    const challengeId = await getChallengeId("859483633534238762");
+    const channelID = process.env.ENV === "DEV" ? 
+      "859483633534238762" : msg.channel.id;
+    const challengeId = await getChallengeId(channelID);
     const tag = `${valueType}-${challengeId}`;
     const convertTable = await getConvertTable();
     const multiplier = convertTable.get(tag);
