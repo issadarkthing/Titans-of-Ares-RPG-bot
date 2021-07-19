@@ -27,6 +27,10 @@ export class List<T extends Identifiable> {
     return this.values.reduce((acc, item) => item.id === id ? acc + 1 : acc, 0);
   }
 
+  includes(id: string) {
+    return this.values.map(x => x.id).includes(id);
+  }
+
   find(pred: (x: T, i: number) => boolean) {
     return this.values.find(pred);
   }

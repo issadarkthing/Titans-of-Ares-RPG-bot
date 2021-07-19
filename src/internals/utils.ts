@@ -9,6 +9,9 @@ export const PLAYER_CRIT_GIF = "https://i.gifer.com/FSka.gif";
 export const CHALLENGER_CRIT_GIF = "https://i.pinimg.com/originals/40/96/d1/4096d1659e8c58bb51375133ab5f459e.gif";
 export const CDN_LINK = "https://cdn.discordapp.com/attachments/";
 export const STAR = "⭐";
+export const BLUE_BUTTON = "🔵";
+export const WHITE_BUTTON = "⚪";
+export const RED_BUTTON = "🔴";
 
 export const NUMBER_BUTTONS = [
   "0️⃣", "1️⃣", "2️⃣", "3️⃣", "4️⃣", "5️⃣", "6️⃣", "7️⃣", "8️⃣", "9️⃣",
@@ -129,4 +132,9 @@ export function upperLimit(current: number, step: number) {
 export function totalLevelPassed(current: number, step: number) {
   const threshold = upperLimit(current, step) - step;
   return threshold / step;
+}
+
+export function roundTo(num: number, decimalPlace: number) {
+  if (Number.isInteger(num)) return num.toString();
+  return num.toFixed(decimalPlace);
 }

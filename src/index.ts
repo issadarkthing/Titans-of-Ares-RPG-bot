@@ -21,6 +21,8 @@ import { energyMainLoop } from './internals/energy';
 import { Buff } from './internals/Buff';
 import { inventory } from "./commands/inventory";
 import { pet } from "./commands/pet";
+import { Armor } from "./internals/Armor";
+import { shop } from "./commands/shop";
 
 const sqlite3 = verbose();
 export const PREFIX = process.env.PREFIX!;
@@ -108,6 +110,10 @@ client.on('message', (msg) => {
     case 'pets':
     case 'pet':
       pet(msg, args);
+      break;
+    case 'shops':
+    case 'shop':
+      shop(msg, args);
       break;
   }
 })
