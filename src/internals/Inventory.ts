@@ -2,18 +2,19 @@ import { Chest, ChestID } from "./Chest";
 import { Item } from "../db/inventory";
 import { Fragment, FragmentID } from "./Fragment";
 import { List } from "./List";
+import { Gear } from "./Gear";
 
 /** manage items to be easily filtered and accessed */
 export class Inventory {
 
   chests: List<Chest>;
   fragments: List<Fragment>;
-  items: Item[];
+  gears: List<Gear>;
   constructor(items: Item[]) {
 
-    this.items = items;
     this.chests = new List();
     this.fragments = new List();
+    this.gears = new List();
 
     for (const item of items) {
       const itemID = item.ItemID;
@@ -24,11 +25,19 @@ export class Inventory {
           break;
         case "fragment":
           this.fragments.push(new Fragment(itemID as FragmentID));
+          break;
+        case "gear":
+          this.gears.push(Gear.fromID(itemID));
+          break;
       }
     }
   }
 
   get all() {
-    return List.from([...this.chests, ...this.fragments]);
+    return List.from([
+      ...this.chests, 
+      ...this.fragments,
+      ...this.gears,
+    ]);
   }
 }

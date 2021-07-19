@@ -2,7 +2,7 @@ import { Message, MessageEmbed } from "discord.js";
 import { Chest } from "../internals/Chest";
 import { Fragment, FragmentID } from "../internals/Fragment";
 import { Player } from "../internals/Player";
-import { aggregateBy, BROWN, GOLD, NUMBER_BUTTONS, STAR } from "../internals/utils";
+import { aggregateBy, BROWN, GOLD, NUMBER_BUTTONS, RETURN_BUTTON, STAR } from "../internals/utils";
 import { sleep } from "../internals/utils";
 import { oneLine } from "common-tags";
 import { ButtonHandler } from "../internals/ButtonHandler";
@@ -169,7 +169,7 @@ export async function inventory(msg: Message, args: string[]) {
       })
     }
 
-    button.addButton("↩️", "return to inventory list", () => {
+    button.addButton(RETURN_BUTTON, "return to inventory list", () => {
       inventory(msg, []);
     })
     button.addCloseButton();

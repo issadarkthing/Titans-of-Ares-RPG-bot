@@ -2,7 +2,7 @@ import { MedalType } from "./Medal";
 import { Item } from "./Item";
 import { BROWN, capitalize, CDN_LINK, GREEN, random } from "./utils";
 import { Player } from "./Player";
-import { Pet, PetID } from "./Pet";
+import { Pet } from "./Pet";
 import { Fragment } from "./Fragment";
 import { removeInventory } from "../db/inventory";
 import { MessageEmbed } from "discord.js";

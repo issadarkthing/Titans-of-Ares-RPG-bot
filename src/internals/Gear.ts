@@ -4,8 +4,7 @@ import { Item } from "./Item";
 import { List } from "./List";
 import { BROWN, random, roundTo } from "./utils";
 
-
-export abstract class Armor extends Item {
+export abstract class Gear extends Item {
   abstract name: string;
   abstract use(fighter: Fighter): void;
   abstract description: string;
@@ -15,7 +14,7 @@ export abstract class Armor extends Item {
   level = 0;
 
   get id() {
-    return `armor`;
+    return `gear`;
   }
 
   get multiplier() {
@@ -30,6 +29,10 @@ export abstract class Armor extends Item {
     return List.from([
       ...Apprentice.all,
     ])
+  }
+
+  static fromID(id: string) {
+    return Gear.all.get(id)!;
   }
 
   get upgradeChance() {
@@ -52,8 +55,9 @@ export abstract class Armor extends Item {
     const embed = new MessageEmbed()
       .setColor(BROWN)
       .setTitle(this.name)
-      .setDescription(this.description)
-      .addField("Count", count)
+      .setDescription(`\`${this.description}\``)
+      .addField("Price", this.price, true)
+      .addField("Owned", count > 0 ? "yes" : "no", true)
 
     return embed;
   }
@@ -64,7 +68,7 @@ export abstract class Armor extends Item {
   }
 }
 
-abstract class Apprentice extends Armor {
+abstract class Apprentice extends Gear {
   set = "Apprentice";
 
   get name() {
@@ -89,7 +93,7 @@ abstract class Apprentice extends Armor {
 
   get id() {
     const pieceName = this.constructor.name.toLowerCase();
-    return `${super.id}_apprentice_${pieceName}_${this.level}`;
+    return `${super.id}_apprentice_${pieceName}`;
   }
 }
 

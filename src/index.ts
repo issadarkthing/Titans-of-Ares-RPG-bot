@@ -21,7 +21,6 @@ import { energyMainLoop } from './internals/energy';
 import { Buff } from './internals/Buff';
 import { inventory } from "./commands/inventory";
 import { pet } from "./commands/pet";
-import { Armor } from "./internals/Armor";
 import { shop } from "./commands/shop";
 
 const sqlite3 = verbose();
