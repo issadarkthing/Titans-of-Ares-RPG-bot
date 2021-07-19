@@ -24,9 +24,11 @@ export class ButtonHandler {
   }
 
   private async react() {
-    for (const emoji of this.emojis) {
-      await this.msgCollector?.react(emoji);
-    }
+    try {
+      for (const emoji of this.emojis) {
+        await this.msgCollector?.react(emoji);
+      }
+    } catch {}
   }
 
   private createLabel() {
@@ -65,7 +67,7 @@ export class ButtonHandler {
 
       this.msgCollector = await this.msg.channel.send(this.embed);
 
-      await this.react();
+      this.react();
       const collected = await this.msgCollector.awaitReactions(filter, options);
       const reaction = collected.first()!;
       const cb = this.getCB(reaction.emoji.name)!;
