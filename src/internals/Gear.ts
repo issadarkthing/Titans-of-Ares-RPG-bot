@@ -58,6 +58,7 @@ export abstract class Gear extends Item {
       .setDescription(`\`${this.description}\``)
       .addField("Price", this.price, true)
       .addField("Owned", count > 0 ? "yes" : "no", true)
+      .addField("Level", this.level, true)
 
     return embed;
   }
