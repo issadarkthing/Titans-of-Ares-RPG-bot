@@ -16,6 +16,7 @@ import {
   makeXPEntryTable,
   makeInventoryTable,
   makePetTable,
+  makeGearTable,
 } from "./db/schema";
 import { energyMainLoop } from './internals/energy';
 import { Buff } from './internals/Buff';
@@ -36,13 +37,16 @@ export const db = new sqlite3.Database(path.resolve(__dirname, DB));
 export const client = new Client();
 
 // create necessary tables if not exist
-db.run(makePlayerTable);
-db.run(makeChallengerTable);
-db.run(makeTimerTable);
-db.run(makeXPEntryTable);
-db.run(makeProfileTable);
-db.run(makeInventoryTable);
-db.run(makePetTable);
+setImmediate(() => {
+  db.run(makePlayerTable);
+  db.run(makeChallengerTable);
+  db.run(makeTimerTable);
+  db.run(makeXPEntryTable);
+  db.run(makeProfileTable);
+  db.run(makeInventoryTable);
+  db.run(makePetTable);
+  db.run(makeGearTable);
+})
 
 setInterval(() => {
   energyMainLoop();
