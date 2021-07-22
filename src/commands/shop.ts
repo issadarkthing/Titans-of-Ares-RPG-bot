@@ -6,6 +6,7 @@ import { Gear } from "../internals/Gear";
 import { ButtonHandler } from "../internals/ButtonHandler";
 import { Player } from "../internals/Player";
 import { BLUE_BUTTON, BROWN, RETURN_BUTTON, WHITE_BUTTON } from "../internals/utils";
+import { Scroll } from "../internals/Scroll";
 
 
 
@@ -16,7 +17,8 @@ export async function shop(msg: Message, args: string[]) {
   const indexInt = parseInt(index);
 
   if (shopType === "coin" && index && indexInt) {
-    const item = Gear.all.get(indexInt - 1);
+    const scroll = new Scroll();
+    const item = [...Gear.all, scroll][indexInt - 1];
     if (!item) return msg.channel.send("Item does not exist");
 
     const player = await Player.getPlayer(msg.member!);
@@ -26,7 +28,8 @@ export async function shop(msg: Message, args: string[]) {
     const menu = new ButtonHandler(msg, embed, player.id);
 
     // only show if player does not have the item
-    if (count === 0) {
+    // or it is not a gear
+    if (count === 0 || !(item instanceof Gear)) {
       menu.addButton(BLUE_BUTTON, "buy item", () => {
         player.addCoin(-item.price);
         addInventory(player.id, item.id);
@@ -58,7 +61,12 @@ export async function shop(msg: Message, args: string[]) {
 
   const coinShop = () => {
     const items = Gear.all;
-    const list = items.map((x, i) => `${i + 1}. ${x.name}`).join("\n");
+    let list = items
+      .map((x, i) => `${i + 1}. ${x.name} \`${x.description}\` \`${x.price}\``)
+      .join("\n");
+
+    const scroll = new Scroll();
+    list += `\n\n12. ${scroll.name} \`+1 gear level\` \`${scroll.price}\``
     const embed = new MessageEmbed()
       .setColor(BROWN)
       .setTitle("Coin Shop")
