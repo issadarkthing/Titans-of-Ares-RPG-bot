@@ -7,6 +7,7 @@ import { ButtonHandler } from "../internals/ButtonHandler";
 import { Player } from "../internals/Player";
 import { BLUE_BUTTON, BROWN, RED_BUTTON, RETURN_BUTTON, WHITE_BUTTON } from "../internals/utils";
 import { Scroll } from "../internals/Scroll";
+import { addGear } from "../db/gear";
 
 
 
@@ -29,9 +30,10 @@ export async function shop(msg: Message, args: string[]) {
 
     // only show if player does not have the item
     if (count === 0 && item instanceof Gear) {
-      menu.addButton(BLUE_BUTTON, "buy item", () => {
+      menu.addButton(BLUE_BUTTON, "buy item", async () => {
         player.addCoin(-item.price);
-        addInventory(player.id, item.id);
+        const inventoryID = await addInventory(player.id, item.id);
+        addGear(inventoryID);
 
         msg.channel.send(
           `Successfully purchased **${item.name}**!`

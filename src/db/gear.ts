@@ -1,38 +1,62 @@
-import { addInventory, removeInventory } from "./inventory";
 import { dbAll, dbRun } from "./promiseWrapper"
 
 export interface Gear {
   ID: number;
+  InventoryID: number;
+  Equipped: boolean;
+  Level: number;
   OwnerID: string;
   Created: string;
-  GearID: string;
+  ItemID: string;
 }
 
-export async function equipGear($userID: string, $itemID: string) {
+const update = (stmt: string) => `
+  UPDATE Gear
+  SET ${stmt}
+  WHERE InventoryID = (
+    SELECT ID 
+    FROM Inventory 
+    WHERE OwnerID = $userID AND ItemID = $itemID
+    LIMIT 1
+  )
+  `
+
+
+export function equipGear($userID: string, $itemID: string) {
+  const sql = update("Equipped = TRUE");
+
+  return dbRun(sql, { $userID, $itemID });
+}
+
+export function unequipGear($userID: string, $itemID: string) {
+  const sql = update("Equipped = FALSE");
+
+  return dbRun(sql, { $userID, $itemID });
+}
+
+export function levelupGear($userID: string, $itemID: string) {
+  const sql = update("Level = Level + 1");
+
+  return dbRun(sql, { $userID, $itemID });
+}
+
+export async function addGear($inventoryID: number) {
   const sql = `
-  INSERT INTO Gear (OwnerID, GearID)
-  VALUES ($userID, $itemID)
+  INSERT INTO Gear (InventoryID)
+  VALUES ($inventoryID)
   `
 
-  await dbRun(sql, { $userID, $itemID });
-  await removeInventory($userID, $itemID);
+  return dbRun(sql, { $inventoryID });
 }
 
-export async function unequipGear($userID: string, $itemID: string) {
-  let sql = `
-  DELETE FROM Gear
-  WHERE OwnerID = $userID AND GearID = $itemID
-  `
-
-  await dbRun(sql, { $userID, $itemID });
-  await addInventory($userID, $itemID);
-}
-
-export function getGears($userID: string) {
+export async function getGears($userID: string) {
   const sql = `
   SELECT * FROM Gear
-  WHERE OwnerID = $userID
+  INNER JOIN Inventory
+  ON Gear.InventoryID = Inventory.ID
+  WHERE Inventory.OwnerID = $userID
   `
 
-  return dbAll<Gear>(sql, { $userID });
+  const gears = await dbAll(sql, { $userID });
+  return gears.map((x: any) => ({...x, Equipped: !!x.Equipped})) as Gear[];
 }

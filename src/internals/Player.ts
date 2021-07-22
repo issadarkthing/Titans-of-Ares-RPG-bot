@@ -99,7 +99,8 @@ export class Player extends Fighter {
     const stats = getStats(level);
     const inventory = await getInventory(userId);
     const pets = (await getAllPets(userId)).map(x => Pet.fromDB(x));
-    const gears = (await getGears(userId)).map(x => Gear.fromID(x.GearID));
+    const gears = (await getGears(userId)).map(x => Gear.fromDB(x));
+    const equippedGears = gears.filter(x => x.equipped);
 
     let player = await getUser(userId);
     if (!player) {
@@ -129,7 +130,7 @@ export class Player extends Fighter {
       silverMedal: player.SilverMedal,
       bronzeMedal: player.BronzeMedal,
       pets: List.from(pets),
-      equippedGears: List.from(gears),
+      equippedGears: List.from(equippedGears),
       fragmentReward: player.FragmentReward,
     })
   }

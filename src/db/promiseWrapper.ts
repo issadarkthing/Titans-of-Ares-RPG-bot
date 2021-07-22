@@ -25,12 +25,12 @@ export function dbGet<T>(sql: string, param?: object) {
 }
 
 export function dbRun(sql: string, param?: object) {
-  return new Promise<void>((resolve, reject) => {
-    return db.run(sql, param, (err) => {
+  return new Promise<number>((resolve, reject) => {
+    return db.run(sql, param, function (err) {
       if (err) {
         reject(err);
       } else {
-        resolve();
+        resolve(this.lastID);
       }
     })
   })

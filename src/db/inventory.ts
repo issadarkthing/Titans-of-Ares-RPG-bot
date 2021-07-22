@@ -31,7 +31,13 @@ export function removeInventory($ownerID: string, $itemID: string) {
 
 export function getInventory($userID: string) {
   const sql = `
-  SELECT * FROM Inventory WHERE OwnerID = $userID
+  SELECT * FROM Inventory 
+  LEFT JOIN Gear
+  ON Gear.InventoryID = Inventory.ID
+  WHERE 
+    IIF(Gear.Equipped = 0 OR Gear.Equipped = 1, 
+      Gear.Equipped = 0 AND Inventory.OwnerID = $userID, 
+      Inventory.OwnerID = $userID)
   `
 
   return dbAll<Item>(sql, { $userID });

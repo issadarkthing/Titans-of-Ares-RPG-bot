@@ -2,7 +2,8 @@ import { MessageEmbed } from "discord.js";
 import { Fighter } from "./Fighter";
 import { Item } from "./Item";
 import { List } from "./List";
-import { BROWN, random, roundTo } from "./utils";
+import { BROWN, CDN_LINK, GOLD, random, roundTo } from "./utils";
+import { Gear as GearDB } from "../db/gear";
 
 export abstract class Gear extends Item {
   abstract name: string;
@@ -11,6 +12,9 @@ export abstract class Gear extends Item {
   abstract price: number;
   abstract set: string;
   abstract baseStat: number;
+  equipped = false;
+  upgradeAnimationUrl = CDN_LINK + 
+    "768053872400007218/866606356861026324/ligin-s-crystal-spiral-downsized-large.gif";
   level = 0;
 
   get id() {
@@ -33,6 +37,13 @@ export abstract class Gear extends Item {
 
   static fromID(id: string) {
     return Gear.all.get(id)!;
+  }
+
+  static fromDB(gear: GearDB) {
+    const g = Gear.fromID(gear.ItemID)!;
+    g.level = gear.Level;
+    g.equipped = gear.Equipped;
+    return g;
   }
 
   get upgradeChance() {
@@ -59,6 +70,15 @@ export abstract class Gear extends Item {
       .addField("Price", this.price, true)
       .addField("Owned", count > 0 ? "yes" : "no", true)
       .addField("Level", this.level, true)
+
+    return embed;
+  }
+
+  upgradeAnimation() {
+    const embed = new MessageEmbed()
+      .setColor(GOLD)
+      .setTitle(`Upgrading ${this.name}`)
+      .setImage(this.upgradeAnimationUrl)
 
     return embed;
   }

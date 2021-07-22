@@ -2,7 +2,7 @@ import { Message, MessageEmbed } from "discord.js";
 import { Chest } from "../internals/Chest";
 import { Fragment, FragmentID } from "../internals/Fragment";
 import { Player } from "../internals/Player";
-import { aggregateBy, BLUE_BUTTON, BROWN, GOLD, NUMBER_BUTTONS, RETURN_BUTTON, STAR } from "../internals/utils";
+import { aggregateBy, BLUE_BUTTON, BROWN, GOLD, NUMBER_BUTTONS, RETURN_BUTTON, STAR, WHITE_BUTTON } from "../internals/utils";
 import { sleep } from "../internals/utils";
 import { oneLine } from "common-tags";
 import { ButtonHandler } from "../internals/ButtonHandler";
@@ -10,7 +10,7 @@ import { PREFIX } from "..";
 import { Pet, PetID } from "../internals/Pet";
 import { addInventory, removeInventory } from "../db/inventory";
 import { Gear } from "../internals/Gear";
-import { equipGear } from "../db/gear";
+import { equipGear, levelupGear } from "../db/gear";
 
 export async function inventory(msg: Message, args: string[]) {
 
@@ -179,6 +179,31 @@ export async function inventory(msg: Message, args: string[]) {
         )
       })
 
+      button.addButton(WHITE_BUTTON, "upgrade item using 1 scroll", async () => {
+
+        const itemCount = player.inventory.all.count("scroll");
+        if (itemCount === 0) return msg.channel.send("Insufficient scroll");
+
+        removeInventory(player.id, "scroll");
+        const animation = await msg.channel.send(item.upgradeAnimation());
+        await sleep(5000);
+
+        const upgradeSuccess = item.upgrade();
+
+        if (upgradeSuccess) {
+
+          levelupGear(player.id, item.id);
+          animation.edit(
+            `Successfully upgraded **${item.name}** to level ${item.level + 1}!`
+          )
+
+        } else {
+          animation.edit(
+            `Upgrade process for ${item.name} failed`
+          )
+        }
+
+      })
     }
 
     button.addButton(RETURN_BUTTON, "return to inventory list", () => {

@@ -79,9 +79,9 @@ export const makePetTable = `
 
 export const makeGearTable = `
   CREATE TABLE IF NOT EXISTS Gear (
-    ID      INTEGER PRIMARY KEY,
-    OwnerID TEXT NOT NULL,
-    Created DEFAULT CURRENT_TIMESTAMP,
-    GearID  TEXT NOT NULL
+    ID          INTEGER PRIMARY KEY,
+    InventoryID INTEGER NOT NULL,
+    Equipped    DEFAULT FALSE,
+    Level       DEFAULT 0
   )
 `
