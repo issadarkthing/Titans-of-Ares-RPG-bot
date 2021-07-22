@@ -1,11 +1,11 @@
 import { oneLine } from "common-tags";
 import { Message, MessageEmbed } from "discord.js";
-import { PREFIX } from "..";
+import { db, PREFIX } from "..";
 import { addInventory } from "../db/inventory";
 import { Gear } from "../internals/Gear";
 import { ButtonHandler } from "../internals/ButtonHandler";
 import { Player } from "../internals/Player";
-import { BLUE_BUTTON, BROWN, RETURN_BUTTON, WHITE_BUTTON } from "../internals/utils";
+import { BLUE_BUTTON, BROWN, RED_BUTTON, RETURN_BUTTON, WHITE_BUTTON } from "../internals/utils";
 import { Scroll } from "../internals/Scroll";
 
 
@@ -28,8 +28,7 @@ export async function shop(msg: Message, args: string[]) {
     const menu = new ButtonHandler(msg, embed, player.id);
 
     // only show if player does not have the item
-    // or it is not a gear
-    if (count === 0 || !(item instanceof Gear)) {
+    if (count === 0 && item instanceof Gear) {
       menu.addButton(BLUE_BUTTON, "buy item", () => {
         player.addCoin(-item.price);
         addInventory(player.id, item.id);
@@ -38,6 +37,28 @@ export async function shop(msg: Message, args: string[]) {
           `Successfully purchased **${item.name}**!`
         )
       })
+
+    } else if (item instanceof Scroll) {
+
+      const buyMany = (count: number) => {
+        return async () => {
+
+          db.run("BEGIN TRANSACTION");
+          for (let i = 0; i < count; i++) {
+            await player.addCoin(-item.price);
+            await addInventory(player.id, item.id);
+          }
+          db.run("COMMIT");
+
+          msg.channel.send(
+            `Successfully purchased **x${count} ${item.name}**!`
+          )
+        }
+      }
+
+      menu.addButton(BLUE_BUTTON, "buy 1 scroll", buyMany(1));
+      menu.addButton(WHITE_BUTTON, "buy 5 scroll", buyMany(5));
+      menu.addButton(RED_BUTTON, "buy 10 scroll", buyMany(10));
 
     }
 
