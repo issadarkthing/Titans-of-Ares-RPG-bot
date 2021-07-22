@@ -89,6 +89,9 @@ export class Player extends Fighter {
 
     this.buff?.use(this);
     this.activePet?.use(this);
+    this.equippedGears.forEach(gear => {
+      gear.use(this);
+    })
   }
 
   static async getPlayer(member: GuildMember): Promise<Player> {
@@ -215,7 +218,7 @@ export class Player extends Fighter {
     const hp = Math.round(this.hp);
     const strength = Math.round(this.strength);
     const speed = Math.round(this.speed);
-    const armor = Math.round(this.armor);
+    const armor = numberFormat(this.armor);
     const critRate = numberFormat(this.critRate * 100);
     const critDamage = numberFormat(this.critDamage);
     const petName = this.activePet ? 
