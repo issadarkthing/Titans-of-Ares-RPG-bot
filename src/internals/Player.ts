@@ -13,6 +13,8 @@ import { getInventory, Item } from "../db/inventory";
 import { Pet } from "./Pet";
 import { getAllPets } from "../db/pet";
 import { List } from "./List"
+import { Gear } from "./Gear";
+import { getGears } from "../db/gear";
 
 export const CRIT_RATE = 0.1;
 export const CRIT_DAMAGE = 2;
@@ -32,6 +34,7 @@ export interface IPlayer extends IFighter {
   bronzeMedal: number;
   fragmentReward: number;
   pets: List<Pet>;
+  equippedGears: List<Gear>;
 }
 
 export class Player extends Fighter {
@@ -54,6 +57,7 @@ export class Player extends Fighter {
    *  for the same limit again. This prevents from user to earn multiple reward.
    * */
   fragmentReward: number;
+  equippedGears: List<Gear>;
   readonly id: string;
   readonly member: GuildMember;
 
@@ -72,6 +76,7 @@ export class Player extends Fighter {
     this.bronzeMedal = data.bronzeMedal;
     this.fragmentReward = data.fragmentReward;
     this.pets = data.pets;
+    this.equippedGears = data.equippedGears;
     this.buff = data.buff && new Buff(data.buff);
     this.baseStats = {
       hp: this.hp,
@@ -94,6 +99,7 @@ export class Player extends Fighter {
     const stats = getStats(level);
     const inventory = await getInventory(userId);
     const pets = (await getAllPets(userId)).map(x => Pet.fromDB(x));
+    const gears = (await getGears(userId)).map(x => Gear.fromID(x.GearID));
 
     let player = await getUser(userId);
     if (!player) {
@@ -123,6 +129,7 @@ export class Player extends Fighter {
       silverMedal: player.SilverMedal,
       bronzeMedal: player.BronzeMedal,
       pets: List.from(pets),
+      equippedGears: List.from(gears),
       fragmentReward: player.FragmentReward,
     })
   }

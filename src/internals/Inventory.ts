@@ -3,18 +3,17 @@ import { Item } from "../db/inventory";
 import { Fragment, FragmentID } from "./Fragment";
 import { List } from "./List";
 import { Gear } from "./Gear";
+import { Scroll } from "./Scroll";
 
 /** manage items to be easily filtered and accessed */
 export class Inventory {
 
-  chests: List<Chest>;
-  fragments: List<Fragment>;
-  gears: List<Gear>;
-  constructor(items: Item[]) {
+  chests = new List<Chest>();
+  fragments = new List<Fragment>();
+  gears = new List<Gear>();
+  scrolls = new List<Scroll>();
 
-    this.chests = new List();
-    this.fragments = new List();
-    this.gears = new List();
+  constructor(items: Item[]) {
 
     for (const item of items) {
       const itemID = item.ItemID;
@@ -29,6 +28,9 @@ export class Inventory {
         case "gear":
           this.gears.push(Gear.fromID(itemID));
           break;
+        case "scroll":
+          this.scrolls.push(new Scroll());
+          break;
       }
     }
   }
@@ -38,6 +40,7 @@ export class Inventory {
       ...this.chests, 
       ...this.fragments,
       ...this.gears,
+      ...this.scrolls,
     ]);
   }
 }
