@@ -2,13 +2,15 @@ import { Message, MessageEmbed } from "discord.js";
 import { Chest } from "../internals/Chest";
 import { Fragment, FragmentID } from "../internals/Fragment";
 import { Player } from "../internals/Player";
-import { aggregateBy, BROWN, GOLD, NUMBER_BUTTONS, RETURN_BUTTON, STAR } from "../internals/utils";
+import { aggregateBy, BLUE_BUTTON, BROWN, GOLD, NUMBER_BUTTONS, RETURN_BUTTON, STAR } from "../internals/utils";
 import { sleep } from "../internals/utils";
 import { oneLine } from "common-tags";
 import { ButtonHandler } from "../internals/ButtonHandler";
 import { PREFIX } from "..";
 import { Pet, PetID } from "../internals/Pet";
 import { addInventory, removeInventory } from "../db/inventory";
+import { Gear } from "../internals/Gear";
+import { equipGear } from "../db/gear";
 
 export async function inventory(msg: Message, args: string[]) {
 
@@ -167,6 +169,16 @@ export async function inventory(msg: Message, args: string[]) {
           choiceButton.addCloseButton();
           choiceButton.run();
       })
+
+    } else if (item instanceof Gear) {
+
+      button.addButton(BLUE_BUTTON, "equip gear", () => {
+        equipGear(player.id, item.id);
+        msg.channel.send(
+          `Successfully equipped **${item.name}**!`
+        )
+      })
+
     }
 
     button.addButton(RETURN_BUTTON, "return to inventory list", () => {

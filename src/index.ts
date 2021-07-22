@@ -23,6 +23,7 @@ import { Buff } from './internals/Buff';
 import { inventory } from "./commands/inventory";
 import { pet } from "./commands/pet";
 import { shop } from "./commands/shop";
+import { gearCmd } from "./commands/gear";
 
 const sqlite3 = verbose();
 export const PREFIX = process.env.PREFIX!;
@@ -117,6 +118,9 @@ client.on('message', (msg) => {
     case 'shops':
     case 'shop':
       shop(msg, args);
+      break;
+    case 'gear':
+      gearCmd(msg, args);
       break;
   }
 })
