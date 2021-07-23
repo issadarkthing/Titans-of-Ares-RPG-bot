@@ -1,7 +1,7 @@
 import { oneLine, stripIndents } from "common-tags";
 import { MessageEmbed } from "discord.js";
 import { Fragment } from "./Fragment";
-import { BROWN, CDN_LINK, GOLD, numberFormat, random, STAR } from "./utils";
+import { BROWN, CDN_LINK, GOLD, numberFormat, random, roundTo, STAR } from "./utils";
 import { Pet as PetDB } from "../db/pet"
 import { Player } from "./Player";
 import { DateTime } from "luxon";
@@ -213,7 +213,7 @@ export class Golem extends Pet {
   use(player: Player) {
     const amount = this.multiplier * player.armor;
     player.armor += amount;
-    return `\`+${numberFormat(amount)}\` Armor`
+    return `\`+${roundTo(amount, 1)}\` Armor`
   }
 }
 
