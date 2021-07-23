@@ -24,13 +24,20 @@ export async function shop(msg: Message, args: string[]) {
 
     const player = await Player.getPlayer(msg.member!);
     const count = player.inventory.all.count(item.id);
+    const isEquipped = player.equippedGears.get(item.id);
 
     const embed = item.show(count);
     const menu = new ButtonHandler(msg, embed, player.id);
 
     // only show if player does not have the item
-    if (count === 0 && item instanceof Gear) {
+    if (!isEquipped && count === 0 && item instanceof Gear) {
       menu.addButton(BLUE_BUTTON, "buy item", async () => {
+        if (player.coins < item.price) {
+          return msg.channel.send(
+            `Insufficient amount of coins`
+          )
+        }
+
         player.addCoin(-item.price);
         const inventoryID = await addInventory(player.id, item.id);
         addGear(inventoryID);
@@ -47,6 +54,11 @@ export async function shop(msg: Message, args: string[]) {
 
           db.run("BEGIN TRANSACTION");
           for (let i = 0; i < count; i++) {
+            if (player.coins < item.price) {
+              return msg.channel.send(
+                `Insufficient amount of coins`
+              )
+            }
             await player.addCoin(-item.price);
             await addInventory(player.id, item.id);
           }
