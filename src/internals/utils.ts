@@ -13,6 +13,7 @@ export const STAR = "⭐";
 export const BLUE_BUTTON = "🔵";
 export const WHITE_BUTTON = "⚪";
 export const RED_BUTTON = "🔴";
+export const BLACK_BUTTON = "⚫";
 export const RETURN_BUTTON = "↩️";
 
 export const NUMBER_BUTTONS = [

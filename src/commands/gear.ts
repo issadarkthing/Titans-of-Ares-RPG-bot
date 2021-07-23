@@ -1,8 +1,9 @@
 import { Message, MessageEmbed } from "discord.js";
 import { unequipGear } from "../db/gear";
 import { ButtonHandler } from "../internals/ButtonHandler";
+import { upgrade } from "../internals/multipleUpgrade";
 import { Player } from "../internals/Player";
-import { BLUE_BUTTON, RETURN_BUTTON, SILVER } from "../internals/utils";
+import { BLACK_BUTTON, BLUE_BUTTON, RED_BUTTON, RETURN_BUTTON, SILVER, WHITE_BUTTON } from "../internals/utils";
 
 
 export async function gearCmd(msg: Message, args: string[]) {
@@ -23,6 +24,24 @@ export async function gearCmd(msg: Message, args: string[]) {
         `Successfully unequip **${gear.name}**!`
       )
     })
+
+    menu.addButton(
+      WHITE_BUTTON,
+      "upgrade item using 1 scroll",
+      upgrade(gear, msg, player, 1),
+    );
+
+    menu.addButton(
+      RED_BUTTON,
+      "upgrade item using 5 scroll",
+      upgrade(gear, msg, player, 5),
+    );
+
+    menu.addButton(
+      BLACK_BUTTON,
+      "upgrade item using 10 scroll",
+      upgrade(gear, msg, player, 10),
+    );
 
     menu.addButton(RETURN_BUTTON, "return to menu", () => {
       gearCmd(msg, []);
