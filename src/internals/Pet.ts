@@ -226,6 +226,7 @@ export class Gryphon extends Pet {
   fragmentImageUrl = CDN_LINK + "574852830125359126/862655845447630888/gryphon.png"
   petInterceptionUrl = CDN_LINK + "852530378916888626/864399592762114078/GryphonCompressed.gif";
   private hasSpawn = false;
+  spawnAt = random().integer(2, 5);
 
   get passiveStatDescription() {
     return `\`+${this.multiplier * 100}%\` speed from base stats`;
@@ -239,13 +240,9 @@ export class Gryphon extends Pet {
 
     if (this.hasSpawn) return false;
     
-    if (round >= 1 && round <= 5) {
-      const x = random().bool();
-
-      if (x) {
-        this.hasSpawn = x;
-        return x;
-      }
+    if (this.spawnAt === round) {
+      this.hasSpawn = true;
+      return true;
     }
 
     return false;
