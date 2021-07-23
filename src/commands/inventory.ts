@@ -40,7 +40,7 @@ export async function inventory(msg: Message, args: string[]) {
     if (Number.isNaN(i)) return msg.channel.send("Please give valid index");
 
     const accItem = itemsList[i];
-    if (!accItem) return msg.channel.send(`No item found at index ${i}`);
+    if (!accItem) return msg.channel.send(`No item found at index ${index}`);
 
     const item = inv.all.get(accItem.value.id)!;
 
