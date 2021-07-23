@@ -146,6 +146,8 @@ export class Player extends Fighter {
     const data = (await getUser(this.id))!;
     const inventory = await getInventory(this.id);
     const pets = (await getAllPets(this.id)).map(x => Pet.fromDB(x));
+    const gears = (await getGears(this.id)).map(x => Gear.fromDB(x));
+    const equippedGears = gears.filter(x => x.equipped);
 
     this.xp = await getTotalXp(this.id);
     this.points = await getTotalPoints(this.id);
@@ -160,6 +162,7 @@ export class Player extends Fighter {
     this.fragmentReward = data.FragmentReward;
     this.buff = data.Buff && new Buff(data.Buff);
     this.pets = List.from(pets);
+    this.equippedGears = List.from(equippedGears);
     this.baseStats = {
       hp: this.hp,
       strength: this.strength,
@@ -170,6 +173,10 @@ export class Player extends Fighter {
     }
 
     this.buff?.use(this);
+    this.activePet?.use(this);
+    this.equippedGears.forEach(gear => {
+      gear.use(this);
+    })
   }
 
   async getRank() {
