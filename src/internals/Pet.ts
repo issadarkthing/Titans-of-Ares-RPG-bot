@@ -1,7 +1,7 @@
-import { oneLine } from "common-tags";
+import { oneLine, stripIndents } from "common-tags";
 import { MessageEmbed } from "discord.js";
 import { Fragment } from "./Fragment";
-import { BROWN, CDN_LINK, GOLD, random, STAR } from "./utils";
+import { BROWN, CDN_LINK, GOLD, numberFormat, random, STAR } from "./utils";
 import { Pet as PetDB } from "../db/pet"
 import { Player } from "./Player";
 import { DateTime } from "luxon";
@@ -28,7 +28,7 @@ export abstract class Pet {
   /** returns true if pet is spawn in that particular round */
   abstract isSpawn(round: number): boolean;
   /** apply passive attribute */
-  abstract use(player: Player): void;
+  abstract use(player: Player): string;
   /** passive multiplier */
   abstract get multiplier(): number;
   /** represents pet level.
@@ -184,7 +184,9 @@ export class Wisp extends Pet {
   }
 
   use(player: Player) {
-    player.hp += player.hp * this.multiplier;
+    const amount = player.hp * this.multiplier;
+    player.hp += amount;
+    return `\`+${Math.round(amount)}\` HP`;
   }
 }
 
@@ -201,7 +203,7 @@ export class Golem extends Pet {
   }
 
   get multiplier() {
-    return this.star * 20;
+    return this.star * 0.1;
   }
 
   isSpawn(round: number) {
@@ -209,7 +211,9 @@ export class Golem extends Pet {
   }
 
   use(player: Player) {
-    player.armor += this.multiplier;
+    const amount = this.multiplier * player.armor;
+    player.armor += amount;
+    return `\`+${numberFormat(amount)}\` Armor`
   }
 }
 
@@ -248,7 +252,9 @@ export class Gryphon extends Pet {
   }
 
   use(player: Player) {
-    player.speed += player.baseStats.speed * this.multiplier;
+    const amount = player.baseStats.speed * this.multiplier;
+    player.speed += amount;
+    return `\`+${Math.round(amount)}\` Speed`;
   }
 }
 
@@ -274,7 +280,9 @@ export class Minotaur extends Pet {
   }
 
   use(player: Player) {
-    player.strength += player.baseStats.strength * this.multiplier;
+    const amount = player.baseStats.strength * this.multiplier
+    player.strength += amount;
+    return `\`+${Math.round(amount)}\` Strength`;
   }
 }
 
@@ -299,7 +307,9 @@ export class Manticore extends Pet {
   }
 
   use(player: Player) {
-    player.critDamage += player.critDamage * this.multiplier;
+    const amount = player.critDamage * this.multiplier;
+    player.critDamage += amount;
+    return `\`+${numberFormat(amount)}\` Crit Damage`
   }
 }
 
@@ -366,9 +376,20 @@ export class Dragon extends Pet {
   }
 
   use(player: Player) {
-    player.strength += player.strength * this.multiplier;
-    player.hp += player.hp * this.multiplier;
-    player.armor += player.armor * this.multiplier;
-    player.speed += player.speed * this.multiplier;
+    const strengthAmount = player.strength * this.multiplier;
+    const hpAmount = player.hp * this.multiplier;
+    const armorAmount = player.armor * this.multiplier;
+    const speedAmount = player.speed * this.multiplier;
+    player.strength += strengthAmount;
+    player.hp += hpAmount;
+    player.armor += armorAmount;
+    player.speed += speedAmount;
+
+    return stripIndents`
+    \`+${Math.round(strengthAmount)}\` Strength
+    \`+${Math.round(hpAmount)}\` HP
+    \`+${numberFormat(armorAmount)}\` Armor
+    \`+${Math.round(speedAmount)}\` Speed
+    `
   }
 }

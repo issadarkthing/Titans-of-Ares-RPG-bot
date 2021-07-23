@@ -60,6 +60,7 @@ export class Player extends Fighter {
   equippedGears: List<Gear>;
   readonly id: string;
   readonly member: GuildMember;
+  readonly petStat?: string;
 
   constructor(data: IPlayer) {
     super(data);
@@ -88,10 +89,10 @@ export class Player extends Fighter {
     }
 
     this.buff?.use(this);
-    this.activePet?.use(this);
     this.equippedGears.forEach(gear => {
       gear.use(this);
     })
+    this.petStat = this.activePet?.use(this);
   }
 
   static async getPlayer(member: GuildMember): Promise<Player> {
@@ -253,6 +254,7 @@ export class Player extends Fighter {
 
         **Pet**
         ${petName}
+        ${this.petStat || ""}
       `);
 
     return embed;
