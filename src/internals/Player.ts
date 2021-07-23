@@ -104,8 +104,10 @@ export class Player extends Fighter {
 
     const attribs: string[] = [];
     for (const [attrib, amount] of stats) {
-      if (attrib === "Crit Rate" || attrib === "Crit Damage") {
-        attribs.push(`\`+${numberFormat(amount)}\` ${attrib}`);
+      if (attrib === "Crit Damage") {
+        attribs.push(`\`+x${numberFormat(amount)}\` ${attrib}`);
+      } else if (attrib === "Crit Rate") {
+        attribs.push(`\`+${numberFormat(amount * 100)}%\` ${attrib}`);
       } else if (attrib === "Armor") {
         attribs.push(`\`+${roundTo(amount, 1)}\` ${attrib}`);
       } else {
