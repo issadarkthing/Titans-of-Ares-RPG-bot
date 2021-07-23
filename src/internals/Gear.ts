@@ -230,7 +230,7 @@ export class Wrist extends Apprentice {
 }
 
 export class LeftRing extends Apprentice {
-  baseStat = 1;
+  baseStat = 0.01;
   price = 200;
 
   get description() {
