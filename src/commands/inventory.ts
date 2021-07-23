@@ -1,4 +1,4 @@
-import { oneLine } from "common-tags";
+import { oneLine, stripIndents } from "common-tags";
 import { Message, MessageEmbed } from "discord.js";
 import { PREFIX } from "..";
 import { equipGear } from "../db/gear";
@@ -27,14 +27,19 @@ import {
 export async function inventory(msg: Message, args: string[]) {
   const player = await Player.getPlayer(msg.member!);
   const inv = player.inventory;
-  const acc = inv.all.aggregate();
+  const itemsList = [
+    ...inv.chests.aggregate(), 
+    ...inv.fragments.aggregate(),
+    ...inv.gears.aggregate(),
+    ...inv.scrolls.aggregate(),
+  ];
   const [index] = args;
 
   if (index) {
     const i = parseInt(index) - 1;
     if (Number.isNaN(i)) return msg.channel.send("Please give valid index");
 
-    const accItem = acc[i];
+    const accItem = itemsList[i];
     if (!accItem) return msg.channel.send(`No item found at index ${i}`);
 
     const item = inv.all.get(accItem.value.id)!;
@@ -207,15 +212,48 @@ export async function inventory(msg: Message, args: string[]) {
     return;
   }
 
-  const itemsList = acc
-    .reduce((acc, v, i) => {
-      return acc + `\n${i + 1}. \`x${v.count} ${v.value.name}\``;
-    }, "")
-    .trim();
+
+  const chestList = [];
+  const fragmentList = [];
+  const gearList = [];
+  const othersList = [];
+
+  let i = 1;
+  for (const {value: item, count} of itemsList) {
+    const line = `${i}. \`x${count} ${item.name}\``;
+    switch (true) {
+      case item instanceof Chest:
+        chestList.push(line);
+        break;
+      case item instanceof Fragment:
+        fragmentList.push(line);
+        break;
+      case item instanceof Gear:
+        gearList.push(line);
+        break;
+      default:
+        othersList.push(line);
+    }
+    i++;
+  }
+
+  const list = stripIndents`
+  **Treasure Chests**
+  ${chestList.join("\n")}
+
+  **Pet Fragments**
+  ${fragmentList.join("\n")}
+
+  **Gear**
+  ${gearList.join("\n")}
+
+  **Other Materials**
+  ${othersList.join("\n")}
+  `
 
   const embed = new MessageEmbed()
     .setColor(GOLD)
-    .addField("Inventory", itemsList || "None")
+    .addField("Inventory", list)
     .addField(
       "\u200b",
       oneLine`Use command \`${PREFIX}inventory <number>\` 
