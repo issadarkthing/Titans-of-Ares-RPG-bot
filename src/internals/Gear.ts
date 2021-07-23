@@ -7,7 +7,7 @@ import { Gear as GearDB } from "../db/gear";
 
 export abstract class Gear extends Item {
   abstract name: string;
-  abstract use(fighter: Fighter): void;
+  abstract use(fighter: Fighter): { attrib: string, amount: number };
   abstract description: string;
   abstract price: number;
   abstract set: string;
@@ -127,6 +127,7 @@ export class Helmet extends Apprentice {
 
   use(fighter: Fighter) {
     fighter.armor += this.increment;
+    return { attrib: "Armor", amount: this.increment };
   }
 }
 
@@ -140,6 +141,7 @@ export class Amulet extends Apprentice {
 
   use(fighter: Fighter) {
     fighter.hp += this.increment;
+    return { attrib: "HP", amount: this.increment };
   }
 }
 
@@ -153,6 +155,7 @@ export class Chest extends Apprentice {
 
   use(fighter: Fighter) {
     fighter.armor += this.increment;
+    return { attrib: "Armor", amount: this.increment };
   }
 }
 
@@ -166,6 +169,7 @@ export class Pants extends Apprentice {
 
   use(fighter: Fighter) {
     fighter.armor += this.increment;
+    return { attrib: "Armor", amount: this.increment };
   }
 }
 
@@ -179,6 +183,7 @@ export class Boots extends Apprentice {
 
   use(fighter: Fighter) {
     fighter.speed += this.increment;
+    return { attrib: "Speed", amount: this.increment };
   }
 }
 
@@ -192,6 +197,7 @@ export class Gauntlets extends Apprentice {
 
   use(fighter: Fighter) {
     fighter.armor += this.increment;
+    return { attrib: "Armor", amount: this.increment };
   }
 }
 
@@ -205,6 +211,7 @@ export class Belt extends Apprentice {
 
   use(fighter: Fighter) {
     fighter.armor += this.increment;
+    return { attrib: "Armor", amount: this.increment };
   }
 }
 
@@ -218,6 +225,7 @@ export class Wrist extends Apprentice {
 
   use(fighter: Fighter) {
     fighter.armor += this.increment;
+    return { attrib: "Armor", amount: this.increment };
   }
 }
 
@@ -231,6 +239,7 @@ export class LeftRing extends Apprentice {
 
   use(fighter: Fighter) {
     fighter.critRate += this.increment;
+    return { attrib: "Crit Rate", amount: this.increment };
   }
 }
 
@@ -244,6 +253,7 @@ export class RightRing extends Apprentice {
 
   use(fighter: Fighter) {
     fighter.critDamage += this.increment;
+    return { attrib: "Crit Damage", amount: this.increment };
   }
 }
 
@@ -257,5 +267,6 @@ export class Sword extends Apprentice {
 
   use(fighter: Fighter) {
     fighter.strength += this.increment;
+    return { attrib: "Strength", amount: this.increment };
   }
 }

@@ -1,4 +1,4 @@
-import { getLevel, getStats, GOLD, numberFormat, STAR } from "./utils";
+import { getLevel, getStats, GOLD, numberFormat, roundTo, STAR } from "./utils";
 import { GuildMember, MessageEmbed } from "discord.js";
 import { IFighter, Fighter, BaseStats } from "./Fighter";
 import { setCoin } from "../db/coin";
@@ -60,7 +60,8 @@ export class Player extends Fighter {
   equippedGears: List<Gear>;
   readonly id: string;
   readonly member: GuildMember;
-  readonly petStat?: string;
+  private petStat?: string;
+  private gearStat?: string;
 
   constructor(data: IPlayer) {
     super(data);
@@ -89,9 +90,30 @@ export class Player extends Fighter {
     }
 
     this.buff?.use(this);
-    this.equippedGears.forEach(gear => {
-      gear.use(this);
-    })
+    const stats = this.equippedGears.toArray().reduce((acc, gear) => {
+      const {attrib, amount} = gear.use(this);
+
+      if (acc.has(attrib)) {
+        acc.set(attrib, acc.get(attrib)! + amount);
+      } else {
+        acc.set(attrib, amount);
+      }
+
+      return acc;
+    }, new Map<string, number>());
+
+    const attribs: string[] = [];
+    for (const [attrib, amount] of stats) {
+      if (attrib === "Crit Rate" || attrib === "Crit Damage") {
+        attribs.push(`\`+${numberFormat(amount)}\` ${attrib}`);
+      } else if (attrib === "Armor") {
+        attribs.push(`\`+${roundTo(amount, 1)}\` ${attrib}`);
+      } else {
+        attribs.push(`\`+${Math.round(amount)}\` ${attrib}`);
+      }
+    }
+
+    this.gearStat = attribs.join("\n");
     this.petStat = this.activePet?.use(this);
   }
 
@@ -173,11 +195,33 @@ export class Player extends Fighter {
       critDamage: this.critDamage,
     }
 
+
     this.buff?.use(this);
-    this.activePet?.use(this);
-    this.equippedGears.forEach(gear => {
-      gear.use(this);
-    })
+    const stats = this.equippedGears.toArray().reduce((acc, gear) => {
+      const {attrib, amount} = gear.use(this);
+
+      if (acc.has(attrib)) {
+        acc.set(attrib, acc.get(attrib)! + amount);
+      } else {
+        acc.set(attrib, amount);
+      }
+
+      return acc;
+    }, new Map<string, number>());
+
+    const attribs: string[] = [];
+    for (const [attrib, amount] of stats) {
+      if (attrib === "Crit Rate" || attrib === "Crit Damage") {
+        attribs.push(`\`+${numberFormat(amount)}\` ${attrib}`);
+      } else if (attrib === "Armor") {
+        attribs.push(`\`+${roundTo(amount, 1)}\` ${attrib}`);
+      } else {
+        attribs.push(`\`+${Math.round(amount)}\` ${attrib}`);
+      }
+    }
+
+    this.gearStat = attribs.join("\n");
+    this.petStat = this.activePet?.use(this);
   }
 
   async getRank() {
@@ -226,7 +270,7 @@ export class Player extends Fighter {
     const hp = Math.round(this.hp);
     const strength = Math.round(this.strength);
     const speed = Math.round(this.speed);
-    const armor = numberFormat(this.armor);
+    const armor = roundTo(this.armor, 1);
     const critRate = numberFormat(this.critRate * 100);
     const critDamage = numberFormat(this.critDamage);
     const petName = this.activePet ? 
@@ -255,6 +299,9 @@ export class Player extends Fighter {
         **Pet**
         ${petName}
         ${this.petStat || ""}
+
+        **Gears**
+        ${this.gearStat || ""}
       `);
 
     return embed;
