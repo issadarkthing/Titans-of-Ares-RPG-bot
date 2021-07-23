@@ -13,8 +13,7 @@ export abstract class Gear extends Item {
   abstract set: string;
   abstract baseStat: number;
   equipped = false;
-  upgradeAnimationUrl = CDN_LINK + 
-    "768053872400007218/866606356861026324/ligin-s-crystal-spiral-downsized-large.gif";
+  upgradeAnimationUrl = CDN_LINK + "852530378916888626/867765847312826398/image0.gif";
   level = 0;
 
   get id() {
