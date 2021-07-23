@@ -15,7 +15,7 @@ export class Scroll extends Item {
     const embed = new MessageEmbed()
       .setColor(BROWN)
       .setTitle("Upgrade Scroll")
-      .setDescription("Scroll is used to upgrade gears")
+      .setDescription("Scroll is used to upgrade normal gears")
       .addField("Price", this.price, true)
       .addField("Count", count, true)
 
