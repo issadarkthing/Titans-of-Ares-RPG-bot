@@ -199,7 +199,7 @@ export class Golem extends Pet {
   petInterceptionUrl = CDN_LINK + "852530378916888626/864139662870970388/ezgif-7-4cc290f06da8.gif";
 
   get passiveStatDescription() {
-    return `\`+${this.multiplier}\` armor`;
+    return `\`+${this.multiplier * 100}%\` armor from gear`;
   }
 
   get multiplier() {

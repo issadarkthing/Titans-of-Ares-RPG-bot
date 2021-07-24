@@ -74,6 +74,18 @@ export abstract class Gear extends Item {
     return embed;
   }
 
+  inspect(scroll: number) {
+    const embed = new MessageEmbed()
+      .setColor(BROWN)
+      .setTitle(this.name)
+      .setDescription(`\`${this.description}\``)
+      .addField("Price", this.price, true)
+      .addField("Upgrade Scrolls", scroll, true)
+      .addField("Level", this.level, true)
+
+    return embed;
+  }
+
   upgradeAnimation() {
     const embed = new MessageEmbed()
       .setColor(GOLD)
@@ -251,6 +263,10 @@ export class LeftRing extends Apprentice {
   baseStat = 0.01;
   price = 200;
 
+  get name() {
+    return `${this.set} Left Ring`;
+  }
+
   get description() {
     return `+${roundTo(this.increment, 2)} Crit Rate`;
   }
@@ -265,8 +281,12 @@ export class RightRing extends Apprentice {
   baseStat = 0.1;
   price = 200;
 
+  get name() {
+    return `${this.set} Right Ring`;
+  }
+
   get description() {
-    return `+${roundTo(this.increment, 2)} Crit Damage`;
+    return `+${roundTo(this.increment, 2)} Crit Dmg`;
   }
 
   use(fighter: Fighter) {

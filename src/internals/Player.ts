@@ -60,8 +60,8 @@ export class Player extends Fighter {
   equippedGears: List<Gear>;
   readonly id: string;
   readonly member: GuildMember;
-  private petStat?: string;
-  private gearStat?: string;
+  petStat?: string;
+  gearStat?: string;
 
   constructor(data: IPlayer) {
     super(data);
@@ -277,6 +277,7 @@ export class Player extends Fighter {
     const critDamage = numberFormat(this.critDamage);
     const petName = this.activePet ? 
       `${this.activePet.name} \`${this.activePet.star} ${STAR}\`` : "None"
+    const petPassiveDesc = this.activePet?.passiveStatDescription;
 
     const embed = new MessageEmbed()
       .setColor(GOLD)
@@ -300,7 +301,7 @@ export class Player extends Fighter {
 
         **Pet**
         ${petName}
-        ${this.petStat || ""}
+        ${this.petStat || ""} ${petPassiveDesc ? `(${petPassiveDesc})` : ""}
 
         **Gears**
         ${this.gearStat || ""}

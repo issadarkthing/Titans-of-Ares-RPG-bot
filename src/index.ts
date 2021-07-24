@@ -24,6 +24,8 @@ import { inventory } from "./commands/inventory";
 import { pet } from "./commands/pet";
 import { shop } from "./commands/shop";
 import { gearCmd } from "./commands/gear";
+import { coinShop } from "./commands/coinShop";
+import { arenaShop } from "./commands/arenaShop";
 
 const sqlite3 = verbose();
 export const PREFIX = process.env.PREFIX!;
@@ -118,6 +120,12 @@ client.on('message', (msg) => {
     case 'shops':
     case 'shop':
       shop(msg, args);
+      break;
+    case 'coinshop':
+      coinShop(msg, args);
+      break;
+    case 'arenashop':
+      arenaShop(msg, args);
       break;
     case 'gear':
       gearCmd(msg, args);

@@ -16,7 +16,8 @@ export async function gearCmd(msg: Message, args: string[]) {
 
   if (gear) {
 
-    const menu = new ButtonHandler(msg, gear.show(1), player.id);
+    const scrollCount = player.inventory.all.count("scroll");
+    const menu = new ButtonHandler(msg, gear.inspect(scrollCount), player.id);
 
     menu.addButton(BLUE_BUTTON, "unequip gear", () => {
       unequipGear(player.id, gear.id);
@@ -33,13 +34,13 @@ export async function gearCmd(msg: Message, args: string[]) {
 
     menu.addButton(
       RED_BUTTON,
-      "upgrade item using 5 scroll",
+      "upgrade item using 5 scrolls",
       upgrade(gear, msg, player, 5),
     );
 
     menu.addButton(
       BLACK_BUTTON,
-      "upgrade item using 10 scroll",
+      "upgrade item using 10 scrolls",
       upgrade(gear, msg, player, 10),
     );
 
@@ -54,14 +55,15 @@ export async function gearCmd(msg: Message, args: string[]) {
   }
   
   const list = gears
-    .map((gear, i) => `${i + 1}. \`Lvl ${gear.level} ${gear.name}\``)
+    .map((gear, i) => `${i + 1}. \`Lvl ${gear.level} ${gear.name} ${gear.description}\``)
     .join("\n");
 
   const embed = new MessageEmbed()
     .setColor(SILVER)
-    .setDescription("Showing all currently equipped gears")
-    .setTitle("Gears")
+    .setDescription("Showing all current equipped gear")
+    .setTitle("Gear")
     .addField("\u200b", list || "none")
+    .addField("Total stats from gear", player.gearStat || "none")
 
   msg.channel.send(embed);
 }

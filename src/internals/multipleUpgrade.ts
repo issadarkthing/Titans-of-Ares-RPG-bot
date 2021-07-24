@@ -13,6 +13,7 @@ export function upgrade(item: Gear, msg: Message, player: Player, count: number)
       await player.sync();
       const itemCount = player.inventory.all.count("scroll");
       if (itemCount === 0) return msg.channel.send("Insufficient scroll");
+      if (item.level >= 10) return msg.channel.send("Gear is on max level");
 
       await removeInventory(player.id, "scroll");
       const animation = await msg.channel.send(item.upgradeAnimation());

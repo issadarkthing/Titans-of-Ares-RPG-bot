@@ -220,7 +220,7 @@ export async function inventory(msg: Message, args: string[]) {
 
   let i = 1;
   for (const {value: item, count} of itemsList) {
-    const line = `${i}. \`x${count} ${item.name}\``;
+    let line = `${i}. \`x${count} ${item.name}\``;
     switch (true) {
       case item instanceof Chest:
         chestList.push(line);
@@ -229,6 +229,7 @@ export async function inventory(msg: Message, args: string[]) {
         fragmentList.push(line);
         break;
       case item instanceof Gear:
+        line = `${i}. \`x${count} ${item.name} Lvl ${(item as Gear).level}\``;
         gearList.push(line);
         break;
       default:

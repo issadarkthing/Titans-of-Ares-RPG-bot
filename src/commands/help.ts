@@ -32,6 +32,13 @@ export default function(msg: Message, args: string[]) {
   This is where you manage your pets where you can activate/deactivate your pets.
   Pet fragments can be earned by winning medals in the Monthly Challenges and as
   a very low drop rate when uploading workouts.
+
+  **$shop**
+  This will open all the possible shops. You can buy gear and upgrade scrolls here.
+
+  **$gear**
+  This will show all your equipped gear and their stats. You can upgrade
+  equipped gear by inspecting items here.
   `
 
 
