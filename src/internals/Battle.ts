@@ -8,12 +8,11 @@ import {
   GOLD,
   PLAYER_CRIT_GIF,
   CHALLENGER_CRIT_GIF,
-  numberFormat,
 } from "./utils";
 import { Fighter } from "./Fighter";
 import { sleep } from "./utils";
 import { Dragon, Golem, Gryphon, Manticore, Minotaur, Wisp } from "./Pet";
-import { oneLine, stripIndents } from "common-tags";
+import { oneLine } from "common-tags";
 
 
 export class Battle {
@@ -76,6 +75,7 @@ export class Battle {
     }
 
     let isCrit = p1.isCriticalHit();
+    let setBonusArmor = 0;
 
     const pet = this.player.activePet;
 
@@ -167,10 +167,18 @@ export class Battle {
           return;
         }
       }
+
+      if (this.challengerRound === 1) {
+        const equippedGears = this.player.equippedGears;
+        const setBonus = equippedGears.get(0)?.bonus(equippedGears.toArray()) || 0;
+        
+        setBonusArmor = setBonus;
+      }
     }
 
     const attackRate = isCrit ? p1.critDamage * p1.strength : p1.strength;
-    const damageReduction = p2.getArmorReduction(attackRate);
+    const bonusArmor = setBonusArmor * attackRate;
+    const damageReduction = p2.getArmorReduction(attackRate) + bonusArmor;
     const damageDone = attackRate - damageReduction;
     p2.hp -= damageDone;
 
