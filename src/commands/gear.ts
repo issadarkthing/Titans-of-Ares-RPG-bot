@@ -64,6 +64,7 @@ export async function gearCmd(msg: Message, args: string[]) {
     .setTitle("Gear")
     .addField("\u200b", list || "none")
     .addField("Total stats from gear", player.gearStat || "none")
+    .addField(`Apprentice Set Reflect Skill`, `${player.equippedGears.length}/11`)
 
   msg.channel.send(embed);
 }

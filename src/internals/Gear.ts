@@ -4,6 +4,7 @@ import { Item } from "./Item";
 import { List } from "./List";
 import { BROWN, CDN_LINK, GOLD, random, roundTo } from "./utils";
 import { Gear as GearDB } from "../db/gear";
+import { oneLine } from "common-tags";
 
 export abstract class Gear extends Item {
   abstract name: string;
@@ -101,8 +102,10 @@ export abstract class Gear extends Item {
   }
 }
 
-abstract class Apprentice extends Gear {
+export abstract class Apprentice extends Gear {
   set = "Apprentice";
+  reflectAnimationUrl = CDN_LINK + 
+    "852530378916888626/868442912294309898/3o7WTqRKlVRj0wsYQo.gif";
 
   get name() {
     return `${this.set} ${this.constructor.name}`;
@@ -139,6 +142,18 @@ abstract class Apprentice extends Gear {
       default:
         return 0;
     }
+  }
+
+  reflectAnimation(playerName: string, damage: number, bonus: number) {
+    const embed = new MessageEmbed()
+      .setColor(GOLD)
+      .setTitle(`${this.set} Set Reflect Skill`)
+      .setImage(this.reflectAnimationUrl)
+      .setDescription(
+        oneLine`${playerName} reflected \`${Math.round(damage)} damage (${bonus * 100}%)\``
+      )
+
+    return embed;
   }
 
   get id() {
@@ -268,7 +283,7 @@ export class LeftRing extends Apprentice {
   }
 
   get description() {
-    return `+${roundTo(this.increment, 2)} Crit Rate`;
+    return `+${roundTo(this.increment * 100, 1)}% Crit Rate`;
   }
 
   use(fighter: Fighter) {

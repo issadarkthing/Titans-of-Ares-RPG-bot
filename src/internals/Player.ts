@@ -62,6 +62,7 @@ export class Player extends Fighter {
   readonly member: GuildMember;
   petStat?: string;
   gearStat?: string;
+  setBonusActive: boolean;
 
   constructor(data: IPlayer) {
     super(data);
@@ -116,6 +117,7 @@ export class Player extends Fighter {
     }
 
     this.gearStat = attribs.join("\n");
+    this.setBonusActive = this.equippedGears.length === 11;
     this.petStat = this.activePet?.use(this);
   }
 
@@ -278,6 +280,10 @@ export class Player extends Fighter {
     const petName = this.activePet ? 
       `${this.activePet.name} \`${this.activePet.star} ${STAR}\`` : "None"
     const petPassiveDesc = this.activePet?.passiveStatDescription;
+    const equippedGears = this.equippedGears;
+    const gear = equippedGears.get(0);
+    const setBonus = gear?.bonus(equippedGears.toArray());
+    const armorBonusSetDesc = setBonus ? `${gear?.set} Set Reflect Skill \`Reflect ${setBonus * 100}% of opponent attack\`` : "";
 
     const embed = new MessageEmbed()
       .setColor(GOLD)
@@ -305,6 +311,7 @@ export class Player extends Fighter {
 
         **Gears**
         ${this.gearStat || ""}
+        ${armorBonusSetDesc}
       `);
 
     return embed;

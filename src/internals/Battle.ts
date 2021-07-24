@@ -13,6 +13,7 @@ import { Fighter } from "./Fighter";
 import { sleep } from "./utils";
 import { Dragon, Golem, Gryphon, Manticore, Minotaur, Wisp } from "./Pet";
 import { oneLine } from "common-tags";
+import { Apprentice } from "./Gear";
 
 
 export class Battle {
@@ -75,7 +76,8 @@ export class Battle {
     }
 
     let isCrit = p1.isCriticalHit();
-    let setBonusArmor = 0;
+    let reflected = false;
+    let reflection = 0;
 
     const pet = this.player.activePet;
 
@@ -170,15 +172,27 @@ export class Battle {
 
       if (this.challengerRound === 1) {
         const equippedGears = this.player.equippedGears;
-        const setBonus = equippedGears.get(0)?.bonus(equippedGears.toArray()) || 0;
+        const gear = equippedGears.get(0);
+        const setBonus = gear?.bonus(equippedGears.toArray());
         
-        setBonusArmor = setBonus;
+        if (setBonus && gear) {
+          reflection = p1.strength * setBonus;
+          const damageReduction = p1.getArmorReduction(reflection);
+          const damageDone = reflection - damageReduction;
+          p1.hp -= damageDone;
+          reflected = true;
+
+          if (gear instanceof Apprentice) {
+            const reflectAnimation = gear.reflectAnimation(p2.name, damageDone, setBonus);
+            await this.battleMsg?.edit(reflectAnimation);
+            await sleep(6000);
+          }
+        }
       }
     }
 
     const attackRate = isCrit ? p1.critDamage * p1.strength : p1.strength;
-    const bonusArmor = setBonusArmor * attackRate;
-    const damageReduction = p2.getArmorReduction(attackRate) + bonusArmor;
+    const damageReduction = reflected ? reflection : p2.getArmorReduction(attackRate);
     const damageDone = attackRate - damageReduction;
     p2.hp -= damageDone;
 

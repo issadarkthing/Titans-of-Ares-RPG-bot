@@ -30,9 +30,7 @@ export function upgrade(item: Gear, msg: Message, player: Player, count: number)
         break;
 
       } else {
-        await animation.edit(
-          `Upgrade process for ${item.name} failed`
-        )
+        await animation.edit(`Upgrade process for ${item.name} failed`);
       }
     }
   }
