@@ -13,7 +13,7 @@ import { Fighter } from "./Fighter";
 import { sleep } from "./utils";
 import { Dragon, Golem, Gryphon, Manticore, Minotaur, Wisp } from "./Pet";
 import { oneLine } from "common-tags";
-import { Apprentice } from "./Gear";
+import { Apprentice, Gear } from "./Gear";
 
 
 export class Battle {
@@ -172,8 +172,8 @@ export class Battle {
 
       if (this.challengerRound === 1) {
         const equippedGears = this.player.equippedGears;
-        const gear = equippedGears.get(0);
-        const setBonus = gear?.bonus(equippedGears.toArray());
+        const gear = equippedGears.random();
+        const setBonus = Gear.getBonus(equippedGears);
         
         if (setBonus && gear) {
           const attackRate = isCrit ? p1.critDamage * p1.strength : p1.strength;

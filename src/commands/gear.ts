@@ -1,6 +1,8 @@
+import { stripIndents } from "common-tags";
 import { Message, MessageEmbed } from "discord.js";
 import { unequipGear } from "../db/gear";
 import { ButtonHandler } from "../internals/ButtonHandler";
+import { Apprentice } from "../internals/Gear";
 import { upgrade } from "../internals/multipleUpgrade";
 import { Player } from "../internals/Player";
 import { BLACK_BUTTON, BLUE_BUTTON, RED_BUTTON, RETURN_BUTTON, SILVER, WHITE_BUTTON } from "../internals/utils";
@@ -51,6 +53,33 @@ export async function gearCmd(msg: Message, args: string[]) {
     menu.addCloseButton();
     menu.run();
 
+    return;
+
+  } else if (index === "bonus") {
+
+    const equipped = player.equippedGears.filter(x => x instanceof Apprentice);
+    const lvl1 = equipped.length;
+    const lvl2 = equipped.filter(x => x.level >= 5).length;
+    const lvl3 = equipped.filter(x => x.level >= 10).length;
+
+    let active = 0;
+    for (const lvl of [lvl1, lvl2, lvl3]) {
+      if (lvl === 11) {
+        active++;
+      }
+    }
+
+    const text = stripIndents`
+    Full Apprentice Set +0  | 10% reflect | \`${lvl1}/11\` ${active === 1 ? "Active" : ""}
+    Full Apprentice Set +5  | 30% reflect | \`${lvl2}/11\` ${active === 2 ? "Active" : ""}
+    Full Apprentice Set +10 | 50% reflect | \`${lvl3}/11\` ${active === 3 ? "Active" : ""}`
+
+    const embed = new MessageEmbed()
+      .setColor(SILVER)
+      .setTitle("Apprentice Set Reflect Skill")
+      .setDescription(text)
+
+    msg.channel.send(embed);
     return;
   }
   

@@ -35,6 +35,10 @@ export class List<T extends Identifiable> {
     return this.values.find(pred);
   }
 
+  every(pred: (x: T, i: number) => boolean) {
+    return this.values.every(pred);
+  }
+
   random() {
     return random().pick(this.values);
   }

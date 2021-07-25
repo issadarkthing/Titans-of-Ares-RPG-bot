@@ -13,7 +13,7 @@ export abstract class Gear extends Item {
   abstract price: number;
   abstract set: string;
   abstract baseStat: number;
-  abstract bonus(gears: Gear[]): number;
+  abstract bonus(gears: List<Gear>): number;
   equipped = false;
   upgradeAnimationUrl = CDN_LINK + "852530378916888626/867765847312826398/image0.gif";
   level = 0;
@@ -100,6 +100,16 @@ export abstract class Gear extends Item {
   upgrade() {
     return random().bool(this.upgradeChance);
   }
+
+  isBonus(gears: List<Gear>) {
+    return gears.length === 11;
+  }
+
+  /** returns magnitude of bonus */
+  static getBonus(gears: List<Gear>) {
+    const gear = gears.get(0);
+    return gear?.bonus(gears);
+  }
 }
 
 export abstract class Apprentice extends Gear {
@@ -127,7 +137,7 @@ export abstract class Apprentice extends Gear {
     ]);
   }
 
-  bonus(gears: Gear[]) {
+  bonus(gears: List<Gear>) {
 
     const isBonus = (minLevel: number) => 
       gears.length === 11 && 

@@ -281,8 +281,8 @@ export class Player extends Fighter {
       `${this.activePet.name} \`${this.activePet.star} ${STAR}\`` : "None"
     const petPassiveDesc = this.activePet?.passiveStatDescription;
     const equippedGears = this.equippedGears;
-    const gear = equippedGears.get(0);
-    const setBonus = gear?.bonus(equippedGears.toArray());
+    const setBonus = Gear.getBonus(equippedGears);
+    const gear = equippedGears.random();
     const armorBonusSetDesc = setBonus ? `${gear?.set} Set Reflect Skill \`Reflect ${setBonus * 100}% of opponents first attack\`` : "";
 
     const embed = new MessageEmbed()
