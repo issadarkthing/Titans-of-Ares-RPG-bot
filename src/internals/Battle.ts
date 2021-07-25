@@ -176,7 +176,8 @@ export class Battle {
         const setBonus = gear?.bonus(equippedGears.toArray());
         
         if (setBonus && gear) {
-          reflection = p1.strength * setBonus;
+          const attackRate = isCrit ? p1.critDamage * p1.strength : p1.strength;
+          reflection = attackRate * setBonus;
           const damageReduction = p1.getArmorReduction(reflection);
           const damageDone = reflection - damageReduction;
           p1.hp -= damageDone;

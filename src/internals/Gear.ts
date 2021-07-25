@@ -130,13 +130,15 @@ export abstract class Apprentice extends Gear {
   bonus(gears: Gear[]) {
 
     const isBonus = (minLevel: number) => 
-      gears.length === 11 && gears.every(gear => gear.level >= minLevel);
+      gears.length === 11 && 
+        gears.every(gear => (gear instanceof Apprentice) 
+          && gear.level >= minLevel);
 
     switch (true) {
       case isBonus(10):
-        return 0.3;
+        return 0.5;
       case isBonus(5):
-        return 0.2;
+        return 0.3;
       case isBonus(0):
         return 0.1;
       default:

@@ -86,6 +86,8 @@ export async function coinShop(msg: Message, args: string[]) {
   const embed = new MessageEmbed()
     .setColor(BROWN)
     .setTitle("Coin Shop")
+    .setDescription(oneLine`Apprentice full set bonus reflects 10%/30%/50% of
+      opponents first hit (Full set +0, +5 or +10)`)
     .addField("---", list)
     .addField(
       "\u200b",

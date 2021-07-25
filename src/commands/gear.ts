@@ -58,13 +58,16 @@ export async function gearCmd(msg: Message, args: string[]) {
     .map((gear, i) => `${i + 1}. \`Lvl ${gear.level} ${gear.name} ${gear.description}\``)
     .join("\n");
 
+  const bonusSetDesc = `Apprentice full set bonus reflects 10%/30%/50% of opponents first hit.`;
+
   const embed = new MessageEmbed()
     .setColor(SILVER)
     .setDescription("Showing all current equipped gear")
     .setTitle("Gear")
     .addField("\u200b", list || "none")
     .addField("Total stats from gear", player.gearStat || "none")
-    .addField(`Apprentice Set Reflect Skill`, `${player.equippedGears.length}/11`)
+    .addField(`Apprentice Set Reflect Skill`, 
+      `${bonusSetDesc}\n${player.equippedGears.length}/11`)
 
   msg.channel.send(embed);
 }

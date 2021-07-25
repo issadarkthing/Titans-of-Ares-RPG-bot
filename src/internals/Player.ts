@@ -283,7 +283,7 @@ export class Player extends Fighter {
     const equippedGears = this.equippedGears;
     const gear = equippedGears.get(0);
     const setBonus = gear?.bonus(equippedGears.toArray());
-    const armorBonusSetDesc = setBonus ? `${gear?.set} Set Reflect Skill \`Reflect ${setBonus * 100}% of opponent attack\`` : "";
+    const armorBonusSetDesc = setBonus ? `${gear?.set} Set Reflect Skill \`Reflect ${setBonus * 100}% of opponents first attack\`` : "";
 
     const embed = new MessageEmbed()
       .setColor(GOLD)
