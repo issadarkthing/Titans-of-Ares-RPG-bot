@@ -25,7 +25,7 @@ export async function coinShop(msg: Message, args: string[]) {
     const count = player.inventory.all.count(item.id);
     const isEquipped = player.equippedGears.get(item.id);
 
-    const embed = item.show(count);
+    const embed = item.show(count + (isEquipped ? 1 : 0));
     const menu = new ButtonHandler(msg, embed, player.id);
 
     // only show if player does not have the item

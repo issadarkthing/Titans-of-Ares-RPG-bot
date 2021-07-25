@@ -43,15 +43,17 @@ export async function inventory(msg: Message, args: string[]) {
     if (!accItem) return msg.channel.send(`No item found at index ${index}`);
 
     const item = inv.all.get(accItem.value.id)!;
+    let itemCount = accItem.count;
 
     if (item instanceof Fragment) {
       const pet = player.pets.get(item.pet.id);
       if (pet) {
         item.pet = pet;
       }
+
     }
 
-    const button = new ButtonHandler(msg, item.show(accItem.count), player.id);
+    const button = new ButtonHandler(msg, item.show(itemCount), player.id);
 
     if (item instanceof Chest) {
       button.addButton("🔵", "use the item", async () => {
