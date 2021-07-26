@@ -40,6 +40,7 @@ export class List<T extends Identifiable> {
   }
 
   random() {
+    if (this.values.length === 0) return;
     return random().pick(this.values);
   }
 
