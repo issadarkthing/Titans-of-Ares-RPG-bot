@@ -62,6 +62,7 @@ export class Player extends Fighter {
   readonly member: GuildMember;
   petStat?: string;
   gearStat?: string;
+  gearStatsValue: Map<string, number>;
   setBonusActive: boolean;
 
   constructor(data: IPlayer) {
@@ -116,6 +117,7 @@ export class Player extends Fighter {
       }
     }
 
+    this.gearStatsValue = stats;
     this.gearStat = attribs.join("\n");
     this.setBonusActive = this.equippedGears.length === 11;
     this.petStat = this.activePet?.use(this);

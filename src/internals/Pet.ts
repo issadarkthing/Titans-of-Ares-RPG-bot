@@ -265,11 +265,11 @@ export class Minotaur extends Pet {
   petInterceptionUrl = CDN_LINK + "852530378916888626/864399618660892682/Minotaurcompressed.gif";
 
   get passiveStatDescription() {
-    return `\`+${this.multiplier * 100}%\` strength from base stats`;
+    return `\`+${this.multiplier * 100}%\` strength from gear stats`;
   }
 
   get multiplier() {
-    return this.star * 0.05;
+    return this.star * 0.1;
   }
 
   isSpawn(round: number) {
@@ -277,7 +277,8 @@ export class Minotaur extends Pet {
   }
 
   use(player: Player) {
-    const amount = player.baseStats.strength * this.multiplier
+    const strength = player.gearStatsValue.get("Strength") || 0;
+    const amount = strength * this.multiplier
     player.strength += amount;
     return `\`+${Math.round(amount)}\` Strength`;
   }

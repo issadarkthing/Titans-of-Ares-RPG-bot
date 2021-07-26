@@ -323,7 +323,7 @@ export class RightRing extends Apprentice {
 }
 
 export class Sword extends Apprentice {
-  baseStat = 10;
+  baseStat = 20;
   price = 500;
 
   get description() {
