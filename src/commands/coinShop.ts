@@ -3,6 +3,7 @@ import { Message, MessageEmbed } from "discord.js";
 import { db, PREFIX } from "..";
 import { addGear } from "../db/gear";
 import { addInventory } from "../db/inventory";
+import { dbRun } from "../db/promiseWrapper";
 import { ButtonHandler } from "../internals/ButtonHandler";
 import { Gear } from "../internals/Gear";
 import { Player } from "../internals/Player";
@@ -44,7 +45,7 @@ export async function coinShop(msg: Message, args: string[]) {
     } else if (item instanceof Scroll) {
       const buyMany = (count: number) => {
         return async () => {
-          db.run("BEGIN TRANSACTION");
+          await dbRun("BEGIN TRANSACTION");
           for (let i = 0; i < count; i++) {
             if (player.coins < item.price) {
               return msg.channel.send(`Insufficient amount of coins`);
@@ -52,7 +53,7 @@ export async function coinShop(msg: Message, args: string[]) {
             await player.addCoin(-item.price);
             await addInventory(player.id, item.id);
           }
-          db.run("COMMIT");
+          await dbRun("COMMIT");
 
           msg.channel.send(
             `Successfully purchased **x${count} ${item.name}**!`
