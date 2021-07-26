@@ -80,7 +80,6 @@ export abstract class Gear extends Item {
       .setColor(BROWN)
       .setTitle(this.name)
       .setDescription(`\`${this.description}\``)
-      .addField("Price", this.price, true)
       .addField("Upgrade Scrolls", scroll, true)
       .addField("Level", this.level, true)
 

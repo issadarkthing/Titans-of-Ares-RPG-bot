@@ -181,6 +181,9 @@ export async function inventory(msg: Message, args: string[]) {
         }
       );
     } else if (item instanceof Gear) {
+      const scroll = player.inventory.all.count("scroll");
+      const button = new ButtonHandler(msg, item.inspect(scroll), player.id);
+
       button.addButton(BLUE_BUTTON, "equip gear", () => {
         equipGear(player.id, item.id);
         msg.channel.send(`Successfully equipped **${item.name}**!`);
@@ -203,6 +206,13 @@ export async function inventory(msg: Message, args: string[]) {
         "upgrade item using 10 scroll",
         upgrade(item, msg, player, 10)
       );
+
+      button.addButton(RETURN_BUTTON, "return to inventory list", () => {
+        inventory(msg, []);
+      });
+      button.addCloseButton();
+      button.run();
+      return;
     }
 
     button.addButton(RETURN_BUTTON, "return to inventory list", () => {

@@ -88,7 +88,6 @@ export async function gearCmd(msg: Message, args: string[]) {
     .map((gear, i) => `${i + 1}. \`Lvl ${gear.level} ${gear.name} ${gear.description}\``)
     .join("\n");
 
-  const bonusSetDesc = `Apprentice full set bonus reflects 10%/30%/50% of opponents first hit.`;
   const setBonus = Gear.getBonus(player.equippedGears);
   const selectedGear = player.equippedGears.random();
   const armorBonusSetDesc = setBonus ? `${selectedGear?.set} Set Reflect Skill \`Reflect ${setBonus * 100}% of opponents first attack\`` : "None";
@@ -100,9 +99,7 @@ export async function gearCmd(msg: Message, args: string[]) {
     .addField("\u200b", list || "none")
     .addField("Total stats from gear", player.gearStat || "none")
     .addField(`Apprentice Set Reflect Skill`, 
-      stripIndents`${bonusSetDesc}
-      ${player.equippedGears.length}/11
-      Current active set bonus: ${armorBonusSetDesc}`)
+      `Current active set bonus: ${armorBonusSetDesc}`)
     .addField("---", stripIndents`
       To see more info about the set bonus use \`${PREFIX}gear bonus\`
       Use \`${PREFIX}gear <number>\` to inspect and upgrade item`)
