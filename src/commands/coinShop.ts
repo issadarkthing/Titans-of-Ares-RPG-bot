@@ -1,4 +1,4 @@
-import { oneLine } from "common-tags";
+import { oneLine, stripIndents } from "common-tags";
 import { Message, MessageEmbed } from "discord.js";
 import { db, PREFIX } from "..";
 import { addGear } from "../db/gear";
@@ -15,13 +15,13 @@ export async function coinShop(msg: Message, args: string[]) {
 
   const index = args[0];
   const indexInt = parseInt(index);
+  const player = await Player.getPlayer(msg.member!);
 
   if (index && indexInt) {
     const scroll = new Scroll();
     const item = [...Gear.all, scroll][indexInt - 1];
     if (!item) return msg.channel.send("Item does not exist");
 
-    const player = await Player.getPlayer(msg.member!);
     const count = player.inventory.all.count(item.id);
     const isEquipped = player.equippedGears.get(item.id);
 
@@ -91,7 +91,9 @@ export async function coinShop(msg: Message, args: string[]) {
     .addField("---", list)
     .addField(
       "\u200b",
-      oneLine`You can inspect an item by using \`${PREFIX}coinshop <number>\``
+      stripIndents`
+      Current coins: \`${player.coins}\`
+      You can inspect an item by using \`${PREFIX}coinshop <number>\``
     );
 
   msg.channel.send(embed);
