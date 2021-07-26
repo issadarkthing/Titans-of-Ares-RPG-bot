@@ -101,7 +101,7 @@ export async function gearCmd(msg: Message, args: string[]) {
     .addField(`Apprentice Set Reflect Skill`, 
       `Current active set bonus: ${armorBonusSetDesc}`)
     .addField("---", stripIndents`
-      To see more info about the set bonus use \`${PREFIX}gear bonus\`
+      Use \`${PREFIX}gear bonus\` to see more info about the set bonus
       Use \`${PREFIX}gear <number>\` to inspect and upgrade item`)
 
   msg.channel.send(embed);
