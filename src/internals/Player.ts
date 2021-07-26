@@ -311,7 +311,7 @@ export class Player extends Fighter {
         ${petName}
         ${this.petStat || ""} ${petPassiveDesc ? `(${petPassiveDesc})` : ""}
 
-        **Gears**
+        **Gear**
         ${this.gearStat || ""}
         ${armorBonusSetDesc}
       `);
