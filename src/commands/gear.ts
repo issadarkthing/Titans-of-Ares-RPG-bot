@@ -1,8 +1,9 @@
 import { stripIndents } from "common-tags";
 import { Message, MessageEmbed } from "discord.js";
+import { PREFIX } from "..";
 import { unequipGear } from "../db/gear";
 import { ButtonHandler } from "../internals/ButtonHandler";
-import { Apprentice } from "../internals/Gear";
+import { Apprentice, Gear } from "../internals/Gear";
 import { upgrade } from "../internals/multipleUpgrade";
 import { Player } from "../internals/Player";
 import { BLACK_BUTTON, BLUE_BUTTON, RED_BUTTON, RETURN_BUTTON, SILVER, WHITE_BUTTON } from "../internals/utils";
@@ -88,6 +89,9 @@ export async function gearCmd(msg: Message, args: string[]) {
     .join("\n");
 
   const bonusSetDesc = `Apprentice full set bonus reflects 10%/30%/50% of opponents first hit.`;
+  const setBonus = Gear.getBonus(player.equippedGears);
+  const selectedGear = player.equippedGears.random();
+  const armorBonusSetDesc = setBonus ? `${selectedGear?.set} Set Reflect Skill \`Reflect ${setBonus * 100}% of opponents first attack\`` : "None";
 
   const embed = new MessageEmbed()
     .setColor(SILVER)
@@ -96,7 +100,10 @@ export async function gearCmd(msg: Message, args: string[]) {
     .addField("\u200b", list || "none")
     .addField("Total stats from gear", player.gearStat || "none")
     .addField(`Apprentice Set Reflect Skill`, 
-      `${bonusSetDesc}\n${player.equippedGears.length}/11`)
+      stripIndents`${bonusSetDesc}
+      ${player.equippedGears.length}/11
+      Current active set bonus: ${armorBonusSetDesc}
+      To see more info about the set bonus use \`${PREFIX}gear bonus\``)
 
   msg.channel.send(embed);
 }
