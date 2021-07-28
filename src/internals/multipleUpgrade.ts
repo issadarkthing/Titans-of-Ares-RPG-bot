@@ -4,10 +4,17 @@ import { removeInventory } from "../db/inventory";
 import { Gear } from "./Gear";
 import { Player } from "./Player";
 import { sleep } from "./utils";
+import { onMultiUpgrade } from "../index";
 
 
 export function upgrade(item: Gear, msg: Message, player: Player, count: number) {
   return async () => {
+
+    if (onMultiUpgrade.has(player.id)) {
+      return msg.channel.send("There is already multiple upgrade running");
+    } else {
+      onMultiUpgrade.add(player.id);
+    }
 
     for (let i = 0; i < count; i++) {
       await player.sync();
@@ -33,5 +40,7 @@ export function upgrade(item: Gear, msg: Message, player: Player, count: number)
         await animation.edit(`Upgrade process for ${item.name} failed`);
       }
     }
+
+    onMultiUpgrade.delete(player.id);
   }
 }

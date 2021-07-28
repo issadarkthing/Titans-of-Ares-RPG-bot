@@ -38,6 +38,7 @@ export const DEV_ID = process.env.DEV_ID!;
 
 export const db = new sqlite3.Database(path.resolve(__dirname, DB));
 export const client = new Client();
+export const onMultiUpgrade = new Set<string>();
 
 // create necessary tables if not exist
 setImmediate(() => {
