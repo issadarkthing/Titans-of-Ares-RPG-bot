@@ -207,6 +207,12 @@ export async function inventory(msg: Message, args: string[]) {
         upgrade(item, msg, player, 10)
       );
 
+      button.addButton(
+        BLACK_BUTTON,
+        "upgrade item using 50 scroll",
+        upgrade(item, msg, player, 50)
+      );
+
       button.addButton(RETURN_BUTTON, "return to inventory list", () => {
         inventory(msg, []);
       });

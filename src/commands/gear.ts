@@ -47,6 +47,12 @@ export async function gearCmd(msg: Message, args: string[]) {
       upgrade(gear, msg, player, 10),
     );
 
+    menu.addButton(
+      BLACK_BUTTON,
+      "upgrade item using 50 scroll",
+      upgrade(gear, msg, player, 50),
+    );
+
     menu.addButton(RETURN_BUTTON, "return to menu", () => {
       gearCmd(msg, []);
     })
