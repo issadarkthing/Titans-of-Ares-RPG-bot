@@ -37,19 +37,13 @@ export async function gearCmd(msg: Message, args: string[]) {
 
     menu.addButton(
       RED_BUTTON,
-      "upgrade item using 5 scrolls",
-      upgrade(gear, msg, player, 5),
-    );
-
-    menu.addButton(
-      BLACK_BUTTON,
       "upgrade item using 10 scrolls",
       upgrade(gear, msg, player, 10),
     );
 
     menu.addButton(
       BLACK_BUTTON,
-      "upgrade item using 50 scroll",
+      "upgrade item using 50 scrolls",
       upgrade(gear, msg, player, 50),
     );
 
