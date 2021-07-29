@@ -42,7 +42,6 @@ export const onMultiUpgrade = new Set<string>();
 
 // create necessary tables if not exist
 setImmediate(() => {
-  db.run("PRAGMA journal_mode = WAL");
   db.run(makePlayerTable);
   db.run(makeChallengerTable);
   db.run(makeTimerTable);
