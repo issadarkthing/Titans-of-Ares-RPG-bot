@@ -16,7 +16,7 @@ export function addInventory($userID: string, $itemID: string) {
   return dbRun(sql, { $userID, $itemID });
 }
 
-export function removeInventory($ownerID: string, $itemID: string) {
+export async function removeInventory($ownerID: string, $itemID: string, count = 1) {
   const sql = `
   DELETE FROM Inventory
   WHERE ID = (
@@ -26,7 +26,11 @@ export function removeInventory($ownerID: string, $itemID: string) {
     LIMIT 1)
   `
 
-  return dbRun(sql, { $ownerID, $itemID });
+  await dbRun("BEGIN TRANSACTION");
+  for (let i = 0; i < count; i++) {
+    await dbRun(sql, { $ownerID, $itemID });
+  }
+  await dbRun("COMMIT");
 }
 
 export function getInventory($userID: string) {
