@@ -48,11 +48,10 @@ export function upgrade(item: Gear, msg: Message, player: Player, count: number)
       }
     }
 
+    onMultiUpgrade.delete(player.id);
     await removeInventory(player.id, "scroll", scrollLost);
     if (upgradeSuccess) {
       await levelupGear(player.id, item.id);
     }
-
-    onMultiUpgrade.delete(player.id);
   }
 }
