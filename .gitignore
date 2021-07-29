@@ -10,3 +10,6 @@ bot.zip
 challenger.csv
 challenger.sql
 data/
+
+MainDB.db-shm
+MainDB.db-wal
