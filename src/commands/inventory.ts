@@ -219,7 +219,7 @@ export async function inventory(msg: Message, args: string[]) {
       inventory(msg, []);
     });
     button.addCloseButton();
-    button.run();
+    await button.run();
 
     return;
   }

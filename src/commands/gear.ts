@@ -52,7 +52,7 @@ export async function gearCmd(msg: Message, args: string[]) {
     })
 
     menu.addCloseButton();
-    menu.run();
+    await menu.run();
 
     return;
 
