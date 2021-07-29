@@ -7,13 +7,21 @@ export interface Item {
   ItemID: string;
 }
 
-export function addInventory($userID: string, $itemID: string) {
+export async function addInventory($userID: string, $itemID: string, count = 1) {
   const sql = `
   INSERT INTO Inventory (OwnerID, ItemID)
   VALUES ($userID, $itemID)
   `
 
-  return dbRun(sql, { $userID, $itemID });
+  let result: number;
+
+  await dbRun("BEGIN TRANSACTION");
+  for (let i = 0; i < count; i++) {
+    result = await dbRun(sql, { $userID, $itemID });
+  }
+  await dbRun("COMMIT");
+
+  return result!;
 }
 
 export async function removeInventory($ownerID: string, $itemID: string, count = 1) {
