@@ -26,6 +26,7 @@ export function upgrade(item: Gear, msg: Message, player: Player, count: number)
         return msg.channel.send("Gear is on max level");
       } else if (scrollCount === 0) {
         onMultiUpgrade.delete(player.id);
+        await removeInventory(player.id, "scroll", scrollLost);
         return msg.channel.send("Insufficient scroll");
       }
 
