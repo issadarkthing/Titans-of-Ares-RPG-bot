@@ -8,7 +8,7 @@ import { addBuff } from "../db/player";
 import { getTimer, setTimer, TimerType } from "../db/timer";
 import { createEntry, getXPEntry, resetXPEntry, setXPEntry } from "../db/xpEntry";
 import { FragmentReward } from "./FragmentReward";
-import { logChannel, xpLogTriggers } from "../index";
+import { logChannel, xpLogTriggers } from "../main";
 import { Buff, BUFF_LIMIT, XP_THRESHOLD } from "../internals/Buff";
 import { Player } from "../internals/Player";
 import { getLevel, getXp } from "../internals/utils";

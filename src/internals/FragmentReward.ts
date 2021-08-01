@@ -4,7 +4,7 @@ import { Pet } from "./Pet";
 import { Player } from "./Player";
 import { random, totalLevelPassed, upperLimit } from "../internals/utils";
 import { getUsers } from "../db/player";
-import { client, db, SERVER_ID } from "..";
+import { client, db, SERVER_ID } from "../main";
 
 
 export class FragmentReward {

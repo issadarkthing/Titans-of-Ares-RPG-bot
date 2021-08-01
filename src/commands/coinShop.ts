@@ -1,6 +1,6 @@
 import { oneLine, stripIndents } from "common-tags";
 import { Message, MessageEmbed } from "discord.js";
-import { PREFIX } from "..";
+import { PREFIX } from "../main";
 import { addGear } from "../db/gear";
 import { addInventory } from "../db/inventory";
 import { dbRun } from "../db/promiseWrapper";

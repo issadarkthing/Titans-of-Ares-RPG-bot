@@ -7,7 +7,7 @@ import { getLevel } from "../internals/utils";
 import { Medal, MedalType } from "../internals/Medal";
 import { Player } from "../internals/Player";
 import { oneLine } from "common-tags";
-import { logChannel } from "../index";
+import { logChannel } from "../main";
 import { Pet } from "../internals/Pet";
 import { addInventory, removeInventory } from "../db/inventory";
 import { Fragment, FragmentID } from "../internals/Fragment";

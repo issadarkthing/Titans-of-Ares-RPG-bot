@@ -4,7 +4,7 @@ import { removeInventory } from "../db/inventory";
 import { Gear } from "./Gear";
 import { Player } from "./Player";
 import { sleep } from "./utils";
-import { onMultiUpgrade } from "../index";
+import { onMultiUpgrade } from "../main";
 
 
 export function upgrade(item: Gear, msg: Message, player: Player, count: number) {

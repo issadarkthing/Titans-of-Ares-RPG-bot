@@ -1,6 +1,6 @@
 import { stripIndents } from "common-tags";
 import { Message, MessageEmbed } from "discord.js";
-import { PREFIX } from "..";
+import { PREFIX } from "../main";
 import { setActivePet, setInactivePet } from "../db/pet";
 import { ButtonHandler } from "../internals/ButtonHandler";
 import { Pet } from "../internals/Pet";

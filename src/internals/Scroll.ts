@@ -1,6 +1,6 @@
 import { stripIndents } from "common-tags";
 import { MessageEmbed } from "discord.js";
-import { PREFIX } from "..";
+import { PREFIX } from "../main";
 import { removeInventory } from "../db/inventory";
 import { Item } from "./Item";
 import { Player } from "./Player";

@@ -1,4 +1,4 @@
-import { db } from "../index";
+import { db } from "../main";
 
 export function dbAll<T>(sql: string, param?: object) {
   return new Promise<T[]>((resolve, reject) => {
