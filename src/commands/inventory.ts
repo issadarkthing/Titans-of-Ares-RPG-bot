@@ -189,23 +189,25 @@ export async function inventory(msg: Message, args: string[]) {
         msg.channel.send(`Successfully equipped **${item.name}**!`);
       });
 
-      button.addButton(
-        WHITE_BUTTON,
-        "upgrade item using 1 scroll",
-        upgrade(item, msg, player, 1)
-      );
+      if (item.level < 10) {
+        button.addButton(
+          WHITE_BUTTON,
+          "upgrade item using 1 scroll",
+          upgrade(item, msg, player, 1)
+        );
 
-      button.addButton(
-        RED_BUTTON,
-        "upgrade item using 10 scroll",
-        upgrade(item, msg, player, 10)
-      );
+        button.addButton(
+          RED_BUTTON,
+          "upgrade item using 10 scroll",
+          upgrade(item, msg, player, 10)
+        );
 
-      button.addButton(
-        BLACK_BUTTON,
-        "upgrade item using 50 scrolls",
-        upgrade(item, msg, player, 50)
-      );
+        button.addButton(
+          BLACK_BUTTON,
+          "upgrade item using 50 scrolls",
+          upgrade(item, msg, player, 50)
+        );
+      }
 
       button.addButton(RETURN_BUTTON, "return to inventory list", () => {
         inventory(msg, []);
@@ -252,25 +254,28 @@ export async function inventory(msg: Message, args: string[]) {
 
   const list = stripIndents`
   **Treasure Chests**
-  ${chestList.join("\n")}
+  ${chestList.join("\n") || "none"}
 
   **Pet Fragments**
-  ${fragmentList.join("\n")}
+  ${fragmentList.join("\n") || "none"}
 
   **Gear**
-  ${gearList.join("\n")}
+  ${gearList.join("\n") || "none"}
 
   **Other Materials**
-  ${othersList.join("\n")}
+  ${othersList.join("\n") || "none"}
   `
 
   const embed = new MessageEmbed()
     .setColor(GOLD)
     .addField("Inventory", list)
+    .addField("Coins", player.coins)
     .addField(
       "\u200b",
-      oneLine`Use command \`${PREFIX}inventory <number>\` 
-      to inspect item in the inventory.`
+      stripIndents`
+      Use command \`${PREFIX}inventory <number>\` to inspect item in the inventory.
+      Use command \`${PREFIX}gear\` to see your current equipped gear.
+      `
     );
 
   msg.channel.send(embed);

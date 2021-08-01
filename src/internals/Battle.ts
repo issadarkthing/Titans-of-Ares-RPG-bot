@@ -8,6 +8,7 @@ import {
   GOLD,
   PLAYER_CRIT_GIF,
   CHALLENGER_CRIT_GIF,
+  roundTo,
 } from "./utils";
 import { Fighter } from "./Fighter";
 import { sleep } from "./utils";
@@ -197,7 +198,7 @@ export class Battle {
     const damageDone = attackRate - damageReduction;
     p2.hp -= damageDone;
 
-    const critText = isCrit ? ` (x${p1.critDamage} critical hit)` : "";
+    const critText = isCrit ? ` (x${roundTo(p1.critDamage, 2)} critical hit)` : "";
 
     this.battleEmbed = new MessageEmbed()
       .setColor(RED)

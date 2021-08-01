@@ -81,7 +81,7 @@ export abstract class Gear extends Item {
       .setTitle(this.name)
       .setDescription(`\`${this.description}\``)
       .addField("Upgrade Scrolls", scroll, true)
-      .addField("Level", this.level, true)
+      .addField("Level", this.level == 10 ? "max" : this.level, true)
 
     return embed;
   }

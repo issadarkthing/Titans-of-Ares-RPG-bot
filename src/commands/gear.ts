@@ -29,23 +29,25 @@ export async function gearCmd(msg: Message, args: string[]) {
       )
     })
 
-    menu.addButton(
-      WHITE_BUTTON,
-      "upgrade item using 1 scroll",
-      upgrade(gear, msg, player, 1),
-    );
+    if (gear.level < 10) {
+      menu.addButton(
+        WHITE_BUTTON,
+        "upgrade item using 1 scroll",
+        upgrade(gear, msg, player, 1),
+      );
 
-    menu.addButton(
-      RED_BUTTON,
-      "upgrade item using 10 scrolls",
-      upgrade(gear, msg, player, 10),
-    );
+      menu.addButton(
+        RED_BUTTON,
+        "upgrade item using 10 scrolls",
+        upgrade(gear, msg, player, 10),
+      );
 
-    menu.addButton(
-      BLACK_BUTTON,
-      "upgrade item using 50 scrolls",
-      upgrade(gear, msg, player, 50),
-    );
+      menu.addButton(
+        BLACK_BUTTON,
+        "upgrade item using 50 scrolls",
+        upgrade(gear, msg, player, 50),
+      );
+    }
 
     menu.addButton(RETURN_BUTTON, "return to menu", () => {
       gearCmd(msg, []);

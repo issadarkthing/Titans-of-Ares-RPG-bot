@@ -299,6 +299,8 @@ export class Player extends Fighter {
         **Inventory**
         \`${this.inventory.chests.length}\` Treasure Chests
         \`${this.inventory.fragments.length}\` Pet Fragments
+        \`${this.inventory.gears.length}\` Gear Pieces
+        \`${this.inventory.scrolls.length}\` Scrolls
         \`${this.coins}\` Coins
 
         **Energy**
