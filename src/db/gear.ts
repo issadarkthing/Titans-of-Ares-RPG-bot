@@ -49,6 +49,7 @@ export async function addGear($inventoryID: number) {
   return dbRun(sql, { $inventoryID });
 }
 
+type GearRaw = { Equipped: number } & Omit<Gear, "Equipped">;
 export async function getGears($userID: string) {
   const sql = `
   SELECT * FROM Gear
@@ -57,6 +58,6 @@ export async function getGears($userID: string) {
   WHERE Inventory.OwnerID = $userID
   `
 
-  const gears = await dbAll(sql, { $userID });
-  return gears.map((x: any) => ({...x, Equipped: !!x.Equipped})) as Gear[];
+  const gears = await dbAll<GearRaw>(sql, { $userID });
+  return gears.map((x: GearRaw) => ({ ...x, Equipped: !!x.Equipped })) as Gear[];
 }

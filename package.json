@@ -19,10 +19,10 @@
     "discord.js": "^12.5.3",
     "dotenv": "^10.0.0",
     "luxon": "^1.27.0",
+    "pm2": "^5.1.0",
     "random-js": "^2.1.0",
     "sqlite3": "^5.0.2",
-    "typescript": "^4.3.2",
-    "pm2": "^5.1.0"
+    "typescript": "^4.3.2"
   },
   "devDependencies": {
     "@types/common-tags": "^1.8.0",
@@ -30,6 +30,9 @@
     "@types/node": "^15.12.2",
     "@types/random-js": "^2.0.0",
     "@types/sqlite3": "^3.1.7",
+    "@typescript-eslint/eslint-plugin": "^4.28.5",
+    "@typescript-eslint/parser": "^4.28.5",
+    "eslint": "^7.32.0",
     "ts-node": "^10.0.0"
   }
 }

@@ -2,7 +2,6 @@ import assert from "assert";
 import { oneLine } from "common-tags";
 import { Message } from "discord.js";
 import { DateTime } from "luxon";
-import { XP_REWARD } from "../db/fragmentReward";
 import { getChallengeId, getConvertTable } from "../db/monthlyChallenge";
 import { addBuff } from "../db/player";
 import { getTimer, setTimer, TimerType } from "../db/timer";
@@ -13,7 +12,7 @@ import { Buff, BUFF_LIMIT, XP_THRESHOLD } from "../internals/Buff";
 import { Player } from "../internals/Player";
 import { getLevel, getXp } from "../internals/utils";
 
-const rgx = /^Registered\sDay:\s(?<day>\d+)\s.*Progress:\s(?<value>\d+[,|\.]?\d*)\s(?<valueType>\w+).*$/;
+const rgx = /^Registered\sDay:\s(?<day>\d+)\s.*Progress:\s(?<value>\d+[,|.]?\d*)\s(?<valueType>\w+).*$/;
 
 const tests = `
 Registered Day: 7 Progress: 6641 steps

@@ -232,7 +232,6 @@ export class Battle {
   }
 
   async run() {
-    let done = false;
     this.battleEmbed = new MessageEmbed();
     this.battleMsg = await this.msg.channel.send("Battle start");
     this.playerMaxHP = this.player.hp;
@@ -249,7 +248,8 @@ export class Battle {
       ? 0
       : 1;
 
-    while (!done) {
+    // eslint-disable-next-line no-constant-condition
+    while (true) {
 
       if (this.isEven(this.round + moveFirst)) {
         await this.attack(this.player, this.challenger);

@@ -1,14 +1,13 @@
 import { oneLine, stripIndents } from "common-tags";
 import { Message, MessageEmbed } from "discord.js";
-import { PREFIX } from "../main";
 import { addGear } from "../db/gear";
 import { addInventory } from "../db/inventory";
-import { dbRun } from "../db/promiseWrapper";
 import { ButtonHandler } from "../internals/ButtonHandler";
 import { Gear } from "../internals/Gear";
 import { Player } from "../internals/Player";
 import { Scroll } from "../internals/Scroll";
 import { BLUE_BUTTON, BROWN, RED_BUTTON, RETURN_BUTTON, WHITE_BUTTON } from "../internals/utils";
+import { PREFIX } from "../main";
 
 
 

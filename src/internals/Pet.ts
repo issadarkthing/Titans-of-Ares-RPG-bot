@@ -206,7 +206,8 @@ export class Golem extends Pet {
     return this.star * 0.1;
   }
 
-  isSpawn(round: number) {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  isSpawn(_round: number) {
     return true;
   }
 
@@ -272,7 +273,8 @@ export class Minotaur extends Pet {
     return this.star * 0.1;
   }
 
-  isSpawn(round: number) {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  isSpawn(_round: number) {
     return random().bool(0.2);
   }
 
@@ -361,7 +363,8 @@ export class Dragon extends Pet {
     }
   }
 
-  isSpawn(round: number) {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  isSpawn(_round: number) {
     if (this.hasSpawn) return false;
 
     const spawn = random().bool(0.2);

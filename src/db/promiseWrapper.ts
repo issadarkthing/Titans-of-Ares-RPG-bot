@@ -1,6 +1,6 @@
 import { db } from "../main";
 
-export function dbAll<T>(sql: string, param?: object) {
+export function dbAll<T>(sql: string, param?: Record<string, unknown>) {
   return new Promise<T[]>((resolve, reject) => {
     return db.all(sql, param, (err, rows) => {
       if (err) {
@@ -12,7 +12,7 @@ export function dbAll<T>(sql: string, param?: object) {
   })
 }
 
-export function dbGet<T>(sql: string, param?: object) {
+export function dbGet<T>(sql: string, param?: Record<string, unknown>) {
   return new Promise<T>((resolve, reject) => {
     return db.get(sql, param, (err, rows) => {
       if (err) {
@@ -24,7 +24,7 @@ export function dbGet<T>(sql: string, param?: object) {
   })
 }
 
-export function dbRun(sql: string, param?: object) {
+export function dbRun(sql: string, param?: Record<string, unknown>) {
   return new Promise<number>((resolve, reject) => {
     return db.run(sql, param, function (err) {
       if (err) {

@@ -87,9 +87,9 @@ export function absoluteXP(level: number) {
   return accXP;
 }
 
-export function aggregate(items: string[]): { [key: string]: number } {
+export function aggregate(items: string[]): Record<string, number> {
 
-  const result: any = {};
+  const result: Record<string, number> = {};
 
   for (const item of items) {
     if (result[item]) {

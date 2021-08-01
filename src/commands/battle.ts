@@ -9,7 +9,8 @@ import { oneLine } from "common-tags";
 
 const emojis = ["◀️", "⏺️", "▶️"];
 
-export async function battle(msg: Message, args: string[]) {
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+export async function battle(msg: Message, _args: string[]) {
 
   let question;
 

@@ -2,7 +2,8 @@ import { stripIndents } from "common-tags";
 import { Message } from "discord.js";
 
 
-export default function(msg: Message, args: string[]) {
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+export default function(msg: Message, _args: string[]) {
 
   const message = stripIndents`
   __**Welcome to the Titans of Ares RPG game!**__

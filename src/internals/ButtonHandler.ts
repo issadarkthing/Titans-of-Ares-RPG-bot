@@ -28,6 +28,7 @@ export class ButtonHandler {
       for (const emoji of this.emojis) {
         await this.msgCollector?.react(emoji);
       }
+    // eslint-disable-next-line no-empty
     } catch {}
   }
 
@@ -50,6 +51,7 @@ export class ButtonHandler {
     this.buttons.push({
       emoji: "❌",
       label: "close this menu",
+      // eslint-disable-next-line @typescript-eslint/no-empty-function
       callback: () => {},
     })
   }

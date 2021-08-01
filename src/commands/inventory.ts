@@ -43,7 +43,7 @@ export async function inventory(msg: Message, args: string[]) {
     if (!accItem) return msg.channel.send(`No item found at index ${index}`);
 
     const item = inv.all.get(accItem.value.id)!;
-    let itemCount = accItem.count;
+    const itemCount = accItem.count;
 
     if (item instanceof Fragment) {
       const pet = player.pets.get(item.pet.id);

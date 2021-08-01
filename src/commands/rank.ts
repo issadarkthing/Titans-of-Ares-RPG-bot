@@ -31,10 +31,8 @@ async function nukeChannel(channel: TextChannel) {
     } while (deleted > 0);
 }
 
-export default async function (
-  msg: Message, 
-  args: string[], 
-) {
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+export default async function(msg: Message, _args: string[]) {
 
   const channel = msg.guild?.channels.resolve(RANK_CHANNEL!);
   if (!channel) throw Error("No rank channel");
@@ -55,7 +53,7 @@ export default async function (
 
   await channel.guild.members.fetch();
 
-  let playersPromise = users
+  const playersPromise = users
     .map(user => channel.guild.members.cache.get(user.DiscordID)!)
     .filter(member => !!member)
     .map(member =>  Player.getPlayer(member));
