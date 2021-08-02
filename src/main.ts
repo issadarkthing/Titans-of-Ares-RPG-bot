@@ -8,16 +8,7 @@ import { xpLog } from "./internals/xpLog";
 import award from "./commands/award";
 import { xp } from './commands/xp';
 import { battle } from './commands/battle';
-import { 
-  makeChallengerTable, 
-  makePlayerTable, 
-  makeProfileTable, 
-  makeTimerTable, 
-  makeXPEntryTable,
-  makeInventoryTable,
-  makePetTable,
-  makeGearTable,
-} from "./db/schema";
+import { schema } from "./db/schema";
 import { energyMainLoop } from './internals/energy';
 import { Buff } from './internals/Buff';
 import { inventory } from "./commands/inventory";
@@ -41,16 +32,7 @@ export const client = new Client();
 export const onMultiUpgrade = new Set<string>();
 
 // create necessary tables if not exist
-setImmediate(() => {
-  db.run(makePlayerTable);
-  db.run(makeChallengerTable);
-  db.run(makeTimerTable);
-  db.run(makeXPEntryTable);
-  db.run(makeProfileTable);
-  db.run(makeInventoryTable);
-  db.run(makePetTable);
-  db.run(makeGearTable);
-})
+db.exec(schema);
 
 setInterval(() => {
   energyMainLoop();

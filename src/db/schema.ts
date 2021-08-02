@@ -1,5 +1,5 @@
 // this table records timer for user energy charger
-export const makeTimerTable = `
+export let schema = `
   CREATE TABLE IF NOT EXISTS Timer (
     ID        INTEGER NOT NULL UNIQUE,
     DiscordID TEXT NOT NULL,
@@ -7,10 +7,10 @@ export const makeTimerTable = `
     Created   DEFAULT CURRENT_TIMESTAMP,
     Expires   TEXT NOT NULL,
     PRIMARY KEY(ID AUTOINCREMENT)
-  )
+  );
 `;
 
-export const makePlayerTable = `
+schema += `
     CREATE TABLE IF NOT EXISTS Player (
       DiscordID	         TEXT NOT NULL UNIQUE,
       XP                 DEFAULT 0,
@@ -23,10 +23,10 @@ export const makePlayerTable = `
       Buff               TEXT,
       FragmentReward     DEFAULT 500,
       PRIMARY KEY("DiscordID")
-    )
+    );
 `;
 
-export const makeChallengerTable = `
+schema += `
   CREATE TABLE IF NOT EXISTS Challenger (
     ID         INTEGER PRIMARY KEY,
     Name       TEXT,
@@ -36,37 +36,37 @@ export const makeChallengerTable = `
     Speed      INT,
     Armor      INT,
     CritChance REAL
-  )
+  );
 `;
 
-export const makeXPEntryTable = `
+schema += `
   CREATE TABLE IF NOT EXISTS XPEntry (
     ID          INTEGER PRIMARY KEY,
     ChallengeID INTEGER,
     Day         INTEGER,
     XP          INTEGER,
     DiscordID   TEXT
-  )
+  );
 `;
 
-export const makeProfileTable = `
+schema += `
   CREATE TABLE IF NOT EXISTS Profile (
     DiscordID   TEXT PRIMARY KEY,
     Checksum    TEXT NOT NULL,
     Data        BLOB NOT NULL
-  )
+  );
 `
 
-export const makeInventoryTable = `
+schema += `
   CREATE TABLE IF NOT EXISTS Inventory (
     ID      INTEGER PRIMARY KEY,
     OwnerID TEXT NOT NULL,
     Created DEFAULT CURRENT_TIMESTAMP,
     ItemID  TEXT NOT NULL
-  )
+  );
 `
 
-export const makePetTable = `
+schema += `
   CREATE TABLE IF NOT EXISTS Pet (
     ID      INTEGER PRIMARY KEY,
     OwnerID TEXT NOT NULL,
@@ -74,14 +74,14 @@ export const makePetTable = `
     PetID   TEXT NOT NULL,
     Star    DEFAULT 0,
     Active  DEFAULT FALSE
-  )
+  );
 `
 
-export const makeGearTable = `
+schema += `
   CREATE TABLE IF NOT EXISTS Gear (
     ID          INTEGER PRIMARY KEY,
     InventoryID INTEGER UNIQUE NOT NULL,
     Equipped    DEFAULT FALSE,
     Level       DEFAULT 0
-  )
+  );
 `
