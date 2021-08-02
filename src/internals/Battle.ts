@@ -31,7 +31,7 @@ export class Battle {
   constructor(
     private msg: Message,
     private player: Player,
-    private challenger: Challenger,
+    private challenger: Player | Challenger,
   ) {
     this.playerMaxHP = this.player.hp;
     this.challengerMaxHP = this.challenger.hp;
@@ -273,15 +273,22 @@ export class Battle {
     );
 
     if (isWon) {
-      const loot = this.challenger.loot;
-      this.battleEmbed.setColor(GOLD);
-      await this.battleMsg.edit(this.battleEmbed);
-      await this.player.addCoin(loot);
-      await setMaxChallenger(this.player.id, this.challenger.level);
-      this.player.challengerMaxLevel = this.challenger.level;
-      await this.msg.channel.send(
-        `${this.player.name} has earned **${loot}** coins!`
-      );
+
+      if (this.challenger instanceof Challenger) {
+        const loot = this.challenger.loot;
+        this.battleEmbed.setColor(GOLD);
+        await this.battleMsg.edit(this.battleEmbed);
+        await this.player.addCoin(loot);
+        await setMaxChallenger(this.player.id, this.challenger.level);
+        this.player.challengerMaxLevel = this.challenger.level;
+        await this.msg.channel.send(
+          `${this.player.name} has earned **${loot}** coins!`
+        );
+
+      } else if (this.challenger instanceof Player) {
+        this.battleEmbed.setColor(GOLD);
+        await this.battleMsg.edit(this.battleEmbed);
+      }
     }
   }
 }
