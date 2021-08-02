@@ -6,6 +6,11 @@ import { BROWN, CDN_LINK, GOLD, random, roundTo } from "./utils";
 import { Gear as GearDB } from "../db/gear";
 import { oneLine } from "common-tags";
 
+interface GearBonus {
+  description: string;
+  bonus: number;
+}
+
 export abstract class Gear extends Item {
   abstract name: string;
   abstract use(fighter: Fighter): { attrib: string, amount: number };
@@ -13,7 +18,7 @@ export abstract class Gear extends Item {
   abstract price: number;
   abstract set: string;
   abstract baseStat: number;
-  abstract bonus(gears: List<Gear>): number;
+  abstract bonus(gears: List<Gear>): GearBonus;
   equipped = false;
   upgradeAnimationUrl = CDN_LINK + "852530378916888626/867765847312826398/image0.gif";
   level = 0;
@@ -143,16 +148,18 @@ export abstract class Apprentice extends Gear {
         gears.every(gear => (gear instanceof Apprentice) 
           && gear.level >= minLevel);
 
+    let bonus = 0;
     switch (true) {
-      case isBonus(10):
-        return 0.5;
-      case isBonus(5):
-        return 0.3;
-      case isBonus(0):
-        return 0.1;
-      default:
-        return 0;
+      case isBonus(10): bonus = 0.5; break;
+      case isBonus(5): bonus = 0.3; break;
+      case isBonus(0): bonus = 0.1; break;
     }
+
+    const description =
+      oneLine`${this.set} Set Reflect Skill \`Reflect ${bonus * 100}% of
+      opponents first attack\``;
+
+    return { bonus, description };
   }
 
   reflectAnimation(playerName: string, damage: number, bonus: number) {

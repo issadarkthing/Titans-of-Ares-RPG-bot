@@ -91,8 +91,7 @@ export async function gearCmd(msg: Message, args: string[]) {
     .join("\n");
 
   const setBonus = Gear.getBonus(player.equippedGears);
-  const selectedGear = player.equippedGears.random();
-  const armorBonusSetDesc = setBonus ? `${selectedGear?.set} Set Reflect Skill \`Reflect ${setBonus * 100}% of opponents first attack\`` : "None";
+  const armorBonusSetDesc = setBonus?.description || "None";
 
   const embed = new MessageEmbed()
     .setColor(SILVER)

@@ -178,14 +178,14 @@ export class Battle {
         
         if (setBonus && gear) {
           const attackRate = isCrit ? p1.critDamage * p1.strength : p1.strength;
-          reflection = attackRate * setBonus;
+          reflection = attackRate * setBonus.bonus;
           const damageReduction = p1.getArmorReduction(reflection);
           const damageDone = reflection - damageReduction;
           p1.hp -= damageDone;
           reflected = true;
 
           if (gear instanceof Apprentice) {
-            const reflectAnimation = gear.reflectAnimation(p2.name, damageDone, setBonus);
+            const reflectAnimation = gear.reflectAnimation(p2.name, damageDone, setBonus.bonus);
             await this.battleMsg?.edit(reflectAnimation);
             await sleep(6000);
           }

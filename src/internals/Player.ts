@@ -284,8 +284,7 @@ export class Player extends Fighter {
     const petPassiveDesc = this.activePet?.passiveStatDescription;
     const equippedGears = this.equippedGears;
     const setBonus = Gear.getBonus(equippedGears);
-    const gear = equippedGears.random();
-    const armorBonusSetDesc = setBonus ? `${gear?.set} Set Reflect Skill \`Reflect ${setBonus * 100}% of opponents first attack\`` : "";
+    const armorBonusSetDesc = setBonus?.description || "None";
 
     const embed = new MessageEmbed()
       .setColor(GOLD)
