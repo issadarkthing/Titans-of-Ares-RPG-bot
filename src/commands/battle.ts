@@ -1,13 +1,17 @@
 import { Collection, Message, MessageReaction, User } from "discord.js";
-import { Battle } from "../internals/Battle";
-import { Player } from "../internals/Player";
-import { Challenger } from "../internals/Challenger";
-import { hasTimer, setEnergy, setTimer, TimerType } from "../db/timer";
 import { DateTime } from "luxon";
+import { hasTimer, setEnergy, setTimer, TimerType } from "../db/timer";
+import { Battle } from "../internals/Battle";
+import { Challenger } from "../internals/Challenger";
 import { ENERGY_TIMEOUT, showTimeLeft } from "../internals/energy";
-import { oneLine } from "common-tags";
+import { Player } from "../internals/Player";
+import * as utils from "../internals/utils";
 
-const emojis = ["◀️", "⏺️", "▶️"];
+const emojis = [
+  utils.LEFT_ARROW_BUTTON,
+  utils.CURRENT_BUTTON,
+  utils.RIGHT_ARROW_BUTTON,
+];
 
 export async function battle(msg: Message, args: string[]) {
 
@@ -60,7 +64,7 @@ export async function battle(msg: Message, args: string[]) {
     }).join(" ");
 
     question = await msg.channel.send(
-      oneLine`Which level you want to challenge? ${levelHint}`
+      `Which level you want to challenge? ${levelHint}`
     );
 
     for (const validEmoji of validEmojis) {
