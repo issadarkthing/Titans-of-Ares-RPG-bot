@@ -1,7 +1,7 @@
 import { getLevel, getStats, GOLD, numberFormat, roundTo, STAR } from "./utils";
 import { GuildMember, MessageEmbed } from "discord.js";
 import { IFighter, Fighter, BaseStats } from "./Fighter";
-import { setCoin } from "../db/coin";
+import { setArenaCoin, setCoin } from "../db/coin";
 import { createUser, getTotalPoints, getTotalXp, getUser, getUsers } from "../db/player";
 import { stripIndents } from "common-tags";
 import { MAX_ENERGY, showTimeLeft } from "./energy";
@@ -328,6 +328,11 @@ export class Player extends Fighter {
   async addCoin(amount: number) {
     await setCoin(this.id, this.coins + amount);
     this.coins += amount;
+  }
+
+  async addArenaCoin(amount: number) {
+    await setArenaCoin(this.id, this.arenaCoins + amount);
+    this.arenaCoins += amount;
   }
 }
 

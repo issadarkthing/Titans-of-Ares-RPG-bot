@@ -8,7 +8,7 @@ import { Player } from "../internals/Player";
 import { Scroll } from "../internals/Scroll";
 import { BLUE_BUTTON, BROWN, RED_BUTTON, RETURN_BUTTON, WHITE_BUTTON } from "../internals/utils";
 import { PREFIX } from "../main";
-
+import { ApprenticeGear } from "../internals/ApprenticeGear";
 
 
 export async function coinShop(msg: Message, args: string[]) {
@@ -19,7 +19,7 @@ export async function coinShop(msg: Message, args: string[]) {
 
   if (index && indexInt) {
     const scroll = new Scroll();
-    const item = [...Gear.all, scroll][indexInt - 1];
+    const item = [...ApprenticeGear.all, scroll][indexInt - 1];
     if (!item) return msg.channel.send("Item does not exist");
 
     const count = player.inventory.all.count(item.id);
@@ -74,7 +74,7 @@ export async function coinShop(msg: Message, args: string[]) {
     return;
   }
 
-  const items = Gear.all;
+  const items = ApprenticeGear.all;
   let list = items
     .map((x, i) => `${i + 1}. ${x.name} \`${x.description}\` | \`${x.price}\``)
     .join("\n");

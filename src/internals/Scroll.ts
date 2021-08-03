@@ -35,3 +35,13 @@ export class Scroll extends Item {
     return removeInventory(player.id, this.id);
   }
 }
+
+export class ArenaScroll extends Scroll {
+  id = "arena_scroll";
+  name = "Arena Upgrade Scroll";
+  description = stripIndents`
+  Arena upgrade scroll is used to upgrade arena gear up to level 10
+
+  To upgrade gear, inspect the item in the \`${PREFIX}inventory\` or \`${PREFIX}gear\` menu`;
+  price = 250;
+}
