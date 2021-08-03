@@ -7,6 +7,7 @@ import { dbAll, dbGet, dbRun } from "./promiseWrapper";
 export interface Player {
   DiscordID: string;
   XP: number;
+  ArenaCoin: number;
   Coin: number;
   Energy: number;
   ChallengerMaxLevel: number;

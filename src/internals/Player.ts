@@ -24,6 +24,7 @@ export interface IPlayer extends IFighter {
   points: number;
   energy: number;
   coins: number;
+  arenaCoins: number;
   userID: string;
   challengerMaxLevel: number;
   member: GuildMember;
@@ -42,6 +43,7 @@ export class Player extends Fighter {
   xp: number;
   points: number;
   coins: number;
+  arenaCoins: number;
   energy: number;
   challengerMaxLevel: number;
   buff: Buff | null;
@@ -70,6 +72,7 @@ export class Player extends Fighter {
     this.xp = data.xp;
     this.points = data.points;
     this.coins = data.coins;
+    this.arenaCoins = data.arenaCoins;
     this.id = data.userID;
     this.member = data.member;
     this.energy = data.energy;
@@ -153,6 +156,7 @@ export class Player extends Fighter {
       points: totalPoints,
       xp: totalXp,
       coins: player.Coin,
+      arenaCoins: player.ArenaCoin,
       userID: member.user.id,
       energy: player.Energy,
       challengerMaxLevel: player.ChallengerMaxLevel,

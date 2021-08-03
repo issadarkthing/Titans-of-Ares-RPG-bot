@@ -15,6 +15,7 @@ schema += `
       DiscordID	         TEXT NOT NULL UNIQUE,
       XP                 DEFAULT 0,
       Coin               DEFAULT 0,
+      ArenaCoin          DEFAULT 0,
       Energy             DEFAULT 5,
       ChallengerMaxLevel DEFAULT 0,
       GoldMedal          DEFAULT 0,
