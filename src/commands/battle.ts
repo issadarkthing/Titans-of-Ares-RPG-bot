@@ -9,18 +9,28 @@ import { oneLine } from "common-tags";
 
 const emojis = ["◀️", "⏺️", "▶️"];
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-export async function battle(msg: Message, _args: string[]) {
+export async function battle(msg: Message, args: string[]) {
 
   let question;
 
   try {
-    const member = msg.guild?.members.cache.get(msg.author.id);
 
-    if (!member)
-      return msg.channel.send("Member does not exist");
+    const opponentID = args[0];
+    const player = await Player.getPlayer(msg.member!);
 
-    const player = await Player.getPlayer(member);
+    if (opponentID) {
+      const memberOpponent = await msg.guild?.members.fetch(opponentID);
+
+      if (!memberOpponent)
+        return msg.channel.send("member not found");
+
+      const opponent = await Player.getPlayer(memberOpponent);
+      const battle = new Battle(msg, player, opponent);
+      await battle.run();
+
+      return;
+    }
+      
 
     if (player.energy <= 0) {
 

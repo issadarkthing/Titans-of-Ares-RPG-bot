@@ -68,9 +68,9 @@ export class Battle {
     );
   }
 
-  async attack(p1: Fighter, p2: Fighter) {
+  private async attack(p1: Fighter, p2: Fighter) {
 
-    if (p1 instanceof Player) {
+    if (p1 === this.player) {
       this.playerRound++;
     } else {
       this.challengerRound++;
@@ -83,7 +83,7 @@ export class Battle {
     const pet = this.player.activePet;
 
     // offensive
-    if (pet && p1 instanceof Player) {
+    if (pet && p1 === this.player) {
 
       if (pet instanceof Wisp) {
         const isSpawn = pet.isSpawn(this.playerRound);
@@ -143,7 +143,7 @@ export class Battle {
       }
 
       // defensive
-    } else if (pet && p1 instanceof Challenger) {
+    } else if (pet && p1 === this.challenger) {
 
       if (pet instanceof Golem) {
         if (isCrit) {
@@ -209,8 +209,8 @@ export class Battle {
       .addField("Damage Done", `\`${Math.round(damageDone)}\``, true)
       .addField("Round", this.round + 1, true);
 
-    const player = p1 instanceof Player ? p1 : p2;
-    const challenger = p2 instanceof Challenger ? p2 : p1;
+    const player = p1 === this.player ? p1 : p2;
+    const challenger = p2 === this.challenger ? p2 : p1;
 
     this.progressBar(player.name, player.hp, this.playerMaxHP);
     this.progressBar(challenger.name, challenger.hp, this.challengerMaxHP);
