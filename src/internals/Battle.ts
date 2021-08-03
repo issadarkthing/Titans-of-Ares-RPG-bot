@@ -14,7 +14,8 @@ import { Fighter } from "./Fighter";
 import { sleep } from "./utils";
 import { Dragon, Golem, Gryphon, Manticore, Minotaur, Wisp } from "./Pet";
 import { oneLine } from "common-tags";
-import { Apprentice, Gear } from "./Gear";
+import { Gear } from "./Gear";
+import { Apprentice } from "./ApprenticeGear";
 
 
 export class Battle {

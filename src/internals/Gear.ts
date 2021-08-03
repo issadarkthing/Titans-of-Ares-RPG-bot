@@ -1,19 +1,18 @@
 import { MessageEmbed } from "discord.js";
-import { Fighter } from "./Fighter";
+import { Gear as GearDB } from "../db/gear";
+import { Fighter, Attributes } from "./Fighter";
 import { Item } from "./Item";
 import { List } from "./List";
-import { BROWN, CDN_LINK, GOLD, random, roundTo } from "./utils";
-import { Gear as GearDB } from "../db/gear";
-import { oneLine } from "common-tags";
+import { BROWN, CDN_LINK, GOLD, random } from "./utils";
 
-interface GearBonus {
+export interface GearBonus {
   description: string;
   bonus: number;
 }
 
 export abstract class Gear extends Item {
   abstract name: string;
-  abstract use(fighter: Fighter): { attrib: string, amount: number };
+  abstract use(fighter: Fighter): { attrib: Attributes, amount: number };
   abstract description: string;
   abstract price: number;
   abstract set: string;
@@ -36,9 +35,15 @@ export abstract class Gear extends Item {
   }
 
   static get all() {
+    // eslint-disable-next-line @typescript-eslint/no-var-requires
+    const { Apprentice } = require("./ApprenticeGear");
+    // eslint-disable-next-line @typescript-eslint/no-var-requires
+    const { Arena } = require("./ArenaGear");
+
     return List.from([
       ...Apprentice.all,
-    ])
+      ...Arena.all,
+    ]);
   }
 
   static fromID(id: string) {
@@ -113,231 +118,5 @@ export abstract class Gear extends Item {
   static getBonus(gears: List<Gear>) {
     const gear = gears.get(0);
     return gear?.bonus(gears);
-  }
-}
-
-export abstract class Apprentice extends Gear {
-  set = "Apprentice";
-  reflectAnimationUrl = CDN_LINK + 
-    "852530378916888626/868442912294309898/3o7WTqRKlVRj0wsYQo.gif";
-
-  get name() {
-    return `${this.set} ${this.constructor.name}`;
-  }
-
-  static get all(): List<Apprentice> {
-    return List.from([
-      new Helmet(),
-      new Amulet(),
-      new Chest(),
-      new Pants(),
-      new Boots(),
-      new Gauntlets(),
-      new Belt(),
-      new Wrist(),
-      new LeftRing(),
-      new RightRing(),
-      new Sword(),
-    ]);
-  }
-
-  bonus(gears: List<Gear>) {
-
-    const isBonus = (minLevel: number) => 
-      gears.length === 11 && 
-        gears.every(gear => (gear instanceof Apprentice) 
-          && gear.level >= minLevel);
-
-    let bonus = 0;
-    switch (true) {
-      case isBonus(10): bonus = 0.5; break;
-      case isBonus(5): bonus = 0.3; break;
-      case isBonus(0): bonus = 0.1; break;
-    }
-
-    const description =
-      oneLine`${this.set} Set Reflect Skill \`Reflect ${bonus * 100}% of
-      opponents first attack\``;
-
-    return { bonus, description };
-  }
-
-  reflectAnimation(playerName: string, damage: number, bonus: number) {
-    const embed = new MessageEmbed()
-      .setColor(GOLD)
-      .setTitle(`${this.set} Set Reflect Skill`)
-      .setImage(this.reflectAnimationUrl)
-      .setDescription(
-        oneLine`${playerName} reflected \`${Math.round(damage)} damage (${bonus * 100}%)\``
-      )
-
-    return embed;
-  }
-
-  get id() {
-    const pieceName = this.constructor.name.toLowerCase();
-    return `${super.id}_apprentice_${pieceName}`;
-  }
-}
-
-export class Helmet extends Apprentice {
-  baseStat = 1;
-  price = 150;
-
-  get description() {
-    return `+${roundTo(this.increment, 1)} Armor`;
-  }
-
-  use(fighter: Fighter) {
-    fighter.armor += this.increment;
-    return { attrib: "Armor", amount: this.increment };
-  }
-}
-
-export class Amulet extends Apprentice {
-  baseStat = 100;
-  price = 200;
-
-  get description() {
-    return `+${Math.round(this.increment)} HP`;
-  }
-
-  use(fighter: Fighter) {
-    fighter.hp += this.increment;
-    return { attrib: "HP", amount: this.increment };
-  }
-}
-
-export class Chest extends Apprentice {
-  baseStat = 1.2;
-  price = 250;
-
-  get description() {
-    return `+${roundTo(this.increment, 1)} Armor`;
-  }
-
-  use(fighter: Fighter) {
-    fighter.armor += this.increment;
-    return { attrib: "Armor", amount: this.increment };
-  }
-}
-
-export class Pants extends Apprentice {
-  baseStat = 1.15;
-  price = 225;
-
-  get description() {
-    return `+${roundTo(this.increment, 1)} Armor`;
-  }
-
-  use(fighter: Fighter) {
-    fighter.armor += this.increment;
-    return { attrib: "Armor", amount: this.increment };
-  }
-}
-
-export class Boots extends Apprentice {
-  baseStat = 20;
-  price = 125;
-
-  get description() {
-    return `+${Math.round(this.increment)} Speed`;
-  }
-
-  use(fighter: Fighter) {
-    fighter.speed += this.increment;
-    return { attrib: "Speed", amount: this.increment };
-  }
-}
-
-export class Gauntlets extends Apprentice {
-  baseStat = 0.5;
-  price = 125;
-
-  get description() {
-    return `+${roundTo(this.increment, 1)} Armor`;
-  }
-
-  use(fighter: Fighter) {
-    fighter.armor += this.increment;
-    return { attrib: "Armor", amount: this.increment };
-  }
-}
-
-export class Belt extends Apprentice {
-  baseStat = 0.3;
-  price = 75;
-
-  get description() {
-    return `+${roundTo(this.increment, 1)} Armor`;
-  }
-
-  use(fighter: Fighter) {
-    fighter.armor += this.increment;
-    return { attrib: "Armor", amount: this.increment };
-  }
-}
-
-export class Wrist extends Apprentice {
-  baseStat = 0.3;
-  price = 75;
-
-  get description() {
-    return `+${roundTo(this.increment, 1)} Armor`;
-  }
-
-  use(fighter: Fighter) {
-    fighter.armor += this.increment;
-    return { attrib: "Armor", amount: this.increment };
-  }
-}
-
-export class LeftRing extends Apprentice {
-  baseStat = 0.01;
-  price = 200;
-
-  get name() {
-    return `${this.set} Left Ring`;
-  }
-
-  get description() {
-    return `+${roundTo(this.increment * 100, 1)}% Crit Rate`;
-  }
-
-  use(fighter: Fighter) {
-    fighter.critRate += this.increment;
-    return { attrib: "Crit Rate", amount: this.increment };
-  }
-}
-
-export class RightRing extends Apprentice {
-  baseStat = 0.1;
-  price = 200;
-
-  get name() {
-    return `${this.set} Right Ring`;
-  }
-
-  get description() {
-    return `+${roundTo(this.increment, 2)} Crit Dmg`;
-  }
-
-  use(fighter: Fighter) {
-    fighter.critDamage += this.increment;
-    return { attrib: "Crit Damage", amount: this.increment };
-  }
-}
-
-export class Sword extends Apprentice {
-  baseStat = 20;
-  price = 500;
-
-  get description() {
-    return `+${Math.round(this.increment)} Strength`;
-  }
-
-  use(fighter: Fighter) {
-    fighter.strength += this.increment;
-    return { attrib: "Strength", amount: this.increment };
   }
 }
