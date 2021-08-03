@@ -4,7 +4,7 @@ import { PREFIX } from "../main";
 import { unequipGear } from "../db/gear";
 import { ButtonHandler } from "../internals/ButtonHandler";
 import { Gear } from "../internals/Gear";
-import { Apprentice } from "../internals/ApprenticeGear";
+import { ApprenticeGear } from "../internals/ApprenticeGear";
 import { upgrade } from "../internals/multipleUpgrade";
 import { Player } from "../internals/Player";
 import { BLACK_BUTTON, BLUE_BUTTON, RED_BUTTON, RETURN_BUTTON, SILVER, WHITE_BUTTON } from "../internals/utils";
@@ -61,7 +61,7 @@ export async function gearCmd(msg: Message, args: string[]) {
 
   } else if (index === "bonus") {
 
-    const equipped = player.equippedGears.filter(x => x instanceof Apprentice);
+    const equipped = player.equippedGears.filter(x => x instanceof ApprenticeGear);
     const lvl1 = equipped.length;
     const lvl2 = equipped.filter(x => x.level >= 5).length;
     const lvl3 = equipped.filter(x => x.level >= 10).length;

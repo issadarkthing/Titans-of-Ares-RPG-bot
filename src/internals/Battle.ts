@@ -15,7 +15,7 @@ import { sleep } from "./utils";
 import { Dragon, Golem, Gryphon, Manticore, Minotaur, Wisp } from "./Pet";
 import { oneLine } from "common-tags";
 import { Gear } from "./Gear";
-import { Apprentice } from "./ApprenticeGear";
+import { ApprenticeGear } from "./ApprenticeGear";
 
 
 export class Battle {
@@ -185,7 +185,7 @@ export class Battle {
           p1.hp -= damageDone;
           reflected = true;
 
-          if (gear instanceof Apprentice) {
+          if (gear instanceof ApprenticeGear) {
             const reflectAnimation = gear.reflectAnimation(p2.name, damageDone, setBonus.bonus);
             await this.battleMsg?.edit(reflectAnimation);
             await sleep(6000);

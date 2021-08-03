@@ -10,6 +10,7 @@ export interface GearBonus {
   bonus: number;
 }
 
+
 export abstract class Gear extends Item {
   abstract name: string;
   abstract use(fighter: Fighter): { attrib: Attributes, amount: number };
@@ -36,13 +37,13 @@ export abstract class Gear extends Item {
 
   static get all() {
     // eslint-disable-next-line @typescript-eslint/no-var-requires
-    const { Apprentice } = require("./ApprenticeGear");
+    const { ApprenticeGear } = require("./ApprenticeGear");
     // eslint-disable-next-line @typescript-eslint/no-var-requires
-    const { Arena } = require("./ArenaGear");
+    const { ArenaGear } = require("./ArenaGear");
 
     return List.from([
-      ...Apprentice.all,
-      ...Arena.all,
+      ...ApprenticeGear.all,
+      ...ArenaGear.all,
     ]);
   }
 
@@ -110,8 +111,13 @@ export abstract class Gear extends Item {
     return random().bool(this.upgradeChance);
   }
 
-  isBonus(gears: List<Gear>) {
-    return gears.length === 11;
+  protected isBonus(gears: List<Gear>, minLevel: number) {
+    return gears.length === 11 && 
+      gears.every(gear => {
+        const passMinGear = gear.level >= minLevel;
+        const sameGearSet = gear.set === this.set;
+        return passMinGear && sameGearSet;
+      });
   }
 
   /** returns magnitude of bonus */

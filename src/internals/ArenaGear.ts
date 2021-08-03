@@ -4,7 +4,7 @@ import { Gear, GearBonus } from "./Gear";
 import { List } from "./List";
 import { roundTo } from "./utils";
 
-export abstract class Arena extends Gear {
+export abstract class ArenaGear extends Gear {
   set = "Arena";
 
   get name() {
@@ -16,7 +16,7 @@ export abstract class Arena extends Gear {
     return `${super.id}_arena_${pieceName}`;
   }
 
-  static get all(): List<Arena> {
+  static get all(): List<ArenaGear> {
     return List.from([
       new Helmet(),
       new Amulet(),
@@ -34,16 +34,12 @@ export abstract class Arena extends Gear {
 
   bonus(gears: List<Gear>): GearBonus {
 
-    const isBonus = (minLevel: number) => 
-      gears.length === 11 && 
-        gears.every(gear => (gear instanceof Arena) 
-          && gear.level >= minLevel);
-
     let bonus = 0;
     switch (true) {
-      case isBonus(10): bonus = 0.4; break;
-      case isBonus(5): bonus = 0.3; break;
-      case isBonus(0): bonus = 0.2; break;
+      case this.isBonus(gears, 10): bonus = 0.6; break;
+      case this.isBonus(gears, 5): bonus = 0.4; break;
+      case this.isBonus(gears, 0): bonus = 0.2; break;
+      default: return { bonus, description: "" };
     }
 
     const description =
@@ -54,7 +50,7 @@ export abstract class Arena extends Gear {
   }
 }
 
-export class Helmet extends Arena {
+export class Helmet extends ArenaGear {
   baseStat = 1.5;
   price = 30;
 
@@ -69,7 +65,7 @@ export class Helmet extends Arena {
 }
 
 
-export class Amulet extends Arena {
+export class Amulet extends ArenaGear {
   baseStat = 150;
   price = 40;
 
@@ -83,7 +79,7 @@ export class Amulet extends Arena {
   }
 }
 
-export class Chest extends Arena {
+export class Chest extends ArenaGear {
   baseStat = 1.8;
   price = 50;
 
@@ -97,7 +93,7 @@ export class Chest extends Arena {
   }
 }
 
-export class Pants extends Arena {
+export class Pants extends ArenaGear {
   baseStat = 1.7;
   price = 46;
 
@@ -111,7 +107,7 @@ export class Pants extends Arena {
   }
 }
 
-export class Boots extends Arena {
+export class Boots extends ArenaGear {
   baseStat = 30;
   price = 26;
 
@@ -125,7 +121,7 @@ export class Boots extends Arena {
   }
 }
 
-export class Gauntlets extends Arena {
+export class Gauntlets extends ArenaGear {
   baseStat = 0.7;
   price = 26;
 
@@ -139,7 +135,7 @@ export class Gauntlets extends Arena {
   }
 }
 
-export class Belt extends Arena {
+export class Belt extends ArenaGear {
   baseStat = 0.5;
   price = 16;
 
@@ -153,7 +149,7 @@ export class Belt extends Arena {
   }
 }
 
-export class Wrist extends Arena {
+export class Wrist extends ArenaGear {
   baseStat = 0.5;
   price = 16;
 
@@ -168,7 +164,7 @@ export class Wrist extends Arena {
 }
 
 
-export class LeftRing extends Arena {
+export class LeftRing extends ArenaGear {
   baseStat = 0.015;
   price = 40;
 
@@ -182,7 +178,7 @@ export class LeftRing extends Arena {
   }
 }
 
-export class RightRing extends Arena {
+export class RightRing extends ArenaGear {
   baseStat = 0.15;
   price = 40;
 
@@ -196,7 +192,7 @@ export class RightRing extends Arena {
   }
 }
 
-export class Claymore extends Arena {
+export class Claymore extends ArenaGear {
   baseStat = 30;
   price = 100;
 

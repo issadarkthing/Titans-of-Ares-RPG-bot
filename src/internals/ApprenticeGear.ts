@@ -5,7 +5,7 @@ import { Gear } from "./Gear";
 import { List } from "./List";
 import { CDN_LINK, GOLD, roundTo } from "./utils";
 
-export abstract class Apprentice extends Gear {
+export abstract class ApprenticeGear extends Gear {
   set = "Apprentice";
   reflectAnimationUrl = CDN_LINK + 
     "852530378916888626/868442912294309898/3o7WTqRKlVRj0wsYQo.gif";
@@ -14,7 +14,7 @@ export abstract class Apprentice extends Gear {
     return `${this.set} ${this.constructor.name}`;
   }
 
-  static get all(): List<Apprentice> {
+  static get all(): List<ApprenticeGear> {
     return List.from([
       new Helmet(),
       new Amulet(),
@@ -32,16 +32,12 @@ export abstract class Apprentice extends Gear {
 
   bonus(gears: List<Gear>) {
 
-    const isBonus = (minLevel: number) => 
-      gears.length === 11 && 
-        gears.every(gear => (gear instanceof Apprentice) 
-          && gear.level >= minLevel);
-
     let bonus = 0;
     switch (true) {
-      case isBonus(10): bonus = 0.5; break;
-      case isBonus(5): bonus = 0.3; break;
-      case isBonus(0): bonus = 0.1; break;
+      case this.isBonus(gears, 10): bonus = 0.5; break;
+      case this.isBonus(gears, 5): bonus = 0.3; break;
+      case this.isBonus(gears, 0): bonus = 0.1; break;
+      default: return { bonus, description: "" };
     }
 
     const description =
@@ -69,7 +65,7 @@ export abstract class Apprentice extends Gear {
   }
 }
 
-export class Helmet extends Apprentice {
+export class Helmet extends ApprenticeGear {
   baseStat = 1;
   price = 150;
 
@@ -83,7 +79,7 @@ export class Helmet extends Apprentice {
   }
 }
 
-export class Amulet extends Apprentice {
+export class Amulet extends ApprenticeGear {
   baseStat = 100;
   price = 200;
 
@@ -97,7 +93,7 @@ export class Amulet extends Apprentice {
   }
 }
 
-export class Chest extends Apprentice {
+export class Chest extends ApprenticeGear {
   baseStat = 1.2;
   price = 250;
 
@@ -111,7 +107,7 @@ export class Chest extends Apprentice {
   }
 }
 
-export class Pants extends Apprentice {
+export class Pants extends ApprenticeGear {
   baseStat = 1.15;
   price = 225;
 
@@ -125,7 +121,7 @@ export class Pants extends Apprentice {
   }
 }
 
-export class Boots extends Apprentice {
+export class Boots extends ApprenticeGear {
   baseStat = 20;
   price = 125;
 
@@ -139,7 +135,7 @@ export class Boots extends Apprentice {
   }
 }
 
-export class Gauntlets extends Apprentice {
+export class Gauntlets extends ApprenticeGear {
   baseStat = 0.5;
   price = 125;
 
@@ -153,7 +149,7 @@ export class Gauntlets extends Apprentice {
   }
 }
 
-export class Belt extends Apprentice {
+export class Belt extends ApprenticeGear {
   baseStat = 0.3;
   price = 75;
 
@@ -167,7 +163,7 @@ export class Belt extends Apprentice {
   }
 }
 
-export class Wrist extends Apprentice {
+export class Wrist extends ApprenticeGear {
   baseStat = 0.3;
   price = 75;
 
@@ -181,7 +177,7 @@ export class Wrist extends Apprentice {
   }
 }
 
-export class LeftRing extends Apprentice {
+export class LeftRing extends ApprenticeGear {
   baseStat = 0.01;
   price = 200;
 
@@ -199,7 +195,7 @@ export class LeftRing extends Apprentice {
   }
 }
 
-export class RightRing extends Apprentice {
+export class RightRing extends ApprenticeGear {
   baseStat = 0.1;
   price = 200;
 
@@ -217,7 +213,7 @@ export class RightRing extends Apprentice {
   }
 }
 
-export class Sword extends Apprentice {
+export class Sword extends ApprenticeGear {
   baseStat = 20;
   price = 500;
 
