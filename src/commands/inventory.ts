@@ -1,8 +1,8 @@
 import { oneLine, stripIndents } from "common-tags";
 import { Message, MessageEmbed } from "discord.js";
-import { PREFIX } from "../main";
 import { equipGear } from "../db/gear";
 import { addInventory, removeInventory } from "../db/inventory";
+import { ArenaGear } from "../internals/ArenaGear";
 import { ButtonHandler } from "../internals/ButtonHandler";
 import { Chest } from "../internals/Chest";
 import { Fragment, FragmentID } from "../internals/Fragment";
@@ -21,8 +21,9 @@ import {
   RETURN_BUTTON,
   sleep,
   STAR,
-  WHITE_BUTTON,
+  WHITE_BUTTON
 } from "../internals/utils";
+import { PREFIX } from "../main";
 
 export async function inventory(msg: Message, args: string[]) {
   const player = await Player.getPlayer(msg.member!);
@@ -180,7 +181,7 @@ export async function inventory(msg: Message, args: string[]) {
           choiceButton.run();
         }
       );
-    } else if (item instanceof Gear) {
+    } else if (item instanceof ArenaGear) {
       const scroll = player.inventory.all.count("scroll");
       const button = new ButtonHandler(msg, item.inspect(scroll), player.id);
 

@@ -89,10 +89,10 @@ export class Battle {
       if (pet instanceof Wisp) {
         const isSpawn = pet.isSpawn(this.playerRound);
         if (isSpawn) {
-          let healed = this.playerMaxHP * 0.4;
+          let healed = this.player.baseStats.hp * 0.4;
           const isOverHeal = healed + p1.hp > this.playerMaxHP;
           if (isOverHeal) {
-            healed = this.playerMaxHP - p1.hp;
+            healed = this.player.baseStats.hp - p1.hp;
           }
 
           p1.hp += healed;
@@ -174,10 +174,10 @@ export class Battle {
 
       if (this.challengerRound === 1) {
         const equippedGears = this.player.equippedGears;
-        const gear = equippedGears.random();
         const setBonus = Gear.getBonus(equippedGears);
         
-        if (setBonus && gear) {
+        if (setBonus) {
+          const gear = equippedGears.random();
           const attackRate = isCrit ? p1.critDamage * p1.strength : p1.strength;
           reflection = attackRate * setBonus.bonus;
           const damageReduction = p1.getArmorReduction(reflection);

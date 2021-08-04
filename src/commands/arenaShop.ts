@@ -31,7 +31,7 @@ export async function arenaShop(msg: Message, args: string[]) {
     // only show if player does not have the item
     if (!isEquipped && count === 0 && item instanceof Gear) {
       menu.addButton(BLUE_BUTTON, "buy item", async () => {
-        if (player.coins < item.price) {
+        if (player.arenaCoins < item.price) {
           return msg.channel.send(`Insufficient amount of arena coins`);
         }
 

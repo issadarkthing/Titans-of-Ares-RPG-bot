@@ -266,7 +266,7 @@ export class Minotaur extends Pet {
   petInterceptionUrl = CDN_LINK + "852530378916888626/864399618660892682/Minotaurcompressed.gif";
 
   get passiveStatDescription() {
-    return `\`+${this.multiplier * 100}%\` strength from gear stats`;
+    return `\`+${this.multiplier * 100}%\` strength from base stats`;
   }
 
   get multiplier() {
@@ -279,7 +279,7 @@ export class Minotaur extends Pet {
   }
 
   use(player: Player) {
-    const strength = player.gearStatsValue.get("Strength") || 0;
+    const strength = player.strength;
     const amount = strength * this.multiplier
     player.strength += amount;
     return `\`+${Math.round(amount)}\` Strength`;

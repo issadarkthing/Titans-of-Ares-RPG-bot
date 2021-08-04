@@ -32,14 +32,14 @@ export abstract class ArenaGear extends Gear {
     ]);
   }
 
-  bonus(gears: List<Gear>): GearBonus {
+  bonus(gears: List<Gear>) {
 
     let bonus = 0;
     switch (true) {
       case this.isBonus(gears, 10): bonus = 0.6; break;
       case this.isBonus(gears, 5): bonus = 0.4; break;
       case this.isBonus(gears, 0): bonus = 0.2; break;
-      default: return { bonus, description: "" };
+      default: return;
     }
 
     const description =

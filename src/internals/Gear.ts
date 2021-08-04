@@ -18,7 +18,7 @@ export abstract class Gear extends Item {
   abstract price: number;
   abstract set: string;
   abstract baseStat: number;
-  abstract bonus(gears: List<Gear>): GearBonus;
+  abstract bonus(gears: List<Gear>): GearBonus | undefined;
   equipped = false;
   upgradeAnimationUrl = CDN_LINK + "852530378916888626/867765847312826398/image0.gif";
   level = 0;

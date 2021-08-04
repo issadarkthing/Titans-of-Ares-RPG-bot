@@ -37,7 +37,7 @@ export abstract class ApprenticeGear extends Gear {
       case this.isBonus(gears, 10): bonus = 0.5; break;
       case this.isBonus(gears, 5): bonus = 0.3; break;
       case this.isBonus(gears, 0): bonus = 0.1; break;
-      default: return { bonus, description: "" };
+      default: return;
     }
 
     const description =
