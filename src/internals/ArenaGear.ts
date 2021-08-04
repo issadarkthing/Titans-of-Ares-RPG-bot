@@ -1,6 +1,6 @@
 import { oneLine } from "common-tags";
 import { Attributes, Fighter } from "./Fighter";
-import { Gear, GearBonus } from "./Gear";
+import { Gear } from "./Gear";
 import { List } from "./List";
 import { roundTo } from "./utils";
 
@@ -28,7 +28,7 @@ export abstract class ArenaGear extends Gear {
       new Wrist(),
       new LeftRing(),
       new RightRing(),
-      new Claymore(),
+      new Sword(),
     ]);
   }
 
@@ -192,7 +192,7 @@ export class RightRing extends ArenaGear {
   }
 }
 
-export class Claymore extends ArenaGear {
+export class Sword extends ArenaGear {
   baseStat = 30;
   price = 100;
 
