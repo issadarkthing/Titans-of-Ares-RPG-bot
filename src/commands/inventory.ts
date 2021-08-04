@@ -1,8 +1,7 @@
 import { oneLine, stripIndents } from "common-tags";
 import { Message, MessageEmbed } from "discord.js";
-import { equipGear } from "../db/gear";
+import { equipGear, unequipGear } from "../db/gear";
 import { addInventory, removeInventory } from "../db/inventory";
-import { ArenaGear } from "../internals/ArenaGear";
 import { ButtonHandler } from "../internals/ButtonHandler";
 import { Chest } from "../internals/Chest";
 import { Fragment, FragmentID } from "../internals/Fragment";
@@ -181,13 +180,24 @@ export async function inventory(msg: Message, args: string[]) {
           choiceButton.run();
         }
       );
-    } else if (item instanceof ArenaGear) {
+    } else if (item instanceof Gear) {
       const scroll = player.inventory.all.count("scroll");
       const button = new ButtonHandler(msg, item.inspect(scroll), player.id);
 
-      button.addButton(BLUE_BUTTON, "equip gear", () => {
-        equipGear(player.id, item.id);
+      button.addButton(BLUE_BUTTON, "equip gear", async () => {
+
+        const currentPiece = player.equippedGears
+          .find(x => x.constructor.name === item.constructor.name);
+
+        // unequip gear if piece is the same for example Arena Armor and
+        // Apprentice Armor
+        if (currentPiece) {
+          await unequipGear(player.id, currentPiece.id);
+        }
+
+        await equipGear(player.id, item.id);
         msg.channel.send(`Successfully equipped **${item.name}**!`);
+
       });
 
       if (item.level < 10) {
