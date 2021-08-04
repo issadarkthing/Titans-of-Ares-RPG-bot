@@ -89,10 +89,10 @@ export class Battle {
       if (pet instanceof Wisp) {
         const isSpawn = pet.isSpawn(this.playerRound);
         if (isSpawn) {
-          let healed = this.player.baseStats.hp * 0.4;
+          let healed = this.playerMaxHP * 0.4;
           const isOverHeal = healed + p1.hp > this.playerMaxHP;
           if (isOverHeal) {
-            healed = this.player.baseStats.hp - p1.hp;
+            healed = this.playerMaxHP - p1.hp;
           }
 
           p1.hp += healed;

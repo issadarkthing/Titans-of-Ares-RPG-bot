@@ -184,7 +184,7 @@ export class Wisp extends Pet {
   }
 
   use(player: Player) {
-    const amount = player.hp * this.multiplier;
+    const amount = player.baseStats.hp * this.multiplier;
     player.hp += amount;
     return `\`+${Math.round(amount)}\` HP`;
   }
@@ -260,7 +260,7 @@ export class Minotaur extends Pet {
   id = PetID.Minotaur;
   name = "Minotaur";
   description = oneLine`Has a 20% chance every round to attack the opponent for
-  50% of strength`;
+  50% of total strength`;
   imageUrl = CDN_LINK + "574852830125359126/862541876804059146/unknown.png";
   fragmentImageUrl = CDN_LINK + "574852830125359126/862669333775777832/minotaur.png";
   petInterceptionUrl = CDN_LINK + "852530378916888626/864399618660892682/Minotaurcompressed.gif";
@@ -279,7 +279,7 @@ export class Minotaur extends Pet {
   }
 
   use(player: Player) {
-    const strength = player.strength;
+    const strength = player.baseStats.strength;
     const amount = strength * this.multiplier
     player.strength += amount;
     return `\`+${Math.round(amount)}\` Strength`;
