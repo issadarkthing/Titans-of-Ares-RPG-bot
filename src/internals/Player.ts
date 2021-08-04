@@ -288,7 +288,7 @@ export class Player extends Fighter {
     const petPassiveDesc = this.activePet?.passiveStatDescription;
     const equippedGears = this.equippedGears;
     const setBonus = Gear.getBonus(equippedGears);
-    const armorBonusSetDesc = setBonus?.description || "None";
+    const armorBonusSetDesc = setBonus?.description || "";
 
     const embed = new MessageEmbed()
       .setColor(GOLD)
