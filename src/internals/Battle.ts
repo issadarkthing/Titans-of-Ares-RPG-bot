@@ -69,6 +69,20 @@ export class Battle {
     );
   }
 
+  private async critAttack(fighter: Fighter) {
+
+    const critGIF = fighter instanceof Player ? 
+      PLAYER_CRIT_GIF : CHALLENGER_CRIT_GIF;
+
+    const critEmbed = new MessageEmbed()
+    .setTitle(`${fighter.name} Critical Attack`)
+    .setColor(RED)
+    .setImage(critGIF);
+
+    await this.battleMsg?.edit(critEmbed);
+    await sleep(4000);
+  }
+
   private async attack(p1: Fighter, p2: Fighter) {
 
     if (p1 === this.player) {
@@ -81,24 +95,26 @@ export class Battle {
     let reflected = false;
     let reflection = 0;
 
-    const pet = this.player.activePet;
+    let pet = p1 instanceof Player && p1.activePet;
 
     // offensive
-    if (pet && p1 === this.player) {
+    if (pet) {
 
       if (pet instanceof Wisp) {
         const isSpawn = pet.isSpawn(this.playerRound);
         if (isSpawn) {
-          let healed = this.playerMaxHP * 0.4;
-          const isOverHeal = healed + p1.hp > this.playerMaxHP;
+          const maxHP = p1 === this.player ? this.playerMaxHP : this.challengerMaxHP;
+          let healed = maxHP * 0.4;
+          const isOverHeal = healed + p1.hp > maxHP;
           if (isOverHeal) {
-            healed = this.playerMaxHP - p1.hp;
+            healed = maxHP - p1.hp;
           }
 
           p1.hp += healed;
-          await this.battleMsg?.edit(pet.interceptCard(
-            `${this.player.name} is being healed \`(+${Math.round(healed)} hp)\``
-          ));
+          const petText = `${p1.name} is being healed \`(+${Math.round(healed)} hp)\``;
+          const interceptCard = pet.interceptCard(petText);
+
+          await this.battleMsg?.edit(interceptCard);
           await sleep(this.PET_INTERCEPT);
         }
 
@@ -108,10 +124,12 @@ export class Battle {
           const dmg = p1.strength * 0.5;
           const damageReduction = p2.getArmorReduction(dmg);
           p2.hp -= dmg - damageReduction;
-          await this.battleMsg?.edit(pet.interceptCard(
-            oneLine`${this.player.name}'s ${pet.name} attacks for
-            \`${Math.round(dmg)}\` damage!`
-          ))
+
+          const petText = 
+            `${p1.name}'s ${pet.name} attacks for \`${Math.round(dmg)}\` damage!`;
+          const interceptCard = pet.interceptCard(petText);
+
+          await this.battleMsg?.edit(interceptCard);
           await sleep(this.PET_INTERCEPT);
 
         }
@@ -119,11 +137,16 @@ export class Battle {
       } else if (pet instanceof Manticore) {
         const isSpawn = pet.isSpawn(this.playerRound);
         if (isSpawn) {
-          isCrit = true;
-          await this.battleMsg?.edit(pet.interceptCard(
-            `${pet.name} has scared the opponent! \`100%\` critical hit`
-          ))
+          
+          const petText = 
+            `${pet.name} has scared the opponent! \`100%\` critical hit`;
+          const interceptCard = pet.interceptCard(petText);
+
+          await this.battleMsg?.edit(interceptCard);
           await sleep(this.PET_INTERCEPT);
+
+          await this.critAttack(p1);
+          isCrit = false;
         }
 
       } else if (pet instanceof Dragon) {
@@ -133,18 +156,21 @@ export class Battle {
           const damage = pet.damage;
           p2.hp -= burn;
           p2.hp -= damage;
-          await this.battleMsg?.edit(pet.interceptCard(
+
+          const petText =
             oneLine`Dragon is using Flame Breath dealing \`${Math.round(damage)}\` damage and 
-            burns \`${pet.burn * 100}% (${Math.round(burn)})\` enemy's hp`
-          ))
+            burns \`${pet.burn * 100}% (${Math.round(burn)})\` enemy's hp`;
+          const interceptCard = pet.interceptCard(petText);
+
+          await this.battleMsg?.edit(interceptCard);
           await sleep(this.PET_INTERCEPT);
-
         }
-
       }
+    } 
 
-      // defensive
-    } else if (pet && p1 === this.challenger) {
+    pet = p2 instanceof Player && p2.activePet;
+    // defensive
+    if (pet) {
 
       if (pet instanceof Golem) {
         if (isCrit) {
@@ -152,9 +178,11 @@ export class Battle {
 
           if (isSpawn) {
             isCrit = false;
-            await this.battleMsg?.edit(pet.interceptCard(
-              `Critical hit has been blocked!`
-            ))
+
+            const petText = `Critical hit has been blocked!`;
+            const interceptCard = pet.interceptCard(petText);
+
+            await this.battleMsg?.edit(interceptCard);
             await sleep(this.PET_INTERCEPT);
           }
         }
@@ -164,16 +192,19 @@ export class Battle {
 
         if (isSpawn) {
 
-          await this.battleMsg?.edit(pet.interceptCard(
-            `${this.player.name} has been saved from ${this.challenger.name}'s attack!`
-          ))
+          const petText =
+            `${p2.name} has been saved from ${this.challenger.name}'s attack!`;
+          const interceptCard = pet.interceptCard(petText);
+
+          await this.battleMsg?.edit(interceptCard);
           await sleep(this.PET_INTERCEPT);
           return;
         }
       }
 
-      if (this.challengerRound === 1) {
-        const equippedGears = this.player.equippedGears;
+      const triggerSetBonus = async (p1: Player, p2: Fighter) => {
+
+        const equippedGears = p1.equippedGears;
         const setBonus = Gear.getBonus(equippedGears);
         
         if (setBonus) {
@@ -191,6 +222,12 @@ export class Battle {
             await sleep(6000);
           }
         }
+      }
+
+      if (p1 instanceof Player && this.challengerRound === 1) {
+        await triggerSetBonus(p1, p2);
+      } else if (p2 instanceof Player && this.playerRound === 1) {
+        await triggerSetBonus(p2, p1);
       }
     }
 
@@ -217,16 +254,7 @@ export class Battle {
     this.progressBar(challenger.name, challenger.hp, this.challengerMaxHP);
 
     if (isCrit) {
-
-      const critGIF = p1 instanceof Player ? PLAYER_CRIT_GIF : CHALLENGER_CRIT_GIF;
-
-      const critEmbed = new MessageEmbed()
-        .setTitle(`${p1.name} Critical Attack`)
-        .setColor(RED)
-        .setImage(critGIF);
-
-      await this.battleMsg?.edit(critEmbed);
-      await sleep(4000);
+      await this.critAttack(p1);
     }
 
     await this.battleMsg?.edit(this.battleEmbed);
