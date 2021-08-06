@@ -3,7 +3,6 @@ import { MessageEmbed } from "discord.js";
 import { removeInventory } from "../db/inventory";
 import { addPet, upgradePet } from "../db/pet";
 import { Item } from "./Item";
-import { List } from "./List";
 import { Pet, PetID } from "./Pet";
 import { Player } from "./Player";
 import { BROWN, CDN_LINK, GOLD } from "./utils";
