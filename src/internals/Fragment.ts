@@ -3,6 +3,7 @@ import { MessageEmbed } from "discord.js";
 import { removeInventory } from "../db/inventory";
 import { addPet, upgradePet } from "../db/pet";
 import { Item } from "./Item";
+import { List } from "./List";
 import { Pet, PetID } from "./Pet";
 import { Player } from "./Player";
 import { BROWN, CDN_LINK, GOLD } from "./utils";
@@ -49,6 +50,10 @@ export class Fragment extends Item {
     enough fragments you can summon this pet or upgrade it.`;
   }
 
+  static get all() {
+    return Pet.all.mapList(pet => pet.fragment);
+  }
+
   summonAnimation() {
     const embed = new MessageEmbed()
       .setColor(GOLD)
@@ -76,7 +81,7 @@ export class Fragment extends Item {
     return embed;
   }
 
-  show(count: number) {
+  show(count: number, opt?: { price: number }) {
 
     const action = this.pet.star === -1 ? "summon" : "upgrade";
     const required = this.pet.upgradeCost;
@@ -86,7 +91,11 @@ export class Fragment extends Item {
       .setTitle(this.name)
       .setThumbnail(this.pet.fragmentImageUrl)
       .setDescription(this.description)
-      .addField(`Fragments to ${action}`, `\`${count}/${required}\``)
+      .addField(`Fragments to ${action}`, `\`${count}/${required}\``, true);
+
+    if (opt?.price) {
+      embed.addField("Price", opt.price);
+    }
 
     return embed;
   }
