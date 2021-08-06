@@ -144,9 +144,7 @@ export class Battle {
 
           await this.battleMsg?.edit(interceptCard);
           await sleep(this.PET_INTERCEPT);
-
-          await this.critAttack(p1);
-          isCrit = false;
+          isCrit = true;
         }
 
       } else if (pet instanceof Dragon) {
@@ -177,6 +175,7 @@ export class Battle {
           const isSpawn = pet.isSpawn(this.challengerRound);
 
           if (isSpawn) {
+            await this.critAttack(p1);
             isCrit = false;
 
             const petText = `Critical hit has been blocked!`;
