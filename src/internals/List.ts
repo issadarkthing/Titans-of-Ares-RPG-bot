@@ -59,7 +59,7 @@ export class List<T extends Identifiable> {
   }
 
   /** same as Array#map but returns List instance back instead of Array */
-  mapList<V extends T>(fn: (x: T, i: number) => V) {
+  mapList<V extends Identifiable>(fn: (x: T, i: number) => V) {
     return List.from(this.values.map(fn));
   }
 
