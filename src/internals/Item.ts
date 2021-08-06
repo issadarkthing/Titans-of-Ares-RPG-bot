@@ -13,7 +13,7 @@ export abstract class Item {
   /** may mutate the argument passed */
   abstract use(fighter: Fighter): void;
 
-  abstract show(count: number): MessageEmbed;
+  abstract show(count: number, options?: Record<string, unknown>): MessageEmbed;
 
   async save(player: Player) {
     await addInventory(player.id, this.id);
