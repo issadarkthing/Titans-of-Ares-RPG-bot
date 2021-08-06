@@ -307,7 +307,7 @@ export class Manticore extends Pet {
   }
 
   use(player: Player) {
-    const amount = player.critDamage * this.multiplier;
+    const amount = this.multiplier;
     player.critDamage += amount;
     return `\`+${numberFormat(amount)}\` Crit Damage`
   }
