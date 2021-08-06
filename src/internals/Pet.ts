@@ -227,7 +227,7 @@ export class Gryphon extends Pet {
   fragmentImageUrl = CDN_LINK + "574852830125359126/862655845447630888/gryphon.png"
   petInterceptionUrl = CDN_LINK + "852530378916888626/864399592762114078/GryphonCompressed.gif";
   private hasSpawn = false;
-  spawnAt = random().integer(2, 5);
+  spawnAt = random().integer(1, 5);
 
   get passiveStatDescription() {
     return `\`+${this.multiplier * 100}%\` speed from base stats`;

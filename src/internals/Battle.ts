@@ -187,12 +187,16 @@ export class Battle {
         }
 
       } else if (pet instanceof Gryphon) {
-        const isSpawn = pet.isSpawn(this.challengerRound);
+        const isSpawn = pet.isSpawn(this.playerRound);
 
         if (isSpawn) {
 
-          const petText =
-            `${p2.name} has been saved from ${this.challenger.name}'s attack!`;
+          if (isCrit) {
+            await this.critAttack(p1);
+            isCrit = false;
+          }
+
+          const petText = `${p2.name} has been saved from ${p1.name}'s attack!`;
           const interceptCard = pet.interceptCard(petText);
 
           await this.battleMsg?.edit(interceptCard);
