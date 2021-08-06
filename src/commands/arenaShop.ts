@@ -10,16 +10,21 @@ import { addGear } from "../db/gear";
 import { Gear } from "../internals/Gear";
 import { oneLine, stripIndents } from "common-tags";
 import { PREFIX } from "../main";
+import { Dragon } from "../internals/Pet";
+import { Fragment } from "../internals/Fragment";
 
 export async function arenaShop(msg: Message, args: string[]) {
 
   const index = args[0];
   const indexInt = parseInt(index);
   const player = await Player.getPlayer(msg.member!);
+  const scroll = new ArenaScroll();
+  const fragments = Fragment.all.filter(x => x.id !== (new Dragon()).fragment.id);
+  const dragonFragment = new Dragon().fragment;
+  const items = [...ArenaGear.all, scroll, ...fragments, dragonFragment];
 
   if (index && indexInt) {
-    const scroll = new ArenaScroll();
-    const item = [...ArenaGear.all, scroll][indexInt - 1];
+    const item = items[indexInt - 1];
     if (!item) return msg.channel.send("Item does not exist");
 
     const count = player.inventory.all.count(item.id);
@@ -74,13 +79,20 @@ export async function arenaShop(msg: Message, args: string[]) {
     return;
   }
 
-  const items = ArenaGear.all;
-  let list = items
+  let list = ArenaGear.all
     .map((x, i) => `${i + 1}. ${x.name} \`${x.description}\` | \`${x.price}\``)
     .join("\n");
 
-  const scroll = new ArenaScroll();
   list += `\n\n12. ${scroll.name} | \`${scroll.price}\``;
+
+  list += "\n";
+  let i = 13;
+  for (const fragment of fragments) {
+    list += `\n${i}. ${fragment.name} | \`30\``;
+    i++;
+  }
+
+  list += `\n${i} ${dragonFragment.name} | \`45\``;
 
   const embed = new MessageEmbed()
     .setColor(BROWN)
