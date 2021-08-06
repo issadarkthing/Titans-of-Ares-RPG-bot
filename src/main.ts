@@ -1,22 +1,12 @@
 import { verbose } from 'sqlite3';
 import { Client, TextChannel } from 'discord.js';
 import path from 'path';
-import { profile } from "./commands/profile";
-import rank from "./commands/rank";
-import help from './commands/help';
 import { xpLog } from "./internals/xpLog";
-import award from "./commands/award";
-import { xp } from './commands/xp';
-import { battle } from './commands/battle';
 import { schema } from "./db/schema";
 import { energyMainLoop } from './internals/energy';
 import { Buff } from './internals/Buff';
-import { inventory } from "./commands/inventory";
-import { pet } from "./commands/pet";
-import { shop } from "./commands/shop";
-import { gearCmd } from "./commands/gear";
-import { coinShop } from "./commands/coinShop";
-import { arenaShop } from "./commands/arenaShop";
+import Rank from "./commands/Rank";
+import { CommandManager } from "./internals/Command";
 
 const sqlite3 = verbose();
 export const PREFIX = process.env.PREFIX!;
@@ -30,6 +20,7 @@ export const DEV_ID = process.env.DEV_ID!;
 export const db = new sqlite3.Database(path.resolve(__dirname, DB));
 export const client = new Client();
 export const onMultiUpgrade = new Set<string>();
+const commandManager = new CommandManager();
 
 // create necessary tables if not exist
 db.exec(schema);
@@ -38,6 +29,8 @@ setInterval(() => {
   energyMainLoop();
   Buff.mainLoop();
 }, 1000) // run every second
+
+commandManager.registerCommands("./commands");
 
 // stores discord id of user that triggers the xp log
 export let xpLogTriggers = "";
@@ -61,7 +54,8 @@ client.on('message', (msg) => {
     msg.content.startsWith("Registered") 
     && (msg.author.id === OLD_BOT_ID || msg.author.id === DEV_ID)
   ) {
-    rank(msg, ["10"]);
+    const rank = new Rank();
+    rank.exec(msg, ["10"]);
     xpLog(msg);
     
   } else if (command.startsWith("!") && !msg.author.bot) {
@@ -72,46 +66,5 @@ client.on('message', (msg) => {
   }
 
   const cmd = command.replace(PREFIX, '').toLowerCase();
-  switch (cmd) {
-    case 'p':
-    case 'profile':
-      profile(msg, args);
-      break;
-    case 'rank':
-      rank(msg, args);
-      break;
-    case 'help':
-      help(msg, args);
-      break;
-    case 'award':
-      award(msg, args);
-      break;
-    case 'xp':
-      xp(msg, args);
-      break;
-    case 'battle':
-      battle(msg, args);
-      break;
-    case 'inv':
-    case 'inventory':
-      inventory(msg, args);
-      break;
-    case 'pets':
-    case 'pet':
-      pet(msg, args);
-      break;
-    case 'shops':
-    case 'shop':
-      shop(msg, args);
-      break;
-    case 'coinshop':
-      coinShop(msg, args);
-      break;
-    case 'arenashop':
-      arenaShop(msg, args);
-      break;
-    case 'gear':
-      gearCmd(msg, args);
-      break;
-  }
+  commandManager.handleMessage(cmd, msg, args);
 })

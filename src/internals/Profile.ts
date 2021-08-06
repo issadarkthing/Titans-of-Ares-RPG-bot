@@ -1,4 +1,4 @@
-import { backgrounds } from "../commands/rank";
+import { backgrounds } from "../commands/Rank";
 import { absoluteXP, getLevelThreshold, hash } from "./utils";
 import Rankcard from "@jiman24/rankcard";
 import { MessageAttachment } from "discord.js";
