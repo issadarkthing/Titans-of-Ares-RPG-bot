@@ -10,7 +10,7 @@ import { TimerType } from "../db/timer";
 import { Profile } from "./Profile";
 import { Inventory } from "./Inventory";
 import { getInventory, Item } from "../db/inventory";
-import { Pet } from "./Pet";
+import { Manticore, Pet } from "./Pet";
 import { getAllPets } from "../db/pet";
 import { List } from "./List"
 import { Gear } from "./Gear";
@@ -285,7 +285,8 @@ export class Player extends Fighter {
     const critDamage = numberFormat(this.critDamage);
     const petName = this.activePet ? 
       `${this.activePet.name} \`${this.activePet.star} ${STAR}\`` : "None"
-    const petPassiveDesc = this.activePet?.passiveStatDescription;
+    const petPassiveDesc = this.activePet instanceof Manticore ? "" :
+      this.activePet?.passiveStatDescription;
     const equippedGears = this.equippedGears;
     const setBonus = Gear.getBonus(equippedGears);
     const armorBonusSetDesc = setBonus?.description || "";
