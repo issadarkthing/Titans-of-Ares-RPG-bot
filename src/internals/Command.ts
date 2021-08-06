@@ -15,15 +15,11 @@ const readdir = util.promisify(fs.readdir);
 export class CommandManager {
   private commands = new Map<string, Command>();
 
-  private join(...fsPath: string[]) {
-    return path.join(__dirname, "..", ...fsPath);
-  }
-
   async registerCommands(dir: string) {
-    const files = await readdir(this.join(dir));
+    const files = await readdir(dir);
     for (const file of files) {
       // eslint-disable-next-line
-      const cmdFile = require(this.join(dir, file));
+      const cmdFile = require(path.join(dir, file));
       const command: Command = new cmdFile.default();
       this.commands.set(command.name, command);
       command.aliases.forEach(alias => this.commands.set(alias, command));

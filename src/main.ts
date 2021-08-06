@@ -30,7 +30,13 @@ setInterval(() => {
   Buff.mainLoop();
 }, 1000) // run every second
 
-commandManager.registerCommands("./commands");
+const initial = performance.now();
+commandManager
+  .registerCommands(path.resolve(__dirname, "./commands"))
+  .then(() => {
+    const timeTaken = performance.now() - initial;
+    console.log(`Registering commands took ${timeTaken.toFixed(4)} ms`);
+  })
 
 // stores discord id of user that triggers the xp log
 export let xpLogTriggers = "";
