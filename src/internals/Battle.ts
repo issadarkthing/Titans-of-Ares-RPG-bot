@@ -83,13 +83,7 @@ export class Battle {
     await sleep(4000);
   }
 
-  private async attack(p1: Fighter, p2: Fighter) {
-
-    if (p1 === this.player) {
-      this.playerRound++;
-    } else {
-      this.challengerRound++;
-    }
+  private async attack(p1: Fighter, p2: Fighter, p1Round: number, p2Round: number) {
 
     let isCrit = p1.isCriticalHit();
     let reflected = false;
@@ -101,7 +95,7 @@ export class Battle {
     if (pet) {
 
       if (pet instanceof Wisp) {
-        const isSpawn = pet.isSpawn(this.playerRound);
+        const isSpawn = pet.isSpawn(p1Round);
         if (isSpawn) {
           const maxHP = p1 === this.player ? this.playerMaxHP : this.challengerMaxHP;
           let healed = maxHP * 0.4;
@@ -119,7 +113,7 @@ export class Battle {
         }
 
       } else if (pet instanceof Minotaur) {
-        const isSpawn = pet.isSpawn(this.playerRound);
+        const isSpawn = pet.isSpawn(p1Round);
         if (isSpawn) {
           const dmg = p1.strength * 0.5;
           const damageReduction = p2.getArmorReduction(dmg);
@@ -135,7 +129,7 @@ export class Battle {
         }
 
       } else if (pet instanceof Manticore) {
-        const isSpawn = pet.isSpawn(this.playerRound);
+        const isSpawn = pet.isSpawn(p1Round);
         if (isSpawn) {
           
           const petText = 
@@ -148,7 +142,7 @@ export class Battle {
         }
 
       } else if (pet instanceof Dragon) {
-        const isSpawn = pet.isSpawn(this.playerRound);
+        const isSpawn = pet.isSpawn(p1Round);
         if (isSpawn) {
           const burn = this.challengerMaxHP * pet.burn;
           const damage = pet.damage;
@@ -174,7 +168,7 @@ export class Battle {
 
       if (pet instanceof Golem) {
         if (isCrit) {
-          const isSpawn = pet.isSpawn(this.challengerRound);
+          const isSpawn = pet.isSpawn(p2Round);
 
           if (isSpawn) {
             await this.critAttack(p1);
@@ -189,7 +183,7 @@ export class Battle {
         }
 
       } else if (pet instanceof Gryphon) {
-        const isSpawn = pet.isSpawn(this.playerRound);
+        const isSpawn = pet.isSpawn(p1Round);
 
         if (isSpawn) {
 
@@ -207,16 +201,15 @@ export class Battle {
         }
       }
 
-      const triggerSetBonus = async (p1: Player, p2: Fighter) => {
-
-        const equippedGears = p1.equippedGears;
+      if (p2 instanceof Player && p1Round === 1) {
+        const equippedGears = p2.equippedGears;
         const setBonus = Gear.getBonus(equippedGears);
         
         if (setBonus) {
           const gear = equippedGears.random();
-          const attackRate = isCrit ? p1.critDamage * p1.strength : p1.strength;
+          const attackRate = isCrit ? p2.critDamage * p2.strength : p2.strength;
           reflection = attackRate * setBonus.bonus;
-          const damageReduction = p1.getArmorReduction(reflection);
+          const damageReduction = p2.getArmorReduction(reflection);
           const damageDone = reflection - damageReduction;
           p1.hp -= damageDone;
           reflected = true;
@@ -227,13 +220,8 @@ export class Battle {
             await sleep(6000);
           }
         }
-      }
+      }    
 
-      if (p1 instanceof Player && this.challengerRound === 1) {
-        await triggerSetBonus(p1, p2);
-      } else if (p2 instanceof Player && this.playerRound === 1) {
-        await triggerSetBonus(p2, p1);
-      }
     }
 
     const attackRate = isCrit ? p1.critDamage * p1.strength : p1.strength;
@@ -286,10 +274,12 @@ export class Battle {
     while (true) {
 
       if (this.isEven(this.round + moveFirst)) {
-        await this.attack(this.player, this.challenger);
+        this.playerRound++;
+        await this.attack(this.player, this.challenger, this.playerRound, this.challengerRound);
 
       } else {
-        await this.attack(this.challenger, this.player);
+        this.challengerRound++;
+        await this.attack(this.challenger, this.player, this.challengerRound, this.playerRound);
       }
 
 
