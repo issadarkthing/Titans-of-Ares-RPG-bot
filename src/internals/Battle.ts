@@ -156,8 +156,10 @@ export class Battle {
           p2.hp -= damage;
 
           const petText =
-            oneLine`Dragon is using Flame Breath dealing \`${Math.round(damage)}\` damage and 
-            burns \`${pet.burn * 100}% (${Math.round(burn)})\` enemy's hp`;
+            oneLine`${p1.name}'s Dragon is using Flame Breath dealing
+            \`${Math.round(damage)}\` damage and burns 
+            \`${pet.burn * 100}% (${Math.round(burn)})\` ${p2.name}'s hp`;
+
           const interceptCard = pet.interceptCard(petText);
 
           await this.battleMsg?.edit(interceptCard);
