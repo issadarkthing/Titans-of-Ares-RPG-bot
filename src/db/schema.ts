@@ -86,3 +86,21 @@ schema += `
     Level       DEFAULT 0
   );
 `
+
+schema += `
+  CREATE TABLE IF NOT EXISTS TeamArena (
+    ID      INTEGER PRIMARY KEY,
+    Created TEXT NOT NULL,
+    Status  TEXT
+  );
+`
+
+schema += `
+  CREATE TABLE IF NOT EXISTS TeamArenaMember (
+    ID          INTEGER PRIMARY KEY,
+    Created     TEXT NOT NULL,
+    TeamArenaID INT NOT NULL,
+    DiscordID   TEXT NOT NULL,
+    Team        TEXT
+  );
+`
