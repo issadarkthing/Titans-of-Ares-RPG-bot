@@ -24,6 +24,7 @@ export class Battle {
   private playerRound = 0;
   private challengerRound = 0;
   private PET_INTERCEPT = 6_000; // 6 seconds
+  private isCritShown = false;
   private battleMsg?: Message;
   private battleEmbed?: MessageEmbed;
   private playerMaxHP: number;
@@ -88,6 +89,8 @@ export class Battle {
     let isCrit = p1.isCriticalHit();
     let reflected = false;
     let reflection = 0;
+    let goneThrough = 0;
+    this.isCritShown = false;
 
     let pet = p1 instanceof Player && p1.activePet;
 
@@ -173,6 +176,7 @@ export class Battle {
           if (isSpawn) {
             await this.critAttack(p1);
             isCrit = false;
+            this.isCritShown = true;
 
             const petText = `Critical hit has been blocked!`;
             const interceptCard = pet.interceptCard(petText);
@@ -190,6 +194,7 @@ export class Battle {
           if (isCrit) {
             await this.critAttack(p1);
             isCrit = false;
+            this.isCritShown = false;
           }
 
           const petText = `${p2.name} has been saved from ${p1.name}'s attack!`;
@@ -206,18 +211,25 @@ export class Battle {
         const setBonus = Gear.getBonus(equippedGears);
         
         if (setBonus) {
-          if (isCrit) {
-            await this.critAttack(p1);
-            isCrit = false;
-          }
 
           const gear = equippedGears.random();
-          const attackRate = isCrit ? p2.critDamage * p2.strength : p2.strength;
+          const attackRate = isCrit ? p1.critDamage * p1.strength : p1.strength;
+          this.msg.channel.send(`Attack Rate: ${attackRate}`);
           reflection = attackRate * setBonus.bonus;
-          const damageReduction = p2.getArmorReduction(reflection);
+          await this.msg.channel.send(`Reflected: ${reflection}`);
+          const damageReduction = p1.getArmorReduction(reflection);
+          await this.msg.channel.send(`Damage Reduction: ${damageReduction}`);
+          goneThrough = attackRate * (1 - setBonus.bonus);
+          await this.msg.channel.send(`Damage Gone Through: ${goneThrough}`);
           const damageDone = reflection - damageReduction;
+          await this.msg.channel.send(`Damage Done: ${damageDone}`);
           p1.hp -= damageDone;
           reflected = true;
+
+          if (isCrit) {
+            await this.critAttack(p1);
+            this.isCritShown = true;
+          }
 
           if (gear instanceof ApprenticeGear) {
             const reflectAnimation = gear.reflectAnimation(p2.name, damageDone, setBonus.bonus);
@@ -229,8 +241,10 @@ export class Battle {
 
     }
 
-    const attackRate = isCrit ? p1.critDamage * p1.strength : p1.strength;
-    const damageReduction = reflected ? reflection : p2.getArmorReduction(attackRate);
+    const attackRate = reflected ? goneThrough : 
+      isCrit ? p1.critDamage * p1.strength : p1.strength;
+
+    const damageReduction = p2.getArmorReduction(attackRate);
     const damageDone = attackRate - damageReduction;
     p2.hp -= damageDone;
 
@@ -251,7 +265,7 @@ export class Battle {
     this.progressBar(player.name, player.hp, this.playerMaxHP);
     this.progressBar(challenger.name, challenger.hp, this.challengerMaxHP);
 
-    if (isCrit) {
+    if (isCrit && !this.isCritShown) {
       await this.critAttack(p1);
     }
 
