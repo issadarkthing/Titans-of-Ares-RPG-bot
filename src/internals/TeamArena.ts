@@ -9,9 +9,9 @@ enum Phase {
   SIGNUP_2 = "signup_2",
   SIGNUP_3 = "signup_3",
   PREPARING = "preparing",
-  BATTLE_1 = "preparing_1",
-  BATTLE_2 = "preparing_2",
-  BATTLE_3 = "preparing_3",
+  BATTLE_1 = "battle_1",
+  BATTLE_2 = "battle_2",
+  BATTLE_3 = "battle_3",
   REWARD = "reward",
 }
 
