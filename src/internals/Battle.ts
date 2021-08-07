@@ -206,6 +206,11 @@ export class Battle {
         const setBonus = Gear.getBonus(equippedGears);
         
         if (setBonus) {
+          if (isCrit) {
+            await this.critAttack(p1);
+            isCrit = false;
+          }
+
           const gear = equippedGears.random();
           const attackRate = isCrit ? p2.critDamage * p2.strength : p2.strength;
           reflection = attackRate * setBonus.bonus;
