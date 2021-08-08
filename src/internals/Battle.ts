@@ -137,7 +137,7 @@ export class Battle {
         if (isSpawn) {
           
           const petText = 
-            `${pet.name} has scared the opponent! \`100%\` critical hit`;
+            `${p1.name}'s ${pet.name} has scared the opponent! \`100%\` critical hit`;
           const interceptCard = pet.interceptCard(petText);
 
           await this.battleMsg?.edit(interceptCard);
@@ -156,7 +156,7 @@ export class Battle {
           const petText =
             oneLine`${p1.name}'s Dragon is using Flame Breath dealing
             \`${Math.round(damage)}\` damage and burns 
-            \`${pet.burn * 100}% (${Math.round(burn)})\` ${p2.name}'s hp`;
+            \`${pet.burn * 100}% (${Math.round(burn)})\` of ${p2.name}'s hp`;
 
           const interceptCard = pet.interceptCard(petText);
 
@@ -179,7 +179,8 @@ export class Battle {
             isCrit = false;
             this.isCritShown = true;
 
-            const petText = `Critical hit has been blocked!`;
+            const petText = 
+              `${p1.name}'s Critical hit has been blocked by ${p2.name} Golem!`;
             const interceptCard = pet.interceptCard(petText);
 
             await this.battleMsg?.edit(interceptCard);
