@@ -29,6 +29,7 @@ export class Battle {
   private battleEmbed?: MessageEmbed;
   private playerMaxHP: number;
   private challengerMaxHP: number;
+  verbose = false;
   
   constructor(
     private msg: Message,
@@ -214,15 +215,20 @@ export class Battle {
 
           const gear = equippedGears.random();
           const attackRate = isCrit ? p1.critDamage * p1.strength : p1.strength;
-          this.msg.channel.send(`Attack Rate: ${attackRate}`);
+          this.verbose && await this.msg.channel.send(`Attack Rate: ${attackRate}`);
+
           reflection = attackRate * setBonus.bonus;
-          await this.msg.channel.send(`Reflected: ${reflection}`);
+          this.verbose && await this.msg.channel.send(`Reflected: ${reflection}`);
+
           const damageReduction = p1.getArmorReduction(reflection);
-          await this.msg.channel.send(`Damage Reduction: ${damageReduction}`);
+          this.verbose && await this.msg.channel.send(`Damage Reduction: ${damageReduction}`);
+
           goneThrough = attackRate * (1 - setBonus.bonus);
-          await this.msg.channel.send(`Damage Gone Through: ${goneThrough}`);
+          this.verbose && await this.msg.channel.send(`Damage Gone Through: ${goneThrough}`);
+
           const damageDone = reflection - damageReduction;
-          await this.msg.channel.send(`Damage Done: ${damageDone}`);
+          this.verbose && await this.msg.channel.send(`Damage Done: ${damageDone}`);
+
           p1.hp -= damageDone;
           reflected = true;
 
