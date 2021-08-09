@@ -4,7 +4,7 @@ enum Days {
   MONDAY = 1, TUESDAY, WEDNESDAY, THURSDAY, FRIDAY, SATURDAY, SUNDAY
 }
 
-enum Phase {
+export enum Phase {
   SIGNUP_1 = "signup_1",
   SIGNUP_2 = "signup_2",
   SIGNUP_3 = "signup_3",
