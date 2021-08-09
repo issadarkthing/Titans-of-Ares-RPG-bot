@@ -98,7 +98,6 @@ export default class extends Command {
       msg.channel.send(`Starting challenge level ${selectedLevel}`);
       const challenger = await Challenger.getChallenger(selectedLevel);
       const battle = new Battle(msg, player, challenger);
-      battle.verbose = true;
       await battle.run();
 
     } catch (e) {
