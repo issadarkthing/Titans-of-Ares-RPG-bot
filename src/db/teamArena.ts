@@ -1,5 +1,5 @@
 import { DateTime } from "luxon";
-import { dbGet, dbRun } from "./promiseWrapper";
+import { dbAll, dbGet, dbRun } from "./promiseWrapper";
 
 interface TeamArena {
   ID: number;
@@ -31,6 +31,34 @@ export function getCurrentArena() {
   `
 
   return dbGet<TeamArena>(sql);
+}
+
+export function getCandidates($arenaID: number) {
+  const sql = `
+    SELECT * FROM TeamArenaMember WHERE TeamArenaID = $arenaID
+  `
+
+  return dbAll<TeamArenaMember>(sql, { $arenaID });
+}
+
+export function deduceCharge($arenaID: number, $discordID: string) {
+  const sql = `
+  UPDATE TeamArenaMember
+  SET Charge = Charge - 1
+  WHERE TeamArenaID = $arenaID AND DiscordID = $discordID
+  `
+
+  return dbRun(sql, { $arenaID, $discordID });
+}
+
+export function updatePoint($arenaID: number, $discordID: string, $amount: number) {
+  const sql = `
+  UPDATE TeamArenaMember
+  SET Point = Point + $amount
+  WHERE TeamArenaID = $arenaID AND DiscordID = $discordID
+  `
+
+  return dbRun(sql, { $arenaID, $discordID, $amount });
 }
 
 export function joinArena($arenaID: number, $discordID: string) {
