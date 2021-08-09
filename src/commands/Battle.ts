@@ -1,5 +1,6 @@
 import { Collection, Message, MessageReaction, User } from "discord.js";
 import { DateTime } from "luxon";
+import { setMaxChallenger } from "../db/challenger";
 import { hasTimer, setEnergy, setTimer, TimerType } from "../db/timer";
 import { Battle } from "../internals/Battle";
 import { Challenger } from "../internals/Challenger";
@@ -98,8 +99,15 @@ export default class extends Command {
       msg.channel.send(`Starting challenge level ${selectedLevel}`);
       const challenger = await Challenger.getChallenger(selectedLevel);
       const battle = new Battle(msg, player, challenger);
-      await battle.run();
+      const isWon = await battle.run();
 
+      if (isWon) {
+        const loot = challenger.loot;
+        await player.addCoin(loot);
+        await setMaxChallenger(player.id, challenger.level);
+        player.challengerMaxLevel = challenger.level;
+        await msg.channel.send(`${player.name} has earned **${loot}** coins!`);
+      }
     } catch (e) {
       if (e instanceof Collection) {
         await question?.reactions.removeAll();

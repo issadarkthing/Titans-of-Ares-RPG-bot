@@ -322,24 +322,10 @@ export class Battle {
       `${this.player.name} has ${battleResult} ${this.challenger.name}!`
     );
 
-    if (isWon) {
+    this.battleEmbed.setColor(GOLD);
+    await this.battleMsg.edit(this.battleEmbed);
 
-      if (this.challenger instanceof Challenger) {
-        const loot = this.challenger.loot;
-        this.battleEmbed.setColor(GOLD);
-        await this.battleMsg.edit(this.battleEmbed);
-        await this.player.addCoin(loot);
-        await setMaxChallenger(this.player.id, this.challenger.level);
-        this.player.challengerMaxLevel = this.challenger.level;
-        await this.msg.channel.send(
-          `${this.player.name} has earned **${loot}** coins!`
-        );
-
-      } else if (this.challenger instanceof Player) {
-        this.battleEmbed.setColor(GOLD);
-        await this.battleMsg.edit(this.battleEmbed);
-      }
-    }
+    return isWon; 
   }
 }
 
