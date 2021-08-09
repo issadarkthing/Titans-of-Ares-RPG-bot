@@ -91,7 +91,7 @@ schema += `
   CREATE TABLE IF NOT EXISTS TeamArena (
     ID      INTEGER PRIMARY KEY,
     Created TEXT NOT NULL,
-    Status  TEXT
+    Phase   DEFAULT "signup_1"
   );
 `
 
@@ -101,6 +101,8 @@ schema += `
     Created     TEXT NOT NULL,
     TeamArenaID INT NOT NULL,
     DiscordID   TEXT NOT NULL,
-    Team        TEXT
+    Charge      DEFAULT 10,
+    Team        TEXT,
+    Score       DEFAULT 0
   );
 `
