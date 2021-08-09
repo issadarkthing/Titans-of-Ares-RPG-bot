@@ -1,21 +1,15 @@
+import { oneLine } from "common-tags";
 import { Message, MessageEmbed } from "discord.js";
-import { setMaxChallenger } from "../db/challenger";
+import { ApprenticeGear } from "./ApprenticeGear";
 import { Challenger } from "./Challenger";
+import { Fighter } from "./Fighter";
+import { Gear } from "./Gear";
+import { Dragon, Golem, Gryphon, Manticore, Minotaur, Wisp } from "./Pet";
 import { Player } from "./Player";
 import {
-  RED,
-  random,
-  GOLD,
-  PLAYER_CRIT_GIF,
-  CHALLENGER_CRIT_GIF,
-  roundTo,
+  CHALLENGER_CRIT_GIF, GOLD,
+  PLAYER_CRIT_GIF, random, RED, roundTo, sleep
 } from "./utils";
-import { Fighter } from "./Fighter";
-import { sleep } from "./utils";
-import { Dragon, Golem, Gryphon, Manticore, Minotaur, Wisp } from "./Pet";
-import { oneLine } from "common-tags";
-import { Gear } from "./Gear";
-import { ApprenticeGear } from "./ApprenticeGear";
 
 
 export class Battle {
