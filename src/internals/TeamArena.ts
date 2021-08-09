@@ -65,4 +65,14 @@ export class TeamArena {
   currentPhase() {
     return this.getPhase(DateTime.now());
   }
+
+  /** returns the monday date of the week */
+  getMondayDate(now: DateTime) {
+    let date = now;
+    while (date.weekday !== Days.MONDAY) {
+      date = date.minus({ day: 1 });
+    }
+
+    return date;
+  }
 }
