@@ -236,13 +236,17 @@ export class Battle {
           const reflectAnimation = gear.reflectAnimation(p2.name, damageDone, setBonus.bonus);
           await this.battleMsg?.edit(reflectAnimation);
           await sleep(6000);
+        }
 
-        } else if (setBonus && gear instanceof ArenaGear) {
+      } else if (p1 instanceof Player) {
+        const equippedGears = p1.equippedGears;
+        const setBonus = Gear.getBonus(equippedGears);
+        const gear = equippedGears.random();
 
+        if (setBonus && gear instanceof ArenaGear) {
           penetrate = setBonus.bonus;
         }
       }
-
     }
 
     const attackRate = reflected ? goneThrough : 
