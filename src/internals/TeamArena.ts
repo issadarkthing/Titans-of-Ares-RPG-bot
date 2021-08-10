@@ -40,6 +40,8 @@ class TeamArenaMember {
 export class TeamArena {
   id: number;
   created: DateTime;
+  /** monday date of the week */
+  monday: DateTime;
   phase: Phase;
   candidates: List<TeamArenaMember>;
 
@@ -47,18 +49,31 @@ export class TeamArena {
     this.id = teamArena.ID;
     this.created = DateTime.fromISO(teamArena.Created);
     this.phase = teamArena.Phase as Phase;
+    this.monday = TeamArena.getMondayDate(this.created).set({ hour: 7, minute: 0 });
     this.candidates = List.from(members.map(x => new TeamArenaMember(x)));
   }
 
   static async getCurrentArena() {
     let arena = await getCurrentArena();
     if (!arena) {
-      await createArena(DateTime.now().toISO());
+      await createArena(TeamArena.getMondayDate(DateTime.now()).toISO());
       arena = await getCurrentArena();
     }
 
     const members = await getCandidates(arena.ID);
     return new TeamArena(arena, members);
+  }
+
+  get timerUntilBattle() {
+    const battleDate = this.monday.plus({ day: 3 });
+    const timeLeft = battleDate.diffNow(["hour", "minute", "second"]);
+    return timeLeft.toFormat("hh:mm:ss");
+  }
+
+  get timerUntilReward() {
+    const battleDate = this.monday.plus({ day: 5 });
+    const timeLeft = battleDate.diffNow(["hour", "minute", "second"]);
+    return timeLeft.toFormat("hh:mm:ss");
   }
 
   private isSignUpPhase1(time: DateTime) {
@@ -111,7 +126,7 @@ export class TeamArena {
   }
 
   /** returns the monday date of the week */
-  getMondayDate(now: DateTime) {
+  static getMondayDate(now: DateTime) {
     let date = now;
     while (date.weekday !== Days.MONDAY) {
       date = date.minus({ day: 1 });

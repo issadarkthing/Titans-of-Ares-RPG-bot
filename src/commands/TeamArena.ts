@@ -11,7 +11,7 @@ import { BLUE_BUTTON, BROWN, random, RED_BUTTON, sleep } from "../internals/util
 import { logChannel, teamArenaChannel } from "../main";
 
 export default class extends Command {
-  name = "teamArena";
+  name = "teamarena";
   block = true;
 
   private async signUp(msg: Message, player: Player, arena: TeamArena) {
@@ -40,6 +40,7 @@ export default class extends Command {
         msg.channel.send("You did not sign up for the Team Arena this week!");
       })
 
+      menu.addCloseButton();
       menu.run();
 
     } else {
@@ -47,7 +48,7 @@ export default class extends Command {
         .setTitle("Team Arena")
         .setDescription(
           oneLine`You already signed in for the Team Arena, it will start in
-          (timer until Wednesday 7.00 AM). Do you want to keep being signed in?`
+          \`(${arena.timerUntilBattle})\`. Do you want to keep being signed in?`
         )
 
       const menu = new ButtonHandler(msg, embed, player.id);
@@ -63,6 +64,7 @@ export default class extends Command {
         msg.channel.send("You did not sign up for the Team Arena this week!");
       })
 
+      menu.addCloseButton();
       menu.run();
     }
   }
@@ -77,7 +79,7 @@ export default class extends Command {
     else if (candidate.Charge <= 0)
       return msg.channel.send(
         oneLine`You are out of arena tries, thanks for participating! The
-        winning team will be announced in: timer until Saturday 7 AM`);
+        winning team will be announced in \`(${arena.timerUntilReward})\``);
 
     const embed = new MessageEmbed()
       .setTitle("Team Arena")
