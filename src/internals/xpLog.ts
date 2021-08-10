@@ -7,7 +7,7 @@ import { addBuff } from "../db/player";
 import { getTimer, setTimer, TimerType } from "../db/timer";
 import { createEntry, getXPEntry, resetXPEntry, setXPEntry } from "../db/xpEntry";
 import { FragmentReward } from "./FragmentReward";
-import { logChannel, xpLogTriggers } from "../main";
+import { logChannel, client } from "../main";
 import { Buff, BUFF_LIMIT, XP_THRESHOLD } from "../internals/Buff";
 import { Player } from "../internals/Player";
 import { getLevel, getXp } from "../internals/utils";
@@ -48,7 +48,7 @@ for (let i = 0; i < lines.length; i++) {
 
 export async function xpLog(msg: Message) {
 
-  const member = msg.guild?.members.cache.get(xpLogTriggers);
+  const member = msg.guild?.members.cache.get(client.xpLogTriggers);
   if (!member) return;
 
   const lines = msg.content.split("\n");

@@ -4,7 +4,7 @@ import { Pet } from "./Pet";
 import { Player } from "./Player";
 import { random, totalLevelPassed, upperLimit } from "../internals/utils";
 import { getUsers } from "../db/player";
-import { client, db, SERVER_ID } from "../main";
+import { client } from "../main";
 
 
 export class FragmentReward {
@@ -37,11 +37,11 @@ export class FragmentReward {
 export async function rewardAll() {
 
   const users = await getUsers();
-  const guild = await client.guilds.fetch(SERVER_ID!);
+  const guild = await client.bot.guilds.fetch(client.serverID);
   const members = await guild.members.fetch();
   let rewardedUser = 0;
 
-  db.exec("BEGIN TRANSACTION");
+  client.db.exec("BEGIN TRANSACTION");
   for (const user of users) {
     const member = members.get(user.DiscordID);
     if (!member) {
@@ -70,7 +70,7 @@ export async function rewardAll() {
     rewardedUser++;
   }
     
-  db.exec("COMMIT");
+  client.db.exec("COMMIT");
 
   console.log(`Total ${rewardedUser} players have been rewarded`);
 }

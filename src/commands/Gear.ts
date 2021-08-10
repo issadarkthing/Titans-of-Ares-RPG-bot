@@ -1,6 +1,6 @@
 import { stripIndents } from "common-tags";
 import { Message, MessageEmbed } from "discord.js";
-import { PREFIX } from "../main";
+import { client } from "../main";
 import { unequipGear } from "../db/gear";
 import { ButtonHandler } from "../internals/ButtonHandler";
 import { Gear } from "../internals/Gear";
@@ -106,8 +106,8 @@ export default class extends Command {
       .addField(`Apprentice Set Reflect Skill`, 
         `Current active set bonus: ${armorBonusSetDesc}`)
       .addField("---", stripIndents`
-        Use \`${PREFIX}gear bonus\` to see more info about the set bonus
-        Use \`${PREFIX}gear <number>\` to inspect and upgrade item`)
+        Use \`${client.prefix}gear bonus\` to see more info about the set bonus
+        Use \`${client.prefix}gear <number>\` to inspect and upgrade item`)
 
     msg.channel.send(embed);
   }

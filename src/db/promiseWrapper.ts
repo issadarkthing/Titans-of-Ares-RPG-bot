@@ -1,8 +1,8 @@
-import { db } from "../main";
+import { client } from "../main";
 
 export function dbAll<T>(sql: string, param?: Record<string, unknown>) {
   return new Promise<T[]>((resolve, reject) => {
-    return db.all(sql, param, (err, rows) => {
+    return client.db.all(sql, param, (err, rows) => {
       if (err) {
         reject(err)
       } else {
@@ -14,7 +14,7 @@ export function dbAll<T>(sql: string, param?: Record<string, unknown>) {
 
 export function dbGet<T>(sql: string, param?: Record<string, unknown>) {
   return new Promise<T>((resolve, reject) => {
-    return db.get(sql, param, (err, rows) => {
+    return client.db.get(sql, param, (err, rows) => {
       if (err) {
         reject(err)
       } else {
@@ -26,7 +26,7 @@ export function dbGet<T>(sql: string, param?: Record<string, unknown>) {
 
 export function dbRun(sql: string, param?: Record<string, unknown>) {
   return new Promise<number>((resolve, reject) => {
-    return db.run(sql, param, function (err) {
+    return client.db.run(sql, param, function (err) {
       if (err) {
         reject(err);
       } else {

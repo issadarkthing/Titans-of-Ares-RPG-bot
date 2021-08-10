@@ -1,6 +1,6 @@
 import { stripIndents } from "common-tags";
 import { Message, MessageEmbed } from "discord.js";
-import { PREFIX } from "../main";
+import { client } from "../main";
 import { setActivePet, setInactivePet } from "../db/pet";
 import { ButtonHandler } from "../internals/ButtonHandler";
 import { Pet } from "../internals/Pet";
@@ -72,10 +72,10 @@ export default class extends Command {
       .setDescription("Showing all pets you summoned")
       .addField("---", petsList || "none")
       .addField("\u200b", stripIndents`
-        You can inspect your summoned pet by using \`${PREFIX}pet <number>\`
-        Use command \`${PREFIX}pet all\` to show all existing pets and how many fragments you need to summon or upgrade them
-        You can summon or upgrade pets from inventory using \`${PREFIX}inventory\`
-        You can convert pet fragments from the inventory using \`${PREFIX}inventory\``)
+        You can inspect your summoned pet by using \`${client.prefix}pet <number>\`
+        Use command \`${client.prefix}pet all\` to show all existing pets and how many fragments you need to summon or upgrade them
+        You can summon or upgrade pets from inventory using \`${client.prefix}inventory\`
+        You can convert pet fragments from the inventory using \`${client.prefix}inventory\``)
 
     msg.channel.send(embed);
   }

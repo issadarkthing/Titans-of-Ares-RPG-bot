@@ -4,16 +4,16 @@ import { removeInventory } from "../db/inventory";
 import { Gear } from "./Gear";
 import { Player } from "./Player";
 import { sleep } from "./utils";
-import { onMultiUpgrade } from "../main";
+import { client } from "../main";
 
 
 export function upgrade(item: Gear, msg: Message, player: Player, count: number) {
   return async () => {
 
-    if (onMultiUpgrade.has(player.id)) {
+    if (client.onMultiUpgrade.has(player.id)) {
       return msg.channel.send("There is already multiple upgrade running");
     } else {
-      onMultiUpgrade.add(player.id);
+      client.onMultiUpgrade.add(player.id);
     }
 
     let scrollCount = player.inventory.all.count("scroll");
@@ -22,10 +22,10 @@ export function upgrade(item: Gear, msg: Message, player: Player, count: number)
 
     for (let i = 0; i < count; i++) {
       if (item.level >= 10) {
-        onMultiUpgrade.delete(player.id);
+        client.onMultiUpgrade.delete(player.id);
         return msg.channel.send("Gear is on max level");
       } else if (scrollCount === 0) {
-        onMultiUpgrade.delete(player.id);
+        client.onMultiUpgrade.delete(player.id);
         await removeInventory(player.id, "scroll", scrollLost);
         return msg.channel.send("Insufficient scroll");
       }
@@ -49,7 +49,7 @@ export function upgrade(item: Gear, msg: Message, player: Player, count: number)
       }
     }
 
-    onMultiUpgrade.delete(player.id);
+    client.onMultiUpgrade.delete(player.id);
 
     try {
       await removeInventory(player.id, "scroll", scrollLost);

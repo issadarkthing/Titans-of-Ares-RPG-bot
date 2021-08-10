@@ -7,7 +7,7 @@ import { Gear } from "../internals/Gear";
 import { Player } from "../internals/Player";
 import { Scroll } from "../internals/Scroll";
 import { BLUE_BUTTON, BROWN, RED_BUTTON, RETURN_BUTTON, WHITE_BUTTON } from "../internals/utils";
-import { PREFIX } from "../main";
+import { client } from "../main";
 import { ApprenticeGear } from "../internals/ApprenticeGear";
 import Command from "../internals/Command";
 
@@ -95,7 +95,7 @@ export default class extends Command {
         "\u200b",
         stripIndents`
         Current coins: \`${player.coins}\`
-        You can inspect an item by using \`${PREFIX}coinshop <number>\``
+        You can inspect an item by using \`${client.prefix}coinshop <number>\``
       );
 
     msg.channel.send(embed);

@@ -23,7 +23,7 @@ import {
   STAR,
   WHITE_BUTTON
 } from "../internals/utils";
-import { PREFIX } from "../main";
+import { client } from "../main";
 
 export default class extends Command {
   name = "inventory";
@@ -289,8 +289,8 @@ export default class extends Command {
       .addField(
         "\u200b",
         stripIndents`
-        Use command \`${PREFIX}inventory <number>\` to inspect item in the inventory.
-        Use command \`${PREFIX}gear\` to see your current equipped gear.
+        Use command \`${client.prefix}inventory <number>\` to inspect item in the inventory.
+        Use command \`${client.prefix}gear\` to see your current equipped gear.
         `
       );
 

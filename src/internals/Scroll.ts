@@ -1,6 +1,6 @@
 import { stripIndents } from "common-tags";
 import { MessageEmbed } from "discord.js";
-import { PREFIX } from "../main";
+import { client } from "../main";
 import { removeInventory } from "../db/inventory";
 import { Item } from "./Item";
 import { Player } from "./Player";
@@ -13,7 +13,7 @@ export class Scroll extends Item {
   description = stripIndents`
   Upgrade scroll is used to upgrade normal gear up to level 10
 
-  To upgrade gear, inspect the item in the \`${PREFIX}inventory\` or \`${PREFIX}gear\` menu`;
+  To upgrade gear, inspect the item in the \`${client.prefix}inventory\` or \`${client.prefix}gear\` menu`;
   price = 25;
   imageUrl = CDN_LINK + 
     "852530378916888626/868333533951840286/704a20ac63fa90bb65cbc06a40e2b452.jpg";
@@ -42,6 +42,6 @@ export class ArenaScroll extends Scroll {
   description = stripIndents`
   Arena upgrade scroll is used to upgrade arena gear up to level 10
 
-  To upgrade gear, inspect the item in the \`${PREFIX}inventory\` or \`${PREFIX}gear\` menu`;
+  To upgrade gear, inspect the item in the \`${client.prefix}inventory\` or \`${client.prefix}gear\` menu`;
   price = 250;
 }

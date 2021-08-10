@@ -9,10 +9,10 @@ import { addInventory } from "../db/inventory";
 import { addGear } from "../db/gear";
 import { Gear } from "../internals/Gear";
 import { oneLine, stripIndents } from "common-tags";
-import { PREFIX } from "../main";
 import { Dragon } from "../internals/Pet";
 import { Fragment } from "../internals/Fragment";
 import Command from "../internals/Command";
+import { client } from "../main";
 
 export default class extends Command {
   name = "arenashop";
@@ -110,7 +110,7 @@ export default class extends Command {
       "\u200b",
       stripIndents`
       Current coins: \`${player.coins}\`
-      You can inspect an item by using \`${PREFIX}arenashop <number>\``
+      You can inspect an item by using \`${client.prefix}arenashop <number>\``
     );
 
     msg.channel.send(embed);

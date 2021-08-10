@@ -1,6 +1,6 @@
 import { TextChannel, Message } from "discord.js";
 import { getUsers } from "../db/player";
-import { RANK_CHANNEL } from "../main";
+import { client } from "../main";
 import { Player } from "../internals/Player";
 import Command from "../internals/Command";
 
@@ -39,7 +39,7 @@ export default class extends Command {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   async exec(msg: Message, _args: string[]) {
 
-    const channel = msg.guild?.channels.resolve(RANK_CHANNEL!);
+    const channel = msg.guild?.channels.resolve(client.rankChannelID);
     if (!channel) throw Error("No rank channel");
 
 
