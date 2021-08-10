@@ -18,7 +18,6 @@ export class Battle {
   private playerRound = 0;
   private challengerRound = 0;
   private PET_INTERCEPT = 6_000; // 6 seconds
-  private isCritShown = false;
   private battleMsg?: Message;
   private battleEmbed?: MessageEmbed;
   private playerMaxHP: number;
@@ -85,7 +84,7 @@ export class Battle {
     let reflected = false;
     let reflection = 0;
     let goneThrough = 0;
-    this.isCritShown = false;
+    let isCritShown = false;
 
     let pet = p1 instanceof Player && p1.activePet;
 
@@ -171,7 +170,7 @@ export class Battle {
           if (isSpawn) {
             await this.critAttack(p1);
             isCrit = false;
-            this.isCritShown = true;
+            isCritShown = true;
 
             const petText = 
               `${p1.name}'s Critical hit has been blocked by ${p2.name} Golem!`;
@@ -190,7 +189,7 @@ export class Battle {
           if (isCrit) {
             await this.critAttack(p1);
             isCrit = false;
-            this.isCritShown = false;
+            isCritShown = false;
           }
 
           const petText = `${p2.name} has been saved from ${p1.name}'s attack!`;
@@ -229,7 +228,7 @@ export class Battle {
 
           if (isCrit) {
             await this.critAttack(p1);
-            this.isCritShown = true;
+            isCritShown = true;
           }
 
           if (gear instanceof ApprenticeGear) {
@@ -266,7 +265,7 @@ export class Battle {
     this.progressBar(player.name, player.hp, this.playerMaxHP);
     this.progressBar(challenger.name, challenger.hp, this.challengerMaxHP);
 
-    if (isCrit && !this.isCritShown) {
+    if (isCrit && !isCritShown) {
       await this.critAttack(p1);
     }
 
