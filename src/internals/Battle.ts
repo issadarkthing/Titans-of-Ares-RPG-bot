@@ -1,6 +1,7 @@
 import { oneLine } from "common-tags";
 import { Message, MessageEmbed } from "discord.js";
 import { ApprenticeGear } from "./ApprenticeGear";
+import { ArenaGear } from "./ArenaGear";
 import { Challenger } from "./Challenger";
 import { Fighter } from "./Fighter";
 import { Gear } from "./Gear";
@@ -85,6 +86,7 @@ export class Battle {
     let reflection = 0;
     let goneThrough = 0;
     let isCritShown = false;
+    let penetrate = 0;
 
     let pet = p1 instanceof Player && p1.activePet;
 
@@ -204,10 +206,10 @@ export class Battle {
       if (p2 instanceof Player && p1Round === 1) {
         const equippedGears = p2.equippedGears;
         const setBonus = Gear.getBonus(equippedGears);
+        const gear = equippedGears.random();
         
-        if (setBonus) {
+        if (setBonus && gear instanceof ApprenticeGear) {
 
-          const gear = equippedGears.random();
           const attackRate = isCrit ? p1.critDamage * p1.strength : p1.strength;
           this.verbose && await this.msg.channel.send(`Attack Rate: ${attackRate}`);
 
@@ -231,20 +233,23 @@ export class Battle {
             isCritShown = true;
           }
 
-          if (gear instanceof ApprenticeGear) {
-            const reflectAnimation = gear.reflectAnimation(p2.name, damageDone, setBonus.bonus);
-            await this.battleMsg?.edit(reflectAnimation);
-            await sleep(6000);
-          }
+          const reflectAnimation = gear.reflectAnimation(p2.name, damageDone, setBonus.bonus);
+          await this.battleMsg?.edit(reflectAnimation);
+          await sleep(6000);
+
+        } else if (setBonus && gear instanceof ArenaGear) {
+
+          penetrate = setBonus.bonus;
         }
-      }    
+      }
 
     }
 
     const attackRate = reflected ? goneThrough : 
       isCrit ? p1.critDamage * p1.strength : p1.strength;
 
-    const damageReduction = p2.getArmorReduction(attackRate);
+    let damageReduction = p2.getArmorReduction(attackRate);
+    damageReduction -= damageReduction * penetrate;
     const damageDone = attackRate - damageReduction;
     p2.hp -= damageDone;
 
