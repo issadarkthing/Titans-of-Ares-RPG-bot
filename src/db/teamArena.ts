@@ -89,3 +89,23 @@ export function addArenaCoin($discordID: string, $amount: number) {
 
   return dbRun(sql, { $discordID, $amount });
 }
+
+export function setPhase($arenaID: number, $phase: string) {
+  const sql = `
+  UPDATE TeamArena
+  SET Phase = $phase
+  WHERE ID = $arenaID
+  `
+
+  return dbRun(sql, { $arenaID, $phase });
+}
+
+export function setTeam($arenaID: number, $discordID: string, $team: string) {
+  const sql = `
+  UPDATE TeamArenaMember
+  SET Team = $team
+  WHERE TeamArenaID = $arenaID AND DiscordID = $discordID
+  `
+
+  return dbRun(sql, { $arenaID, $discordID, $team });
+}
