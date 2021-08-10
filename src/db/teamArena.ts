@@ -1,13 +1,13 @@
 import { DateTime } from "luxon";
 import { dbAll, dbGet, dbRun } from "./promiseWrapper";
 
-interface TeamArena {
+export interface TeamArena {
   ID: number;
   Created: string;
   Phase: string;
 }
 
-interface TeamArenaMember {
+export interface TeamArenaMember {
   ID: number;
   Created: string;
   TeamArenaID: number;
@@ -69,4 +69,23 @@ export function joinArena($arenaID: number, $discordID: string) {
   `
 
   return dbRun(sql, { $now, $arenaID, $discordID });
+}
+
+export function leaveArena($arenaID: number, $discordID: string) {
+  const sql = `
+    DELETE FROM TeamArenaMember
+    WHERE TeamArenaID = $arenaID AND DiscordID = $discordID
+  `
+
+  return dbRun(sql, { $arenaID, $discordID });
+}
+
+export function addArenaCoin($discordID: string, $amount: number) {
+  const sql = `
+  UPDATE Player
+  SET ArenaCoin = ArenaCoin + $amount
+  WHERE DiscordID = $discordID
+  `
+
+  return dbRun(sql, { $discordID, $amount });
 }

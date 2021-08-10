@@ -1,4 +1,12 @@
 import { DateTime } from "luxon";
+import { 
+  TeamArena as TeamArenaDB, 
+  TeamArenaMember as TeamArenaMemberDB,
+  getCurrentArena,
+  getCandidates,
+  createArena,
+} from "../db/teamArena";
+import { List } from "./List";
 
 enum Days {
   MONDAY = 1, TUESDAY, WEDNESDAY, THURSDAY, FRIDAY, SATURDAY, SUNDAY
@@ -15,37 +23,73 @@ export enum Phase {
   REWARD = "reward",
 }
 
-export class TeamArena {
+class TeamArenaMember {
+  id: string;
+  created: DateTime;
+  teamArenaID: number;
+  team: "RED" | "BLUE";
 
-  isSignUpPhase1(time: DateTime) {
+  constructor(member: TeamArenaMemberDB) {
+    this.id = member.DiscordID;
+    this.created = DateTime.fromISO(member.Created);
+    this.teamArenaID = member.TeamArenaID;
+    this.team = member.Team as TeamArenaMember["team"];
+  }
+}
+
+export class TeamArena {
+  id: number;
+  created: DateTime;
+  phase: Phase;
+  candidates: List<TeamArenaMember>;
+
+  constructor(teamArena: TeamArenaDB, members: TeamArenaMemberDB[]) {
+    this.id = teamArena.ID;
+    this.created = DateTime.fromISO(teamArena.Created);
+    this.phase = teamArena.Phase as Phase;
+    this.candidates = List.from(members.map(x => new TeamArenaMember(x)));
+  }
+
+  static async getCurrentArena() {
+    let arena = await getCurrentArena();
+    if (!arena) {
+      await createArena(DateTime.now().toISO());
+      arena = await getCurrentArena();
+    }
+
+    const members = await getCandidates(arena.ID);
+    return new TeamArena(arena, members);
+  }
+
+  private isSignUpPhase1(time: DateTime) {
     return time.weekday >= Days.MONDAY && time.hour >= 7;
   }
 
-  isSignUpPhase2(time: DateTime) {
+  private isSignUpPhase2(time: DateTime) {
     return time.weekday >= Days.TUESDAY && time.hour >= 7;
   }
 
-  isSignUpPhase3(time: DateTime) {
+  private isSignUpPhase3(time: DateTime) {
     return time.weekday >= Days.TUESDAY && time.hour >= 19;
   }
 
-  isPreparingPhase(time: DateTime) {
+  private isPreparingPhase(time: DateTime) {
     return time.weekday >= Days.WEDNESDAY && time.hour >= 7;
   }
 
-  isBattlePhase1(time: DateTime) {
+  private isBattlePhase1(time: DateTime) {
     return time.weekday >= Days.THURSDAY && time.hour >= 7;
   }
 
-  isBattlePhase2(time: DateTime) {
+  private isBattlePhase2(time: DateTime) {
     return time.weekday >= Days.FRIDAY && time.hour >= 7;
   }
 
-  isBattlePhase3(time: DateTime) {
+  private isBattlePhase3(time: DateTime) {
     return time.weekday >= Days.FRIDAY && time.hour >= 19;
   }
 
-  isRewardPhase(time: DateTime) {
+  private isRewardPhase(time: DateTime) {
     return time.weekday >= Days.SATURDAY && time.hour >= 7;
   }
 

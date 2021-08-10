@@ -83,7 +83,6 @@ export default async function($userId: string) {
 }
 
 
-
 export async function getTotalPoints(userId: string) {
 
   const activities = await getActivity(userId);

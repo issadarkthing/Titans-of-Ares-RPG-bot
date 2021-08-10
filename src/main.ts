@@ -42,6 +42,7 @@ commandManager
 export let xpLogTriggers = "";
 
 export let logChannel: TextChannel;
+export let teamArenaChannel: TextChannel;
 
 client.once('ready', async () => {
   console.log('Bot is ready');
