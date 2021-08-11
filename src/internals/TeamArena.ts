@@ -42,12 +42,16 @@ class TeamArenaMember {
   teamArenaID: number;
   team: "RED" | "BLUE";
   player: Player;
+  charge: number;
+  score: number;
 
   constructor(member: TeamArenaMemberDB, player: Player) {
     this.id = member.DiscordID;
     this.created = DateTime.fromISO(member.Created);
     this.teamArenaID = member.TeamArenaID;
     this.team = member.Team as TeamArenaMember["team"];
+    this.charge = member.Charge;
+    this.score = member.Score;
     this.player = player;
   }
 }
@@ -216,6 +220,29 @@ export class TeamArena {
     }
 
     return date;
+  }
+
+  scoreBoard() {
+    const redTeam = this.candidates.filter(x => x.team === "RED");
+    const blueTeam = this.candidates.filter(x => x.team === "BLUE");
+
+    redTeam.sort((b, a) => b.score - a.score);
+    blueTeam.sort((b, a) => b.score - a.score);
+
+    const redTeamList = redTeam
+      .map((x, i) => `${i + 1}. ${x.player.name} \`${x.score} points\``)
+      .join("\n");
+
+    const blueTeamList = blueTeam
+      .map((x, i) => `${i + 1}. ${x.player.name} \`${x.score} points\``)
+      .join("\n");
+
+    const embed = new MessageEmbed()
+      .setTitle("Team Arena Scoreboard")
+      .addField("Red Team", redTeamList)
+      .addField("Blue Team", blueTeamList)
+
+    return embed;
   }
 
   async onPrepare() {

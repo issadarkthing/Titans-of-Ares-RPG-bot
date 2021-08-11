@@ -123,6 +123,9 @@ export default class extends Command {
         client.logChannel.send(
           `${player} has earned 1 Arena Coin by winning a battle in the Team Arena!`
         )
+
+        // update score board
+        client.teamArenaChannel.send(arena.scoreBoard());
       } else {
         client.teamArenaChannel.send(
           `${opponentMember} has succesfully defended against ${player} in the Team Arena!`

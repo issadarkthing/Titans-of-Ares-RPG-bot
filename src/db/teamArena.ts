@@ -14,6 +14,7 @@ export interface TeamArenaMember {
   DiscordID: string;
   Charge: number;
   Team: string;
+  Score: number;
 }
 
 export function createArena($dateISO: string) {
