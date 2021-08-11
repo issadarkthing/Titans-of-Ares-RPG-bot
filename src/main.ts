@@ -13,13 +13,12 @@ client.addPollHandler(Buff.mainLoop);
 
 client.registerCommands(path.resolve(__dirname, "./commands"));
 
-export let logChannel: TextChannel;
-export let teamArenaChannel: TextChannel;
-
 client.bot.once('ready', async () => {
   console.log('Bot is ready');
   const guild = await client.bot.guilds.fetch(client.serverID);
-  logChannel = guild.channels.cache.get(client.xpLogChannelID) as TextChannel;
+  const channels = guild.channels.cache;
+  client.logChannel = channels.get(client.xpLogChannelID) as TextChannel;
+  client.teamArenaChannel = channels.get(client.teamArenaChannelID) as TextChannel;
 })
 
 client.bot.on('message', (msg) => {

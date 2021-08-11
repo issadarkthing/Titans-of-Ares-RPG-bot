@@ -10,7 +10,7 @@ import {
   TeamArena as TeamArenaDB,
   TeamArenaMember as TeamArenaMemberDB,
 } from "../db/teamArena";
-import { teamArenaChannel } from "../main";
+import { client } from "../main";
 import { List } from "./List";
 import { Player } from "./Player";
 import { GOLD, random } from "./utils";
@@ -78,11 +78,11 @@ export class TeamArena {
       arena = await getCurrentArena();
     }
 
-    await teamArenaChannel.guild.members.fetch();
+    await client.teamArenaChannel.guild.members.fetch();
     const members = await getCandidates(arena.ID);
     const candidates = members
       .map((member) => {
-        const guildMember = teamArenaChannel.guild.members.cache.get(
+        const guildMember = client.teamArenaChannel.guild.members.cache.get(
           member.DiscordID
         );
         return guildMember;
@@ -244,7 +244,7 @@ export class TeamArena {
       .addField("Team Red", teamRedList)
       .addField("Team Blue", teamBlueList);
 
-    teamArenaChannel.send(embed);
+    client.teamArenaChannel.send(embed);
   }
 
   /** updates phase upon every second */

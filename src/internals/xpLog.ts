@@ -7,7 +7,7 @@ import { addBuff } from "../db/player";
 import { getTimer, setTimer, TimerType } from "../db/timer";
 import { createEntry, getXPEntry, resetXPEntry, setXPEntry } from "../db/xpEntry";
 import { FragmentReward } from "./FragmentReward";
-import { logChannel, client } from "../main";
+import { client } from "../main";
 import { Buff, BUFF_LIMIT, XP_THRESHOLD } from "../internals/Buff";
 import { Player } from "../internals/Player";
 import { getLevel, getXp } from "../internals/utils";
@@ -78,14 +78,14 @@ export async function xpLog(msg: Message) {
     const prevLevel = getLevel(prevXp);
     const name = player.name;
 
-    logChannel.send(`${name} has earned \`${xp} xp\`!`);
+    client.logChannel.send(`${name} has earned \`${xp} xp\`!`);
 
     // fragment reward
     if (player.xp >= player.fragmentReward) {
 
       if (FragmentReward.random()) {
         const fragment = await FragmentReward.reward(player);
-        logChannel.send(oneLine`${player.name} has been awarded a
+        client.logChannel.send(oneLine`${player.name} has been awarded a
           **${fragment.name}** by Ares himself for great effort in working out.
           Keep up the good work!`);
       } 
@@ -115,14 +115,14 @@ export async function xpLog(msg: Message) {
       setTimer(TimerType.Buff, player.id, expireDate);
       addBuff(player.id, buff.id);
 
-      logChannel.send(
+      client.logChannel.send(
         oneLine`Ares has granted ${member} a 2 hour ${buff.name}
         for getting 10 points in the monthly challenge today!`
       );
     }
 
     if (currentLevel !== prevLevel) {
-      logChannel.send(`${name} is now on **level ${currentLevel}**`);
+      client.logChannel.send(`${name} is now on **level ${currentLevel}**`);
     }
   }
 }

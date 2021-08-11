@@ -1,6 +1,6 @@
 import { Database, verbose } from "sqlite3";
 import { CommandManager } from "./Command";
-import Discord from "discord.js";
+import Discord, { TextChannel } from "discord.js";
 import { schema } from "../db/schema";
 
 export default class Client {
@@ -8,6 +8,7 @@ export default class Client {
   oldBotID = process.env.OLD_BOT_ID!;
   rankChannelID = process.env.RANK_CHANNEL!;
   xpLogChannelID = process.env.XP_LOG_CHANNEL!;
+  teamArenaChannelID = process.env.TEAM_ARENA_CHANNEL!;
   dbPath = process.env.DB!;
   serverID = process.env.SERVER_ID!;
   devID = process.env.DEV_ID!;
@@ -20,6 +21,8 @@ export default class Client {
   /** stores discord id of user that triggers the xp log */
   xpLogTriggers = "";
   db: Database;
+  logChannel!: TextChannel;
+  teamArenaChannel!: TextChannel;
 
   constructor(dbPath: string) {
     const sqlite3 = verbose();

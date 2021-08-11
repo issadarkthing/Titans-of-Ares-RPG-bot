@@ -8,7 +8,7 @@ import Command from "../internals/Command";
 import { Player } from "../internals/Player";
 import { Phase } from "../internals/TeamArena";
 import { BLUE_BUTTON, BROWN, random, RED_BUTTON, sleep } from "../internals/utils";
-import { logChannel, teamArenaChannel } from "../main";
+import { client } from "../main";
 
 export default class extends Command {
   name = "teamarena";
@@ -116,15 +116,15 @@ export default class extends Command {
         await updatePoint(arena.id, player.id, 1);
         await player.addArenaCoin(1);
 
-        teamArenaChannel.send(
+        client.teamArenaChannel.send(
           `${player} has scored 1 point for Team ${candidate.Team} by defeating ${opponentMember}`
         )
 
-        logChannel.send(
+        client.logChannel.send(
           `${player} has earned 1 Arena Coin by winning a battle in the Team Arena!`
         )
       } else {
-        teamArenaChannel.send(
+        client.teamArenaChannel.send(
           `${opponentMember} has succesfully defended against ${player} in the Team Arena!`
         )
       }

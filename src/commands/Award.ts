@@ -7,7 +7,7 @@ import { getLevel } from "../internals/utils";
 import { Medal, MedalType } from "../internals/Medal";
 import { Player } from "../internals/Player";
 import { oneLine } from "common-tags";
-import { logChannel } from "../main";
+import { client } from "../main";
 import { Pet } from "../internals/Pet";
 import { addInventory, removeInventory } from "../db/inventory";
 import { Fragment, FragmentID } from "../internals/Fragment";
@@ -19,6 +19,7 @@ export default class extends Command {
   name = "award";
 
   async exec(msg: Message, args: string[]) {
+    const logChannel = client.logChannel;
 
     const userId = args[0];
     if (!userId)
