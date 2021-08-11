@@ -55,7 +55,7 @@ export function deduceCharge($arenaID: number, $discordID: string) {
 export function updatePoint($arenaID: number, $discordID: string, $amount: number) {
   const sql = `
   UPDATE TeamArenaMember
-  SET Point = Point + $amount
+  SET Score = Score + $amount
   WHERE TeamArenaID = $arenaID AND DiscordID = $discordID
   `
 
