@@ -109,7 +109,7 @@ export default class extends Command {
     .addField(
       "\u200b",
       stripIndents`
-      Current coins: \`${player.coins}\`
+      Current coins: \`${player.arenaCoins}\`
       You can inspect an item by using \`${client.prefix}arenashop <number>\``
     );
 
