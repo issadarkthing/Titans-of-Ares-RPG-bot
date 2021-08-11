@@ -1,3 +1,4 @@
+import { oneLine } from "common-tags";
 import { MessageEmbed } from "discord.js";
 import { DateTime } from "luxon";
 import { dbRun } from "../db/promiseWrapper";
@@ -287,13 +288,63 @@ export class TeamArena {
     const arena = await TeamArena.getCurrentArena();
     const currentPhase = client.isDev && client.arenaPhase ? 
       client.arenaPhase : TeamArena.currentPhase();
+    const mention = client.isDev ? "@all" : "@everyone";
 
-    if (currentPhase && arena.phase !== currentPhase) {
-      if (currentPhase === Phase.PREPARING) {
-        arena.onPrepare();
-      }
-
-      setPhase(arena.id, currentPhase);
+    if (!currentPhase || arena.phase === currentPhase) {
+      return;
     }
+
+    switch (currentPhase) {
+      case Phase.SIGNUP_1:
+        client.teamArenaChannel.send(
+          oneLine`${mention} Notice: You can now sign up for the Team Arena
+          battles of this week! Use the \`$TeamArena\` command to participate.
+          You have 48 hours to sign up!`
+        );
+        break;
+      case Phase.SIGNUP_2:
+        client.teamArenaChannel.send(
+          oneLine`${mention} Notice: You can now sign up for the Team Arena
+          battles of this week! Use the \`$TeamArena\` command to participate.
+          You have 24 hours to sign up!`
+        );
+        break;
+      case Phase.SIGNUP_3:
+        client.teamArenaChannel.send(
+          oneLine`${mention} Notice: You can now sign up for the Team Arena
+          battles of this week! Use the \`$TeamArena\` command to participate.
+          You have 12 hours to sign up!`
+        );
+        break;
+      case Phase.PREPARING:
+        client.teamArenaChannel.send(
+          oneLine`${mention} The teams for the Team Arena have been formed! You
+          can no longer sign up for Team Arena this week! Battles will start in
+          24 hours!`
+        );
+        arena.onPrepare();
+        break;
+      case Phase.BATTLE_1:
+        client.teamArenaChannel.send(
+          oneLine`${mention} You can now battle the opponents team by using
+          \`$TeamArena\` and earn points for your team!`
+        );
+        client.teamArenaChannel.send(arena.scoreBoard());
+        break;
+      case Phase.BATTLE_2:
+        client.teamArenaChannel.send(
+          oneLine`${mention} Notice: You have 24 hours left to battle in the
+          Team Arena by using \`$TeamArena\`!`
+        );
+        break;
+      case Phase.BATTLE_3:
+        client.teamArenaChannel.send(
+          oneLine`${mention} Notice: You have 12 hours left to battle in the
+          Team Arena by using \`$TeamArena\`!`
+        );
+        break;
+    }
+
+    setPhase(arena.id, currentPhase);
   }
 }
