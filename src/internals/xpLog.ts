@@ -85,7 +85,7 @@ export async function xpLog(msg: Message) {
 
       if (FragmentReward.random()) {
         const fragment = await FragmentReward.reward(player);
-        client.logChannel.send(oneLine`${player.name} has been awarded a
+        client.logChannel.send(oneLine`${player.member} has been awarded a
           **${fragment.name}** by Ares himself for great effort in working out.
           Keep up the good work!`);
       } 
