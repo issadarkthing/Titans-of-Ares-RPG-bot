@@ -114,7 +114,6 @@ export default class extends Command {
 
       if (isWon) {
         await updatePoint(arena.id, player.id, 1);
-        await player.addArenaCoin(1);
 
         client.teamArenaChannel.send(
           `${player} has scored 1 point for Team ${candidate.Team} by defeating ${opponentMember}`
