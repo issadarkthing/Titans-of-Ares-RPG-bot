@@ -31,7 +31,8 @@ export default class extends Command {
         joinArena(arena.id, player.id);
         msg.channel.send(
           oneLine`You have signed up for this weeks Team Arena and will be
-          assigned to either Team Red or Team Blue when the sign up closes!`
+          assigned to either Team ${RED_BUTTON} or Team ${BLUE_BUTTON} when the
+          sign up closes!`
         )
       })
 
@@ -53,8 +54,7 @@ export default class extends Command {
       const menu = new ButtonHandler(msg, embed, player.id);
       menu.addButton(BLUE_BUTTON, "yes", () => {
         msg.channel.send(
-          oneLine`You have signed up for this weeks Team Arena and will be
-          assigned to either Team Red or Team Blue when the sign up closes!`
+          oneLine`You are still signed in for this weeks Team Arena!`
         )
       })
 
@@ -152,7 +152,9 @@ export default class extends Command {
         return this.signUp(msg, player, arena);
       case Phase.PREPARING:
         return msg.channel.send(
-          "Registration for this week Team Arena has been closed"
+          oneLine`Registration for this week Team Arena has been closed and
+          teams have been formed. The battles will start in
+          \`${arena.timerUntilBattle}\``
         );
       case Phase.BATTLE_1:
       case Phase.BATTLE_2:

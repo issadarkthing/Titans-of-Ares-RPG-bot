@@ -246,33 +246,37 @@ export class TeamArena {
     const blueTeamList = makeList(blueTeam);
     const blueTeamScore = score(blueTeam);
 
-    const redWinning = redTeamScore > blueTeamScore;
-    const blueWinning = blueTeamScore > redTeamScore;
+    const redCrown = redTeamScore > blueTeamScore ? CROWN : "";
+    const blueCrown = blueTeamScore > redTeamScore ? CROWN : "";
 
     const embed = new MessageEmbed()
       .setTitle("Team Arena Scoreboard")
       .addField(
-        `Team ${RED_BUTTON} (${redTeamScore}) ${redWinning ? CROWN : ""}`, redTeamList)
+        `Team ${RED_BUTTON} (${redTeamScore} points) ${redCrown}`, redTeamList)
       .addField(
-        `Team ${BLUE_BUTTON} (${blueTeamScore}) ${blueWinning ? CROWN : ""}`, blueTeamList)
+        `Team ${BLUE_BUTTON} (${blueTeamScore} points) ${blueCrown}`, blueTeamList)
 
     return embed;
   }
 
   async updateScoreboard() {
-    const scoreBoard = this.scoreBoard();
+    try {
+      const scoreBoard = this.scoreBoard();
 
-    const messages = client.teamArenaChannel.messages;
-    await messages.fetch();
-    const oldScoreboard = messages.cache.get(this.messageID);
+      const messages = client.teamArenaChannel.messages;
+      await messages.fetch();
+      const oldScoreboard = messages.cache.get(this.messageID);
 
-    // delete old scoreboard
-    oldScoreboard && await oldScoreboard.delete();
+      // delete old scoreboard
+      oldScoreboard && await oldScoreboard.delete();
 
-    // send a new one
-    const newScoreboard = await client.teamArenaChannel.send(scoreBoard);
-    this.messageID = newScoreboard.id;
-    await setMessage(this.id, newScoreboard.id);
+      // send a new one
+      const newScoreboard = await client.teamArenaChannel.send(scoreBoard);
+      this.messageID = newScoreboard.id;
+      await setMessage(this.id, newScoreboard.id);
+
+    // eslint-disable-next-line no-empty
+    } catch {}
   }
 
   async onPrepare() {
@@ -334,7 +338,7 @@ export class TeamArena {
       case Phase.PREPARING:
         client.teamArenaChannel.send(
           oneLine`${mention} The teams for the Team Arena have been formed! You
-          can no longer sign up for Team Arena this week! Battles will start in
+          can no longer sign up for Team Arena this week. Battles will start in
           24 hours!`
         );
         arena.onPrepare();

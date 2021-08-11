@@ -98,8 +98,8 @@ export default class extends Command {
 
     list += `\n${i} ${dragonFragment.name} | \`45\``;
 
-    const description = oneLine`Arena full set bonus penetrates 20%/40%/60% of
-                    opponents first hit (Full set +0, +5 or +10)`
+    const description = oneLine`Arena full set bonus penetrates +20%/40%/60% of
+                    armor penetration (Full set +0, +5 or +10)`
 
     const embed = new MessageEmbed()
     .setColor(BROWN)
@@ -109,7 +109,7 @@ export default class extends Command {
     .addField(
       "\u200b",
       stripIndents`
-      Current coins: \`${player.arenaCoins}\`
+      Current arena coins: \`${player.arenaCoins}\`
       You can inspect an item by using \`${client.prefix}arenashop <number>\``
     );
 
