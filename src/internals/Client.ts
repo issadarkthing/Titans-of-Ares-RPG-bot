@@ -5,25 +5,25 @@ import { schema } from "../db/schema";
 import { Phase } from "./TeamArena";
 
 export default class Client {
-  prefix = process.env.PREFIX!;
-  oldBotID = process.env.OLD_BOT_ID!;
-  rankChannelID = process.env.RANK_CHANNEL!;
-  xpLogChannelID = process.env.XP_LOG_CHANNEL!;
-  teamArenaChannelID = process.env.TEAM_ARENA_CHANNEL!;
-  dbPath = process.env.DB!;
-  serverID = process.env.SERVER_ID!;
-  devID = process.env.DEV_ID!;
-  isDev = process.env.ENV === "DEV";
-  commandManager = new CommandManager();
-  onMultiUpgrade = new Set<string>();
-  bot = new Discord.Client();
+  readonly prefix = process.env.PREFIX!;
+  readonly oldBotID = process.env.OLD_BOT_ID!;
+  readonly rankChannelID = process.env.RANK_CHANNEL!;
+  readonly xpLogChannelID = process.env.XP_LOG_CHANNEL!;
+  readonly teamArenaChannelID = process.env.TEAM_ARENA_CHANNEL!;
+  readonly dbPath = process.env.DB!;
+  readonly serverID = process.env.SERVER_ID!;
+  readonly devID = process.env.DEV_ID!;
+  readonly isDev = process.env.ENV === "DEV";
+  readonly commandManager = new CommandManager();
+  readonly onMultiUpgrade = new Set<string>();
+  readonly bot = new Discord.Client();
+  db: Database;
+  logChannel!: TextChannel;
+  teamArenaChannel!: TextChannel;
   /** functions to be run every 1 seconds interval */
   pollHandlers: (() => void)[] = [];
   /** stores discord id of user that triggers the xp log */
   xpLogTriggers = "";
-  db: Database;
-  logChannel!: TextChannel;
-  teamArenaChannel!: TextChannel;
   /** variable to only be changed in dev environment for testing purposes.
    * For production, please avoid using this to update the team arena phase and
    * use poll event instead */
