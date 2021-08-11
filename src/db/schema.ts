@@ -89,9 +89,10 @@ schema += `
 
 schema += `
   CREATE TABLE IF NOT EXISTS TeamArena (
-    ID      INTEGER PRIMARY KEY,
-    Created TEXT NOT NULL,
-    Phase   DEFAULT "signup_1"
+    ID        INTEGER PRIMARY KEY,
+    Created   TEXT NOT NULL,
+    Phase     DEFAULT "signup_1",
+    MessageID TEXT
   );
 `
 

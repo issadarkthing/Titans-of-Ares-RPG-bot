@@ -91,8 +91,6 @@ export default class extends Command {
 
     menu.addButton(BLUE_BUTTON, "fight", async () => {
 
-      await msg.guild?.members.fetch();
-
       const opponents = candidates.filter(x => x.team !== candidate.team);
       const opponent = random().pick(opponents);
 
@@ -107,18 +105,18 @@ export default class extends Command {
       const isWon = await battle.run();
 
       if (isWon) {
+        candidate.score++;
         await updatePoint(arena.id, player.id, 1);
 
-        client.teamArenaChannel.send(
+        client.logChannel.send(
           oneLine`${player.member} has scored 1 point for Team ${candidate.team}
           by defeating ${opponent.player.member}`
         )
 
-        arena = await TeamArena.getCurrentArena();
         // update score board
-        client.teamArenaChannel.send(arena.scoreBoard());
+        arena.updateScoreboard();
       } else {
-        client.teamArenaChannel.send(
+        client.logChannel.send(
           oneLine`${opponent.player.member} has succesfully defended against
           ${player.member} in the Team Arena!`
         )

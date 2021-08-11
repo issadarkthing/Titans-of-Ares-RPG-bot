@@ -5,6 +5,7 @@ export interface TeamArena {
   ID: number;
   Created: string;
   Phase: string;
+  MessageID: string;
 }
 
 export interface TeamArenaMember {
@@ -109,4 +110,14 @@ export function setTeam($arenaID: number, $discordID: string, $team: string) {
   `
 
   return dbRun(sql, { $arenaID, $discordID, $team });
+}
+
+export function setMessage($arenaID: number, $messageID: string) {
+  const sql = `
+  UPDATE TeamArena
+  SET MessageID = $messageID
+  WHERE ID = $arenaID
+  `
+
+  return dbRun(sql, { $arenaID, $messageID });
 }

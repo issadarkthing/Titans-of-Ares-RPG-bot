@@ -6,15 +6,16 @@ import {
   createArena,
   getCandidates,
   getCurrentArena,
+  setMessage,
   setPhase,
   setTeam,
   TeamArena as TeamArenaDB,
-  TeamArenaMember as TeamArenaMemberDB,
+  TeamArenaMember as TeamArenaMemberDB
 } from "../db/teamArena";
 import { client } from "../main";
 import { List } from "./List";
 import { Player } from "./Player";
-import { GOLD, random } from "./utils";
+import { random } from "./utils";
 
 enum Days {
   MONDAY = 1,
@@ -63,6 +64,7 @@ export class TeamArena {
   /** monday date of the week */
   monday: DateTime;
   phase: Phase;
+  messageID: string;
   candidates: List<TeamArenaMember>;
 
   constructor(teamArena: TeamArenaDB, candidates: List<TeamArenaMember>) {
@@ -73,6 +75,7 @@ export class TeamArena {
       hour: 7,
       minute: 0,
     });
+    this.messageID = teamArena.MessageID;
     this.candidates = candidates;
   }
 
@@ -246,6 +249,22 @@ export class TeamArena {
     return embed;
   }
 
+  async updateScoreboard() {
+    const scoreBoard = this.scoreBoard();
+
+    const messages = client.teamArenaChannel.messages;
+    await messages.fetch();
+    const oldScoreboard = messages.cache.get(this.messageID);
+
+    // delete old scoreboard
+    oldScoreboard && await oldScoreboard.delete();
+
+    // send a new one
+    const newScoreboard = await client.teamArenaChannel.send(scoreBoard);
+    this.messageID = newScoreboard.id;
+    await setMessage(this.id, newScoreboard.id);
+  }
+
   async onPrepare() {
 
     let teamRed: TeamArenaMember[] = [];
@@ -266,21 +285,7 @@ export class TeamArena {
     }
     dbRun("COMMIT");
 
-    const teamRedList = teamRed
-      .map((x, i) => `${i + 1}. ${x.player.name}`)
-      .join("\n");
-
-    const teamBlueList = teamBlue
-      .map((x, i) => `${i + 1}. ${x.player.name}`)
-      .join("\n");
-
-    const embed = new MessageEmbed()
-      .setColor(GOLD)
-      .setTitle("Team Arena Scoreboard")
-      .addField("Team Red", teamRedList)
-      .addField("Team Blue", teamBlueList);
-
-    client.teamArenaChannel.send(embed);
+    await this.updateScoreboard();
   }
 
   /** updates phase upon every second */
@@ -329,7 +334,6 @@ export class TeamArena {
           oneLine`${mention} You can now battle the opponents team by using
           \`$TeamArena\` and earn points for your team!`
         );
-        client.teamArenaChannel.send(arena.scoreBoard());
         break;
       case Phase.BATTLE_2:
         client.teamArenaChannel.send(
