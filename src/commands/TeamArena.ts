@@ -1,12 +1,11 @@
 import { oneLine } from "common-tags";
 import { Message, MessageEmbed } from "discord.js";
 import { deduceCharge, getCandidates, joinArena, leaveArena, updatePoint } from "../db/teamArena";
-import { TeamArena } from "../internals/TeamArena";
 import { Battle } from "../internals/Battle";
 import { ButtonHandler } from "../internals/ButtonHandler";
 import Command from "../internals/Command";
 import { Player } from "../internals/Player";
-import { Phase } from "../internals/TeamArena";
+import { Phase, TeamArena } from "../internals/TeamArena";
 import { BLUE_BUTTON, BROWN, random, RED_BUTTON, sleep } from "../internals/utils";
 import { client } from "../main";
 
@@ -71,12 +70,12 @@ export default class extends Command {
 
   private async battle(msg: Message, player: Player, arena: TeamArena) {
 
-    const candidates = await getCandidates(arena.id);
-    const candidate = candidates.find(x => x.DiscordID === player.id);
+    const candidates = arena.candidates;
+    const candidate = candidates.find(x => x.player.id === player.id);
 
     if (!candidate) 
       return msg.channel.send("You are not registered for this week Team Arena");
-    else if (candidate.Charge <= 0)
+    else if (candidate.charge <= 0)
       return msg.channel.send(
         oneLine`You are out of arena tries, thanks for participating! The
         winning team will be announced in \`(${arena.timerUntilReward})\``);
@@ -86,7 +85,7 @@ export default class extends Command {
       .setColor(BROWN)
       .setDescription(
         oneLine`Welcome to the Team Arena! You have
-        \`${candidate.Charge}/10\`. Do you want to battle now?`)
+        \`${candidate.charge}/10\`. Do you want to battle now?`)
 
     const menu = new ButtonHandler(msg, embed, player.id);
 
@@ -94,46 +93,40 @@ export default class extends Command {
 
       await msg.guild?.members.fetch();
 
-      const opponentCandidate = random().pick(candidates);
-      const opponentMember = msg.guild?.members
-        .cache.get(opponentCandidate.DiscordID);
-
-      if (!opponentMember)
-        return msg.channel.send(`Cannot find user ${opponentCandidate.DiscordID}`);
+      const opponents = candidates.filter(x => x.team !== candidate.team);
+      const opponent = random().pick(opponents);
 
       msg.channel.send(
-        `You are battling ${opponentMember} of the opponents team!`
+        `You are battling ${opponent.player.member} of the opponents team!`
       )
 
       await sleep(5000);
 
       await deduceCharge(arena.id, player.id);
-      const opponent = await Player.getPlayer(opponentMember);
-      const battle = new Battle(msg, player, opponent);
+      const battle = new Battle(msg, player, opponent.player);
       const isWon = await battle.run();
 
       if (isWon) {
         await updatePoint(arena.id, player.id, 1);
 
         client.teamArenaChannel.send(
-          `${player} has scored 1 point for Team ${candidate.Team} by defeating ${opponentMember}`
+          oneLine`${player.member} has scored 1 point for Team ${candidate.team}
+          by defeating ${opponent.player.member}`
         )
 
-        client.logChannel.send(
-          `${player} has earned 1 Arena Coin by winning a battle in the Team Arena!`
-        )
-
+        arena = await TeamArena.getCurrentArena();
         // update score board
         client.teamArenaChannel.send(arena.scoreBoard());
       } else {
         client.teamArenaChannel.send(
-          `${opponentMember} has succesfully defended against ${player} in the Team Arena!`
+          oneLine`${opponent.player.member} has succesfully defended against
+          ${player.member} in the Team Arena!`
         )
       }
     })
 
     menu.addCloseButton();
-    menu.run();
+    await menu.run();
   }
 
   async exec(msg: Message, args: string[]) {
@@ -165,7 +158,7 @@ export default class extends Command {
       case Phase.BATTLE_1:
       case Phase.BATTLE_2:
       case Phase.BATTLE_3:
-        return this.battle(msg, player, arena);
+        return await this.battle(msg, player, arena);
       case Phase.REWARD:
         return msg.channel.send("This week Team Arena has ended");
     }
