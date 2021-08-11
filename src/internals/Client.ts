@@ -2,6 +2,7 @@ import { Database, verbose } from "sqlite3";
 import { CommandManager } from "./Command";
 import Discord, { TextChannel } from "discord.js";
 import { schema } from "../db/schema";
+import { Phase } from "./TeamArena";
 
 export default class Client {
   prefix = process.env.PREFIX!;
@@ -23,6 +24,10 @@ export default class Client {
   db: Database;
   logChannel!: TextChannel;
   teamArenaChannel!: TextChannel;
+  /** variable to only be changed in dev environment for testing purposes.
+   * For production, please avoid using this to update the team arena phase and
+   * use poll event instead */
+  arenaPhase?: Phase;
 
   constructor(dbPath: string) {
     const sqlite3 = verbose();
@@ -43,13 +48,15 @@ export default class Client {
     this.pollHandlers.push(fn);
   }
 
+  startPollEvent() {
+    setInterval(() => {
+      this.pollHandlers.forEach(fn => fn());
+    }, 1000)
+  }
+
   start() {
     // create necessary tables if not exist
     this.db.exec(schema);
     this.bot.login(process.env.BOT_TOKEN);
-
-    setInterval(() => {
-      this.pollHandlers.forEach(fn => fn());
-    }, 1000)
   }
 }

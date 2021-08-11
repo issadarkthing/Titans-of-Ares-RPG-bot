@@ -134,12 +134,22 @@ export default class extends Command {
     menu.run();
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  async exec(msg: Message, _args: string[]) {
+  async exec(msg: Message, args: string[]) {
 
     const player = await Player.getPlayer(msg.member!);
     const arena = await TeamArena.getCurrentArena();
     const phase = arena.phase;
+
+    if (client.isDev && args.length > 0) {
+      const [phase] = args;
+      if (Object.values(Phase).some(x => x === phase)) {
+        client.arenaPhase = phase as Phase;
+        msg.channel.send(`Successfully updated Team Arena Phase to \`${phase}\``);
+      } else {
+        msg.channel.send("invalid phase");
+      }
+      return;
+    }
 
     switch (phase) {
       case Phase.SIGNUP_1:

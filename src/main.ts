@@ -5,11 +5,13 @@ import { energyMainLoop } from './internals/energy';
 import { Buff } from './internals/Buff';
 import Rank from "./commands/Rank";
 import Client from "./internals/Client";
+import { TeamArena } from "./internals/TeamArena";
 
 export const client = new Client(path.resolve(__dirname, process.env.DB!));
 
 client.addPollHandler(energyMainLoop);
 client.addPollHandler(Buff.mainLoop);
+client.addPollHandler(TeamArena.mainLoop);
 
 client.registerCommands(path.resolve(__dirname, "./commands"));
 
@@ -19,6 +21,7 @@ client.bot.once('ready', async () => {
   const channels = guild.channels.cache;
   client.logChannel = channels.get(client.xpLogChannelID) as TextChannel;
   client.teamArenaChannel = channels.get(client.teamArenaChannelID) as TextChannel;
+  client.startPollEvent();
 })
 
 client.bot.on('message', (msg) => {

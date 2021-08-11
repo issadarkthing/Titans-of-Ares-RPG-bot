@@ -219,7 +219,15 @@ export class TeamArena {
   }
 
   async onPrepare() {
-    const [teamRed, teamBlue] = TeamArena.sortMembers(this.candidates.toArray());
+
+    let teamRed: TeamArenaMember[] = [];
+    let teamBlue: TeamArenaMember[] = [];
+    try {
+      [teamRed, teamBlue] = TeamArena.sortMembers(this.candidates.toArray());
+    } catch {
+      client.teamArenaChannel.send("Cannot start arena with only one candidate");
+      return;
+    }
 
     dbRun("BEGIN TRANSACTION");
     for (const candidate of teamRed) {
@@ -250,7 +258,8 @@ export class TeamArena {
   /** updates phase upon every second */
   static async mainLoop() {
     const arena = await TeamArena.getCurrentArena();
-    const currentPhase = TeamArena.currentPhase();
+    const currentPhase = client.isDev && client.arenaPhase ? 
+      client.arenaPhase : TeamArena.currentPhase();
 
     if (currentPhase && arena.phase !== currentPhase) {
       if (currentPhase === Phase.PREPARING) {
