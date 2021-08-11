@@ -107,10 +107,11 @@ export default class extends Command {
       if (isWon) {
         candidate.score++;
         await updatePoint(arena.id, player.id, 1);
+        const team = candidate.team === "RED" ? RED_BUTTON : BLUE_BUTTON;
 
         client.logChannel.send(
-          oneLine`${player.member} has scored 1 point for Team ${candidate.team}
-          by defeating ${opponent.player.member}`
+          oneLine`${player.member} has scored 1 point for Team ${team} by
+          defeating ${opponent.player.member}`
         )
 
         // update score board

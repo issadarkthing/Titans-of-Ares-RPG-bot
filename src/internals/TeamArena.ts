@@ -15,7 +15,7 @@ import {
 import { client } from "../main";
 import { List } from "./List";
 import { Player } from "./Player";
-import { random } from "./utils";
+import { BLUE_BUTTON, CROWN, random, RED_BUTTON } from "./utils";
 
 enum Days {
   MONDAY = 1,
@@ -233,18 +233,28 @@ export class TeamArena {
     redTeam.sort((b, a) => b.score - a.score);
     blueTeam.sort((b, a) => b.score - a.score);
 
-    const redTeamList = redTeam
+    const score = (team: TeamArenaMember[]) => 
+      team.reduce((acc, v) => acc + v.score, 0);
+
+    const makeList = (team: TeamArenaMember[]) => team
       .map((x, i) => `${i + 1}. ${x.player.name} \`${x.score} points\``)
       .join("\n");
 
-    const blueTeamList = blueTeam
-      .map((x, i) => `${i + 1}. ${x.player.name} \`${x.score} points\``)
-      .join("\n");
+    const redTeamList = makeList(redTeam);
+    const redTeamScore = score(redTeam);
+
+    const blueTeamList = makeList(blueTeam);
+    const blueTeamScore = score(blueTeam);
+
+    const redWinning = redTeamScore > blueTeamScore;
+    const blueWinning = blueTeamScore > redTeamScore;
 
     const embed = new MessageEmbed()
       .setTitle("Team Arena Scoreboard")
-      .addField("Red Team", redTeamList)
-      .addField("Blue Team", blueTeamList)
+      .addField(
+        `Team ${RED_BUTTON} (${redTeamScore}) ${redWinning ? CROWN : ""}`, redTeamList)
+      .addField(
+        `Team ${BLUE_BUTTON} (${blueTeamScore}) ${blueWinning ? CROWN : ""}`, blueTeamList)
 
     return embed;
   }

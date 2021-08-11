@@ -18,6 +18,7 @@ export const RETURN_BUTTON = "↩️";
 export const LEFT_ARROW_BUTTON = "◀️";
 export const CURRENT_BUTTON = "⏺️";
 export const RIGHT_ARROW_BUTTON = "▶️";
+export const CROWN = "👑";
 
 export const NUMBER_BUTTONS = [
   "0️⃣", "1️⃣", "2️⃣", "3️⃣", "4️⃣", "5️⃣", "6️⃣", "7️⃣", "8️⃣", "9️⃣",
