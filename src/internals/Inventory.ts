@@ -30,7 +30,11 @@ export class Inventory {
           this.gears.push(Gear.fromDB(item as GearDB));
           break;
         case "scroll":
-          this.scrolls.push(new Scroll());
+          if (itemID === "scroll_arena") {
+            this.scrolls.push(new ArenaScroll());
+          } else {
+            this.scrolls.push(new Scroll());
+          }
           break;
       }
     }

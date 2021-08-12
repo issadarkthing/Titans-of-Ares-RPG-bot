@@ -37,7 +37,7 @@ export class Scroll extends Item {
 }
 
 export class ArenaScroll extends Scroll {
-  id = "arena_scroll";
+  id = "scroll_arena";
   name = "Arena Upgrade Scroll";
   description = stripIndents`
   Arena upgrade scroll is used to upgrade arena gear up to level 10
