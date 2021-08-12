@@ -3,6 +3,7 @@ import { Gear as GearDB } from "../db/gear";
 import { Fighter, Attributes } from "./Fighter";
 import { Item } from "./Item";
 import { List } from "./List";
+import { Scroll } from "./Scroll";
 import { BROWN, CDN_LINK, GOLD, random } from "./utils";
 
 export interface GearBonus {
@@ -19,6 +20,7 @@ export abstract class Gear extends Item {
   abstract set: string;
   abstract baseStat: number;
   abstract bonus(gears: List<Gear>): GearBonus | undefined;
+  scroll = new Scroll();
   equipped = false;
   upgradeAnimationUrl = CDN_LINK + "852530378916888626/867765847312826398/image0.gif";
   level = 0;

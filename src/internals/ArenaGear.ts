@@ -2,10 +2,12 @@ import { oneLine } from "common-tags";
 import { Attributes, Fighter } from "./Fighter";
 import { Gear } from "./Gear";
 import { List } from "./List";
+import { ArenaScroll } from "./Scroll";
 import { roundTo } from "./utils";
 
 export abstract class ArenaGear extends Gear {
   set = "Arena";
+  scroll = new ArenaScroll();
 
   get name() {
     return `${this.set} ${this.constructor.name}`;

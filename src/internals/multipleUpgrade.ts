@@ -7,7 +7,12 @@ import { sleep } from "./utils";
 import { client } from "../main";
 
 
-export function upgrade(item: Gear, msg: Message, player: Player, count: number) {
+export function upgrade(
+  item: Gear, 
+  msg: Message, 
+  player: Player, 
+  count: number,
+) {
   return async () => {
 
     if (client.onMultiUpgrade.has(player.id)) {
@@ -16,7 +21,8 @@ export function upgrade(item: Gear, msg: Message, player: Player, count: number)
       client.onMultiUpgrade.add(player.id);
     }
 
-    let scrollCount = player.inventory.all.count("scroll");
+    const scroll = item.scroll;
+    let scrollCount = player.inventory.all.count(scroll.id);
     let scrollLost = 0;
     let upgradeSuccess = false;
 
@@ -26,7 +32,8 @@ export function upgrade(item: Gear, msg: Message, player: Player, count: number)
         return msg.channel.send("Gear is on max level");
       } else if (scrollCount === 0) {
         client.onMultiUpgrade.delete(player.id);
-        await removeInventory(player.id, "scroll", scrollLost);
+        // bulk remove on failed upgrade midway
+        await removeInventory(player.id, scroll.id, scrollLost);
         return msg.channel.send("Insufficient scroll");
       }
 
@@ -52,7 +59,8 @@ export function upgrade(item: Gear, msg: Message, player: Player, count: number)
     client.onMultiUpgrade.delete(player.id);
 
     try {
-      await removeInventory(player.id, "scroll", scrollLost);
+      // bulk remove on finish
+      await removeInventory(player.id, scroll.id, scrollLost);
       if (upgradeSuccess) {
         await levelupGear(player.id, item.id);
       }

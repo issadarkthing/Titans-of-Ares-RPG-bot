@@ -186,8 +186,8 @@ export default class extends Command {
           }
         );
       } else if (item instanceof Gear) {
-        const scroll = player.inventory.all.count("scroll");
-        const button = new ButtonHandler(msg, item.inspect(scroll), player.id);
+        const scrollCount = player.inventory.all.count(item.scroll.id);
+        const button = new ButtonHandler(msg, item.inspect(scrollCount), player.id);
 
         button.addButton(BLUE_BUTTON, "equip gear", async () => {
 

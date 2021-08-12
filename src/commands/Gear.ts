@@ -23,7 +23,7 @@ export default class extends Command {
 
     if (gear) {
 
-      const scrollCount = player.inventory.all.count("scroll");
+      const scrollCount = player.inventory.all.count(gear.scroll.id);
       const menu = new ButtonHandler(msg, gear.inspect(scrollCount), player.id);
 
       menu.addButton(BLUE_BUTTON, "unequip gear", () => {
