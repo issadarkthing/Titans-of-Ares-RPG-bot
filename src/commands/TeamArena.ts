@@ -102,7 +102,7 @@ export default class extends Command {
       const profileImage = await opponent.player.getProfile();
       const opponentBanner = await msg.channel.send(profileImage);
 
-      await sleep(5000);
+      await sleep(6000);
 
       await opponentBanner.delete();
 
