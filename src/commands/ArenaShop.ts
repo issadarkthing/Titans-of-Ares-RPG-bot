@@ -13,6 +13,7 @@ import { client } from "../main";
 
 export default class extends Command {
   name = "arenashop";
+  aliases = ["ash"];
 
   async exec(msg: Message, args: string[]) {
 
