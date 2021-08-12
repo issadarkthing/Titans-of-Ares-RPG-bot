@@ -5,7 +5,7 @@ import { addInventory } from "../db/inventory";
 import { ButtonHandler } from "../internals/ButtonHandler";
 import { Gear } from "../internals/Gear";
 import { Player } from "../internals/Player";
-import { Scroll } from "../internals/Scroll";
+import { ArenaScroll, Scroll } from "../internals/Scroll";
 import { BLUE_BUTTON, BROWN, RED_BUTTON, RETURN_BUTTON, WHITE_BUTTON } from "../internals/utils";
 import { client } from "../main";
 import { ApprenticeGear } from "../internals/ApprenticeGear";
@@ -22,7 +22,8 @@ export default class extends Command {
 
     if (index && indexInt) {
       const scroll = new Scroll();
-      const item = [...ApprenticeGear.all, scroll][indexInt - 1];
+      const arenaScroll = new ArenaScroll();
+      const item = [...ApprenticeGear.all, scroll, arenaScroll][indexInt - 1];
       if (!item) return msg.channel.send("Item does not exist");
 
       const count = player.inventory.all.count(item.id);
@@ -53,7 +54,11 @@ export default class extends Command {
               return msg.channel.send(`Insufficient amount of coins`);
             }
               
-            await player.addCoin(-totalPrice);
+            if (item instanceof ArenaScroll) {
+              await player.addArenaCoin(-totalPrice);
+            } else {
+              await player.addCoin(-totalPrice);
+            }
             await addInventory(player.id, item.id, count);
 
             msg.channel.send(
@@ -83,7 +88,10 @@ export default class extends Command {
       .join("\n");
 
     const scroll = new Scroll();
+    const arenaScroll = new ArenaScroll();
     list += `\n\n12. ${scroll.name} | \`${scroll.price}\``;
+    list += `\n13. ${arenaScroll.name} | \`${arenaScroll.price}\``;
+
 
     const embed = new MessageEmbed()
       .setColor(BROWN)

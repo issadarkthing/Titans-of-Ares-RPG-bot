@@ -1,17 +1,16 @@
+import { oneLine, stripIndents } from "common-tags";
 import { Message, MessageEmbed } from "discord.js";
-import { BROWN, RED_BUTTON, RETURN_BUTTON, WHITE_BUTTON } from "../internals/utils";
+import { addGear } from "../db/gear";
+import { addInventory } from "../db/inventory";
+import { ArenaGear } from "../internals/ArenaGear";
+import { ButtonHandler } from "../internals/ButtonHandler";
+import Command from "../internals/Command";
+import { Fragment } from "../internals/Fragment";
+import { Gear } from "../internals/Gear";
+import { Dragon } from "../internals/Pet";
 import { Player } from "../internals/Player";
 import { ArenaScroll } from "../internals/Scroll";
-import { ButtonHandler } from "../internals/ButtonHandler";
-import { ArenaGear } from "../internals/ArenaGear";
-import { BLUE_BUTTON } from "../internals/utils";
-import { addInventory } from "../db/inventory";
-import { addGear } from "../db/gear";
-import { Gear } from "../internals/Gear";
-import { oneLine, stripIndents } from "common-tags";
-import { Dragon } from "../internals/Pet";
-import { Fragment } from "../internals/Fragment";
-import Command from "../internals/Command";
+import { BLUE_BUTTON, BROWN, RETURN_BUTTON } from "../internals/utils";
 import { client } from "../main";
 
 export default class extends Command {
@@ -50,28 +49,8 @@ export default class extends Command {
 
           msg.channel.send(`Successfully purchased **${item.name}**!`);
         });
-      } else if (item instanceof ArenaScroll) {
-        const buyMany = (count: number) => {
-          return async () => {
+      } 
 
-            const totalPrice = item.price * count;
-            if (player.coins < totalPrice) {
-              return msg.channel.send(`Insufficient amount of arena coins`);
-            }
-
-            await player.addArenaCoin(-totalPrice);
-            await addInventory(player.id, item.id, count);
-
-            msg.channel.send(
-              `Successfully purchased **x${count} ${item.name}**!`
-            );
-          };
-        };
-
-        menu.addButton(BLUE_BUTTON, "buy 1 scroll", buyMany(1));
-        menu.addButton(RED_BUTTON, "buy 10 scrolls", buyMany(10));
-        menu.addButton(WHITE_BUTTON, "buy 100 scrolls", buyMany(100));
-      }
 
       menu.addButton(RETURN_BUTTON, "return back to menu", () => {
         this.exec(msg, []);
@@ -87,10 +66,8 @@ export default class extends Command {
     .map((x, i) => `${i + 1}. ${x.name} \`${x.description}\` | \`${x.price}\``)
     .join("\n");
 
-    list += `\n\n12. ${scroll.name} | \`${scroll.price}\``;
-
     list += "\n";
-    let i = 13;
+    let i = 12;
     for (const fragment of fragments) {
       list += `\n${i}. ${fragment.name} | \`30\``;
       i++;

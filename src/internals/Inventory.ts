@@ -4,7 +4,7 @@ import { Fragment, FragmentID } from "./Fragment";
 import { List } from "./List";
 import { Gear } from "./Gear";
 import { Gear as GearDB } from "../db/gear";
-import { Scroll } from "./Scroll";
+import { ArenaScroll, Scroll } from "./Scroll";
 
 /** manage items to be easily filtered and accessed */
 export class Inventory {
