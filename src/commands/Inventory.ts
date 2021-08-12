@@ -286,6 +286,7 @@ export default class extends Command {
       .setColor(GOLD)
       .addField("Inventory", list)
       .addField("Coins", player.coins)
+      .addField("Arena Coins", player.arenaCoins)
       .addField(
         "\u200b",
         stripIndents`

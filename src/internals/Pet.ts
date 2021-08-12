@@ -104,7 +104,7 @@ export abstract class Pet {
 
     const action = this.star === -1 ? "summon" : "upgrade";
     const fragmentCostText = this.star === 5 ? 
-      "max" : `\`${fragmentCount}/${this.upgradeCost}\``;
+      "Max level" : `\`${fragmentCount}/${this.upgradeCost}\``;
 
     const embed = new MessageEmbed()
       .setColor(BROWN)
@@ -165,7 +165,7 @@ export class Wisp extends Pet {
   spawnAt = random().integer(2, 5);
 
   get passiveStatDescription() {
-    return `\`+${this.multiplier * 100}%\` HP from base stats`;
+    return `\`+${Math.round(this.multiplier * 100)}%\` HP from base stats`;
   }
 
   get multiplier() {
@@ -199,7 +199,7 @@ export class Golem extends Pet {
   petInterceptionUrl = CDN_LINK + "852530378916888626/864139662870970388/ezgif-7-4cc290f06da8.gif";
 
   get passiveStatDescription() {
-    return `\`+${this.multiplier * 100}%\` armor from gear`;
+    return `\`+${Math.round(this.multiplier * 100)}%\` armor from gear`;
   }
 
   get multiplier() {
@@ -230,7 +230,7 @@ export class Gryphon extends Pet {
   spawnAt = random().integer(1, 5);
 
   get passiveStatDescription() {
-    return `\`+${this.multiplier * 100}%\` speed from base stats`;
+    return `\`+${Math.round(this.multiplier * 100)}%\` speed from base stats`;
   }
 
   get multiplier() {
@@ -266,7 +266,7 @@ export class Minotaur extends Pet {
   petInterceptionUrl = CDN_LINK + "852530378916888626/864399618660892682/Minotaurcompressed.gif";
 
   get passiveStatDescription() {
-    return `\`+${this.multiplier * 100}%\` strength from base stats`;
+    return `\`+${Math.round(this.multiplier * 100)}%\` strength from base stats`;
   }
 
   get multiplier() {
@@ -325,7 +325,7 @@ export class Dragon extends Pet {
   private hasSpawn = false;
 
   get passiveStatDescription() {
-    return `\`+${this.multiplier * 100}%\` all stats\n(Strength, HP, Armor, Speed)`;
+    return `\`+${Math.round(this.multiplier * 100)}%\` all stats\n(Strength, HP, Armor, Speed)`;
   }
 
   get multiplier() {
