@@ -86,13 +86,15 @@ export class Fragment extends Item {
 
     const action = this.pet.star === -1 ? "summon" : "upgrade";
     const required = this.pet.upgradeCost;
+    const upgradeAmount = this.pet.star >= 5 ? 
+      "max level" : `\`${count}/${required}\``;
 
     const embed = new MessageEmbed()
       .setColor(BROWN)
       .setTitle(this.name)
       .setThumbnail(this.pet.fragmentImageUrl)
       .setDescription(this.description)
-      .addField(`Fragments to ${action}`, `\`${count}/${required}\``, true);
+      .addField(`Fragments to ${action}`, upgradeAmount, true);
 
     if (opt?.price) {
       embed.addField("Price", this.price, true);
