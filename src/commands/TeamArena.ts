@@ -96,7 +96,7 @@ export default class extends Command {
       const opponent = random().pick(opponents);
 
       msg.channel.send(
-        `You are battling ${opponent.player.member} of the opponents team!`
+        `You are battling ${opponent.player.name} of the opponents team!`
       )
       
       const profileImage = await opponent.player.getProfile();
