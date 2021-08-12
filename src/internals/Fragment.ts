@@ -3,7 +3,7 @@ import { MessageEmbed } from "discord.js";
 import { removeInventory } from "../db/inventory";
 import { addPet, upgradePet } from "../db/pet";
 import { Item } from "./Item";
-import { Pet, PetID } from "./Pet";
+import { Dragon, Pet, PetID } from "./Pet";
 import { Player } from "./Player";
 import { BROWN, CDN_LINK, GOLD } from "./utils";
 
@@ -12,6 +12,7 @@ export type FragmentID = `fragment_${PetID}`;
 export class Fragment extends Item {
 
   pet: Pet;
+  price: number;
   private summonGif = 
     CDN_LINK + "852546444086214676/863007776983613460/giphy_1.gif";
   private upgradeGif =
@@ -23,6 +24,7 @@ export class Fragment extends Item {
     super();
     const petID = this.id.split("_").slice(1).join("_");
     this.pet = Pet.fromPetID(petID as PetID);
+    this.price = this.pet instanceof Dragon ? 45 : 30;
   }
 
   static fromPetID(petID: PetID) {
@@ -80,7 +82,7 @@ export class Fragment extends Item {
     return embed;
   }
 
-  show(count: number, opt?: { price: number }) {
+  show(count: number, opt?: { price: boolean }) {
 
     const action = this.pet.star === -1 ? "summon" : "upgrade";
     const required = this.pet.upgradeCost;
@@ -93,7 +95,7 @@ export class Fragment extends Item {
       .addField(`Fragments to ${action}`, `\`${count}/${required}\``, true);
 
     if (opt?.price) {
-      embed.addField("Price", opt.price);
+      embed.addField("Price", this.price, true);
     }
 
     return embed;

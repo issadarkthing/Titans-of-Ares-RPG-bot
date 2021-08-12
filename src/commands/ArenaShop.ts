@@ -7,9 +7,8 @@ import { ButtonHandler } from "../internals/ButtonHandler";
 import Command from "../internals/Command";
 import { Fragment } from "../internals/Fragment";
 import { Gear } from "../internals/Gear";
-import { Dragon } from "../internals/Pet";
 import { Player } from "../internals/Player";
-import { BLUE_BUTTON, BROWN, RETURN_BUTTON } from "../internals/utils";
+import { BLUE_BUTTON, BROWN, RED_BUTTON, RETURN_BUTTON, WHITE_BUTTON } from "../internals/utils";
 import { client } from "../main";
 
 export default class extends Command {
@@ -20,9 +19,8 @@ export default class extends Command {
     const index = args[0];
     const indexInt = parseInt(index);
     const player = await Player.getPlayer(msg.member!);
-    const fragments = Fragment.all.filter(x => x.id !== (new Dragon()).fragment.id);
-    const dragonFragment = new Dragon().fragment;
-    const items = [...ArenaGear.all, ...fragments, dragonFragment];
+    const fragments = Fragment.all;
+    const items = [...ArenaGear.all, ...Fragment.all];
 
     if (index && indexInt) {
       const item = items[indexInt - 1];
@@ -31,7 +29,11 @@ export default class extends Command {
       const count = player.inventory.all.count(item.id);
       const isEquipped = player.equippedGears.get(item.id);
 
-      const embed = item.show(count + (isEquipped ? 1 : 0));
+      let embed = item.show(count + (isEquipped ? 1 : 0));
+      if (item instanceof Fragment) {
+        embed = item.show(count, { price: true });
+      }
+
       const menu = new ButtonHandler(msg, embed, player.id);
 
       // only show if player does not have the item
@@ -47,7 +49,30 @@ export default class extends Command {
 
           msg.channel.send(`Successfully purchased **${item.name}**!`);
         });
-      } 
+
+      } else if (item instanceof Fragment) {
+        const buyMany = (count: number) => {
+          return async () => {
+
+            const totalPrice = item.price * count;
+            if (player.coins < totalPrice) {
+              return msg.channel.send(`Insufficient amount of coins`);
+            }
+              
+            await player.addArenaCoin(-totalPrice);
+            await addInventory(player.id, item.id, count);
+
+            msg.channel.send(
+              `Successfully purchased **x${count} ${item.name}**!`
+            );
+          };
+        };
+
+        menu.addButton(BLUE_BUTTON, "buy 1 fragment", buyMany(1));
+        menu.addButton(RED_BUTTON, "buy 10 fragments", buyMany(10));
+        menu.addButton(WHITE_BUTTON, "buy 100 fragments", buyMany(100));
+
+      }
 
 
       menu.addButton(RETURN_BUTTON, "return back to menu", () => {
@@ -67,11 +92,9 @@ export default class extends Command {
     list += "\n";
     let i = 12;
     for (const fragment of fragments) {
-      list += `\n${i}. ${fragment.name} | \`30\``;
+      list += `\n${i}. ${fragment.name} | \`${fragment.price}\``;
       i++;
     }
-
-    list += `\n${i} ${dragonFragment.name} | \`45\``;
 
     const description = oneLine`Arena full set bonus penetrates +20%/40%/60% of
                     armor penetration (Full set +0, +5 or +10)`
