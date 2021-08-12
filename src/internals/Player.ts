@@ -15,6 +15,7 @@ import { getAllPets } from "../db/pet";
 import { List } from "./List"
 import { Gear } from "./Gear";
 import { getGears } from "../db/gear";
+import { ArenaGear } from "./ArenaGear";
 
 export const CRIT_RATE = 0.1;
 export const CRIT_DAMAGE = 2;
@@ -173,6 +174,18 @@ export class Player extends Fighter {
 
   get activePet() {
     return this.pets.find(x => x.active);
+  }
+
+  get penetration() {
+    const equippedGears = this.equippedGears;
+    const setBonus = Gear.getBonus(equippedGears);
+    const gear = equippedGears.random();
+
+    if (setBonus && gear instanceof ArenaGear) {
+      return setBonus.bonus;
+    }
+
+    return 0;
   }
 
   async sync() {

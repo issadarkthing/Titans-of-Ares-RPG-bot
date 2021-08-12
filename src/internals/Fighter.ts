@@ -58,24 +58,17 @@ export class Fighter {
     this.imageUrl = data.imageUrl;
   }
 
+  get penetration() {
+    return 0;
+  }
+
   isCriticalHit() {
     return random().bool(this.critRate);
   }
 
-  /** Attack mutates the challenger hp to simulate attack. It also accounts for
-  * critical hit. This method returns true if the attack was a critical hit.
-  */
-  attack(challenger: Fighter) {
-    const isCrit = this.isCriticalHit();
-    const attackRate = isCrit ? CRIT_RATE * this.strength : this.strength;
-    const damageReduction = this.getArmorReduction(attackRate);
-    const damageDone = (attackRate - damageReduction);
-    challenger.hp -= damageDone;
-    return [isCrit, attackRate, damageReduction, damageDone] as const;
-  }
-
-  getArmorReduction(attack: number) {
-    const armor = 100 / (100 + this.armor);
+  getArmorReduction(attack: number, penetrate: number) {
+    const penetrated = this.armor * (1 - penetrate);
+    const armor = 100 / (100 + penetrated);
     const damageDone = attack * armor;
     return attack - damageDone;
   }

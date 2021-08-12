@@ -1,7 +1,6 @@
 import { oneLine } from "common-tags";
 import { Message, MessageEmbed } from "discord.js";
 import { ApprenticeGear } from "./ApprenticeGear";
-import { ArenaGear } from "./ArenaGear";
 import { Challenger } from "./Challenger";
 import { Fighter } from "./Fighter";
 import { Gear } from "./Gear";
@@ -86,7 +85,7 @@ export class Battle {
     let reflection = 0;
     let goneThrough = 0;
     let isCritShown = false;
-    let penetrate = 0;
+
 
     let pet = p1 instanceof Player && p1.activePet;
 
@@ -115,7 +114,7 @@ export class Battle {
         const isSpawn = pet.isSpawn(p1Round);
         if (isSpawn) {
           const dmg = p1.strength * 0.5;
-          const damageReduction = p2.getArmorReduction(dmg);
+          const damageReduction = p2.getArmorReduction(dmg, p1.penetration);
           p2.hp -= dmg - damageReduction;
 
           const petText = 
@@ -203,57 +202,49 @@ export class Battle {
         }
       }
 
-      if (p2 instanceof Player && p1Round === 1) {
-        const equippedGears = p2.equippedGears;
-        const setBonus = Gear.getBonus(equippedGears);
-        const gear = equippedGears.random();
-        
-        if (setBonus && gear instanceof ApprenticeGear) {
-
-          const attackRate = isCrit ? p1.critDamage * p1.strength : p1.strength;
-          this.verbose && await this.msg.channel.send(`Attack Rate: ${attackRate}`);
-
-          reflection = attackRate * setBonus.bonus;
-          this.verbose && await this.msg.channel.send(`Reflected: ${reflection}`);
-
-          const damageReduction = p1.getArmorReduction(reflection);
-          this.verbose && await this.msg.channel.send(`Damage Reduction: ${damageReduction}`);
-
-          goneThrough = attackRate * (1 - setBonus.bonus);
-          this.verbose && await this.msg.channel.send(`Damage Gone Through: ${goneThrough}`);
-
-          const damageDone = reflection - damageReduction;
-          this.verbose && await this.msg.channel.send(`Damage Done: ${damageDone}`);
-
-          p1.hp -= damageDone;
-          reflected = true;
-
-          if (isCrit) {
-            await this.critAttack(p1);
-            isCritShown = true;
-          }
-
-          const reflectAnimation = gear.reflectAnimation(p2.name, damageDone, setBonus.bonus);
-          await this.battleMsg?.edit(reflectAnimation);
-          await sleep(6000);
-        }
-
-      } else if (p1 instanceof Player) {
-        const equippedGears = p1.equippedGears;
-        const setBonus = Gear.getBonus(equippedGears);
-        const gear = equippedGears.random();
-
-        if (setBonus && gear instanceof ArenaGear) {
-          penetrate = setBonus.bonus;
-        }
-      }
     }
+
+    if (p2 instanceof Player && p1Round === 1) {
+      const equippedGears = p2.equippedGears;
+      const setBonus = Gear.getBonus(equippedGears);
+      const gear = equippedGears.random();
+
+      if (setBonus && gear instanceof ApprenticeGear) {
+
+        const attackRate = isCrit ? p1.critDamage * p1.strength : p1.strength;
+        this.verbose && await this.msg.channel.send(`Attack Rate: ${attackRate}`);
+
+        reflection = attackRate * setBonus.bonus;
+        this.verbose && await this.msg.channel.send(`Reflected: ${reflection}`);
+
+        const damageReduction = p1.getArmorReduction(reflection, p2.penetration);
+        this.verbose && await this.msg.channel.send(`Damage Reduction: ${damageReduction}`);
+
+        goneThrough = attackRate * (1 - setBonus.bonus);
+        this.verbose && await this.msg.channel.send(`Damage Gone Through: ${goneThrough}`);
+
+        const damageDone = reflection - damageReduction;
+        this.verbose && await this.msg.channel.send(`Damage Done: ${damageDone}`);
+
+        p1.hp -= damageDone;
+        reflected = true;
+
+        if (isCrit) {
+          await this.critAttack(p1);
+          isCritShown = true;
+        }
+
+        const reflectAnimation = gear.reflectAnimation(p2.name, damageDone, setBonus.bonus);
+        await this.battleMsg?.edit(reflectAnimation);
+        await sleep(6000);
+      }
+
+    } 
 
     const attackRate = reflected ? goneThrough : 
       isCrit ? p1.critDamage * p1.strength : p1.strength;
 
-    let damageReduction = p2.getArmorReduction(attackRate);
-    damageReduction -= damageReduction * penetrate;
+    const damageReduction = p2.getArmorReduction(attackRate, p1.penetration);
     const damageDone = attackRate - damageReduction;
     p2.hp -= damageDone;
 

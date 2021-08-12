@@ -17,6 +17,7 @@ const emojis = [
 
 export default class extends Command {
   name = "battle";
+  aliases = ["b"];
   block = true;
 
   async exec(msg: Message, args: string[]) {
