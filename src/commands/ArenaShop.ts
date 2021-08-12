@@ -9,7 +9,6 @@ import { Fragment } from "../internals/Fragment";
 import { Gear } from "../internals/Gear";
 import { Dragon } from "../internals/Pet";
 import { Player } from "../internals/Player";
-import { ArenaScroll } from "../internals/Scroll";
 import { BLUE_BUTTON, BROWN, RETURN_BUTTON } from "../internals/utils";
 import { client } from "../main";
 
@@ -21,10 +20,9 @@ export default class extends Command {
     const index = args[0];
     const indexInt = parseInt(index);
     const player = await Player.getPlayer(msg.member!);
-    const scroll = new ArenaScroll();
     const fragments = Fragment.all.filter(x => x.id !== (new Dragon()).fragment.id);
     const dragonFragment = new Dragon().fragment;
-    const items = [...ArenaGear.all, scroll, ...fragments, dragonFragment];
+    const items = [...ArenaGear.all, ...fragments, dragonFragment];
 
     if (index && indexInt) {
       const item = items[indexInt - 1];
