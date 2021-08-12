@@ -9,6 +9,7 @@ import { upgrade } from "../internals/multipleUpgrade";
 import { Player } from "../internals/Player";
 import { BLACK_BUTTON, BLUE_BUTTON, RED_BUTTON, RETURN_BUTTON, SILVER, WHITE_BUTTON } from "../internals/utils";
 import Command from "../internals/Command";
+import { ArenaGear } from "../internals/ArenaGear";
 
 export default class extends Command {
   name = "gear";
@@ -64,10 +65,11 @@ export default class extends Command {
 
     } else if (index === "bonus") {
 
-      const equipped = player.equippedGears.filter(x => x instanceof ApprenticeGear);
-      const lvl1 = equipped.length;
-      const lvl2 = equipped.filter(x => x.level >= 5).length;
-      const lvl3 = equipped.filter(x => x.level >= 10).length;
+      // TODO remove code duplication
+      let equipped = player.equippedGears.filter(x => x instanceof ApprenticeGear);
+      let lvl1 = equipped.length;
+      let lvl2 = equipped.filter(x => x.level >= 5).length;
+      let lvl3 = equipped.filter(x => x.level >= 10).length;
 
       let active = 0;
       for (const lvl of [lvl1, lvl2, lvl3]) {
@@ -76,15 +78,32 @@ export default class extends Command {
         }
       }
 
-      const text = stripIndents`
+      const apprenticeBonus = stripIndents`
       Full Apprentice Set +0  | 10% reflect | \`${lvl1}/11\` ${active === 1 ? "Active" : ""}
       Full Apprentice Set +5  | 30% reflect | \`${lvl2}/11\` ${active === 2 ? "Active" : ""}
       Full Apprentice Set +10 | 50% reflect | \`${lvl3}/11\` ${active === 3 ? "Active" : ""}`
 
+      equipped = player.equippedGears.filter(x => x instanceof ArenaGear);
+      lvl1 = equipped.length;
+      lvl2 = equipped.filter(x => x.level >= 5).length;
+      lvl3 = equipped.filter(x => x.level >= 10).length;
+
+      active = 0;
+      for (const lvl of [lvl1, lvl2, lvl3]) {
+        if (lvl === 11) {
+          active++;
+        }
+      }
+
+      const arenaBonus = stripIndents`
+      Full Arena Set +0  | 20% penetrate | \`${lvl1}/11\` ${active === 1 ? "Active" : ""}
+      Full Arena Set +5  | 40% penetrate | \`${lvl2}/11\` ${active === 2 ? "Active" : ""}
+      Full Arena Set +10 | 60% penetrate | \`${lvl3}/11\` ${active === 3 ? "Active" : ""}`
+
       const embed = new MessageEmbed()
         .setColor(SILVER)
-        .setTitle("Apprentice Set Reflect Skill")
-        .setDescription(text)
+        .addField("Apprentice Set Reflect Skill", apprenticeBonus)
+        .addField("Arena Set Penetrate Skill", arenaBonus)
 
       msg.channel.send(embed);
       return;
