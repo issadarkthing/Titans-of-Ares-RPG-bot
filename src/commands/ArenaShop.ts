@@ -56,7 +56,7 @@ export default class extends Command {
           return async () => {
 
             const totalPrice = item.price * count;
-            if (player.coins < totalPrice) {
+            if (player.arenaCoins < totalPrice) {
               return msg.channel.send(`Insufficient amount of coins`);
             }
               
