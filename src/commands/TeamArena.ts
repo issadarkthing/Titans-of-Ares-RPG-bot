@@ -11,6 +11,7 @@ import { client } from "../main";
 
 export default class extends Command {
   name = "teamarena";
+  aliases = ["ta"];
   block = true;
 
   private async signUp(msg: Message, player: Player, arena: TeamArena) {
@@ -97,8 +98,13 @@ export default class extends Command {
       msg.channel.send(
         `You are battling ${opponent.player.member} of the opponents team!`
       )
+      
+      const profileImage = await opponent.player.getProfile();
+      const opponentBanner = await msg.channel.send(profileImage);
 
       await sleep(5000);
+
+      await opponentBanner.delete();
 
       await deduceCharge(arena.id, player.id);
       const battle = new Battle(msg, player, opponent.player);
