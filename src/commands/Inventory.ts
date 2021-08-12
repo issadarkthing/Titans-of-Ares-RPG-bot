@@ -86,50 +86,53 @@ export default class extends Command {
           cards.forEach((x) => msg.channel.send(x));
         });
       } else if (item instanceof Fragment) {
-        button.addButton("🔵", "use the item", async () => {
-          const pet = item.pet;
-          const ownedFragmentCount = inv.all.count(item.id);
-          let ownedPet = player.pets.get(pet.id);
+        const ownedPet = player.pets.get(item.pet.id);
+        if (!ownedPet || ownedPet.star < 5) {
+          button.addButton("🔵", "use the item", async () => {
+            const pet = item.pet;
+            const ownedFragmentCount = inv.all.count(item.id);
+            let ownedPet = player.pets.get(pet.id);
 
-          // if own the pet but does not have enough fragment to upgrade
-          if (ownedPet && ownedFragmentCount < ownedPet.upgradeCost) {
-            return msg.channel.send(oneLine`Insufficient fragments to upgrade
+            // if own the pet but does not have enough fragment to upgrade
+            if (ownedPet && ownedFragmentCount < ownedPet.upgradeCost) {
+              return msg.channel.send(oneLine`Insufficient fragments to upgrade
               ${ownedPet.name} \`${ownedFragmentCount}/${ownedPet.upgradeCost}\``);
 
-            // if player does not own the pet but has less fragments than required
-            // fragment in order to obtain the pet
-          } else if (ownedFragmentCount < Fragment.minFragments) {
-            return msg.channel.send(oneLine`Insufficient fragments to summon
+              // if player does not own the pet but has less fragments than required
+              // fragment in order to obtain the pet
+            } else if (ownedFragmentCount < Fragment.minFragments) {
+              return msg.channel.send(oneLine`Insufficient fragments to summon
               ${pet.name} \`${ownedFragmentCount}/${Fragment.minFragments}\``);
-          } else if (ownedPet && ownedPet.star >= 5) {
-            return msg.channel.send("Your pet is already at max star");
-          }
+            } else if (ownedPet && ownedPet.star >= 5) {
+              return msg.channel.send("Your pet is already at max star");
+            }
 
-          const result = await item.use(player);
-          await player.sync();
+            const result = await item.use(player);
+            await player.sync();
 
-          ownedPet = player.pets.get(pet.id)!;
-          const fragmentCount = player.inventory.all.count(item.id);
+            ownedPet = player.pets.get(pet.id)!;
+            const fragmentCount = player.inventory.all.count(item.id);
 
-          if (result === "obtain") {
-            const summonAnimation = await msg.channel.send(
-              item.summonAnimation()
-            );
-            await sleep(8000);
-            await summonAnimation.delete();
-            msg.channel.send(`${player.name} has obtained **${pet.name}**!`);
-            msg.channel.send(ownedPet.card(fragmentCount, true));
-          } else if (result === "upgrade") {
-            const ownedPet = player.pets.get(pet.id)!;
-            const upgradeAnimation = await msg.channel.send(
-              item.upgradeAnimation()
-            );
-            await sleep(8000);
-            await upgradeAnimation.delete();
-            msg.channel.send(`${pet.name} is now **${ownedPet.star}** ${STAR}!`);
-            msg.channel.send(ownedPet.card(fragmentCount, true));
-          }
-        });
+            if (result === "obtain") {
+              const summonAnimation = await msg.channel.send(
+                item.summonAnimation()
+              );
+              await sleep(8000);
+              await summonAnimation.delete();
+              msg.channel.send(`${player.name} has obtained **${pet.name}**!`);
+              msg.channel.send(ownedPet.card(fragmentCount, true));
+            } else if (result === "upgrade") {
+              const ownedPet = player.pets.get(pet.id)!;
+              const upgradeAnimation = await msg.channel.send(
+                item.upgradeAnimation()
+              );
+              await sleep(8000);
+              await upgradeAnimation.delete();
+              msg.channel.send(`${pet.name} is now **${ownedPet.star}** ${STAR}!`);
+              msg.channel.send(ownedPet.card(fragmentCount, true));
+            }
+          });
+        }
 
         button.addButton(
           "⚪",
@@ -280,13 +283,15 @@ export default class extends Command {
 
     **Other Materials**
     ${othersList.join("\n") || "none"}
+
+    **Coins**
+    \`${player.coins}\` Coins
+    \`${player.arenaCoins}\` Arena Coins
     `
 
     const embed = new MessageEmbed()
       .setColor(GOLD)
       .addField("Inventory", list)
-      .addField("Coins", player.coins)
-      .addField("Arena Coins", player.arenaCoins)
       .addField(
         "\u200b",
         stripIndents`
