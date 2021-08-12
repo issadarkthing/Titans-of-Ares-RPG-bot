@@ -306,6 +306,7 @@ export class Player extends Fighter {
         \`${this.inventory.gears.length}\` Gear Pieces
         \`${this.inventory.scrolls.length}\` Scrolls
         \`${this.coins}\` Coins
+        \`${this.arenaCoins}\` Arena Coins
 
         **Energy**
         ${this.energy}/${MAX_ENERGY} ${energyTimer}
