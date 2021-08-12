@@ -54,11 +54,7 @@ export default class extends Command {
               return msg.channel.send(`Insufficient amount of coins`);
             }
               
-            if (item instanceof ArenaScroll) {
-              await player.addArenaCoin(-totalPrice);
-            } else {
-              await player.addCoin(-totalPrice);
-            }
+            await player.addCoin(-totalPrice);
             await addInventory(player.id, item.id, count);
 
             msg.channel.send(
