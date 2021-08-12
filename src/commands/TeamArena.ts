@@ -115,6 +115,7 @@ export default class extends Command {
         await updatePoint(arena.id, player.id, 1);
         const team = candidate.team === "RED" ? RED_BUTTON : BLUE_BUTTON;
 
+        msg.channel.send(`${player.name} has earned 1 point for Team ${team}!`);
         client.logChannel.send(
           oneLine`${player.member} has scored 1 point for Team ${team} by
           defeating ${opponent.player.member}`

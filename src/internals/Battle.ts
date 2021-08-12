@@ -319,11 +319,6 @@ export class Battle {
     }
 
     const isWon = this.player.hp > 0;
-    const battleResult = isWon ? "won over" : "lost to";
-    await this.msg.channel.send(
-      `${this.player.name} has ${battleResult} ${this.challenger.name}!`
-    );
-
     this.battleEmbed.setColor(GOLD);
     await this.battleMsg.edit(this.battleEmbed);
 

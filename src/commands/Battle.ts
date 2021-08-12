@@ -102,6 +102,12 @@ export default class extends Command {
       const battle = new Battle(msg, player, challenger);
       const isWon = await battle.run();
 
+      const battleResult = isWon ? "won over" : "lost to";
+      await msg.channel.send(
+        `${player.name} has ${battleResult} ${challenger.name}!`
+      );
+
+
       if (isWon) {
         const loot = challenger.loot;
         await player.addCoin(loot);
