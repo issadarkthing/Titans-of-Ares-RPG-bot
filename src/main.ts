@@ -9,6 +9,10 @@ import { TeamArena } from "./internals/TeamArena";
 
 export const client = new Client(path.resolve(__dirname, process.env.DB!));
 
+if (client.isDev) {
+  client.commandManager.verbose = true;
+}
+
 client.addPollHandler(energyMainLoop);
 client.addPollHandler(Buff.mainLoop);
 client.addPollHandler(TeamArena.mainLoop);

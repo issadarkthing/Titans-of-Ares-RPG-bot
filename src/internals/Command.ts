@@ -18,13 +18,21 @@ const readdir = util.promisify(fs.readdir);
 export class CommandManager {
   private commands = new Map<string, Command>();
   private blockList = new Set<string>();
+  verbose = false;
 
   async registerCommands(dir: string) {
     const files = await readdir(dir);
     for (const file of files) {
+      const initial = performance.now();
       // eslint-disable-next-line
       const cmdFile = require(path.join(dir, file));
       const command: Command = new cmdFile.default();
+      const now = performance.now();
+      const timeTaken = now - initial;
+      this.verbose && console.log(
+        `Registering ${command.name} command took ${timeTaken.toFixed(4)} ms`
+      )
+
       this.commands.set(command.name, command);
       command.aliases.forEach(alias => this.commands.set(alias, command));
     }
