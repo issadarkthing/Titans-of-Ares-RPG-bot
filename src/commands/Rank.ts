@@ -24,6 +24,7 @@ export const backgrounds = [
 
 export default class extends Command {
   name = "rank";
+  block = true;
 
   async exec(msg: Message, args: string[]) {
 
