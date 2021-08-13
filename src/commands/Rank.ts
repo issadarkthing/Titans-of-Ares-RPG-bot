@@ -80,10 +80,8 @@ export default class extends Command {
         for (const file of files) {
           await author.send(file);
         }
-      } catch (err) {
-        console.error(err);
-        console.error(`${author.username} closed their DM`);
-      }
+      // eslint-disable-next-line no-empty
+      } catch {}
     }
   }
 }
