@@ -3,7 +3,7 @@ import { getTotalXp } from "../db/player";
 import Command from "../internals/Command";
 
 export default class extends Command {
-  name = "command";
+  name = "xp";
 
   async exec(msg: Message, args: string[]) {
 
