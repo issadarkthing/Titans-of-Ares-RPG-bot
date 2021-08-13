@@ -7,8 +7,9 @@
     "start": "pm2 start --no-daemon --node-args=\"-r dotenv/config\" dist/index.js",
     "build": "tsc",
     "lint": "eslint src",
-    "dev": "ENV=DEV nodemon -r dotenv/config ./dist/index.js --exec 'npm run build || exit 1 && npm run lint && node'",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "dev": "ENV=DEV nodemon -r dotenv/config ./dist/index.js --exec 'npm run lint && node'",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "clean": "rm -rf dist tsconfig.tsbuildinfo"
   },
   "author": "",
   "license": "ISC",
@@ -23,6 +24,7 @@
     "luxon": "^1.27.0",
     "pm2": "^5.1.0",
     "random-js": "^2.1.0",
+    "source-map-support": "^0.5.19",
     "sqlite3": "^5.0.2",
     "typescript": "^4.3.2"
   },
