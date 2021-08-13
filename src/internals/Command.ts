@@ -29,6 +29,14 @@ export class CommandManager {
   private commandRegisterLog: CommandLog[] = [];
   verbose = false;
 
+  registerCommand(name: string, cmd: Command) {
+    if (this.commands.has(name)) {
+      throw new Error(`command "${name}" has already been defined`);
+    }
+
+    this.commands.set(name, cmd);
+  }
+
   async registerCommands(dir: string) {
     this.verbose && 
       console.log(`=== ${chalk.blue("Registering command(s)")} ===`)
@@ -50,9 +58,10 @@ export class CommandManager {
         timeTaken,
       })
 
-      this.commands.set(command.name, command);
-      command.aliases.forEach(alias => this.commands.set(alias, command));
+      this.registerCommand(command.name, command);
+      command.aliases.forEach(alias => this.registerCommand(alias, command));
     }
+
     const now = performance.now();
     const timeTaken = (now - initial).toFixed(4);
 
