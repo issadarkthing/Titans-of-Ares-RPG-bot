@@ -4,6 +4,7 @@ import Command from "../internals/Command";
 
 export default class extends Command {
   name = "help";
+  aliases = ["h"];
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   exec(msg: Message, _args: string[]) {

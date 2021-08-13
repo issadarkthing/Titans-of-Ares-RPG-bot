@@ -11,6 +11,7 @@ import Command from "../internals/Command";
 
 export default class Shop extends Command {
   name = "shop";
+  aliases = ["sh"];
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   async exec(msg: Message, _args: string[]) {

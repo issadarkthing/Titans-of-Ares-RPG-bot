@@ -17,6 +17,7 @@ export default abstract class Command {
 
 interface CommandLog {
   name: string;
+  aliases: string[];
   timeTaken: number;
 }
 
@@ -45,6 +46,7 @@ export class CommandManager {
 
       this.commandRegisterLog.push({
         name: command.name,
+        aliases: command.aliases,
         timeTaken,
       })
 
@@ -59,7 +61,10 @@ export class CommandManager {
 
       for (const log of this.commandRegisterLog) {
         const timeTaken = log.timeTaken.toFixed(4);
-        console.log(`${chalk.yellow(`[${timeTaken} ms]`)} ${log.name}`);
+        const aliases = log.aliases.join(", ");
+        console.log(
+          `${chalk.yellow(`[${timeTaken} ms]`)} ${log.name}\t\t${aliases}`
+        );
       }
 
       const commandCount = this.commandRegisterLog.length;

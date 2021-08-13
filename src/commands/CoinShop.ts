@@ -13,6 +13,7 @@ import Command from "../internals/Command";
 
 export default class extends Command {
   name = "coinshop";
+  aliases = ["csh"];
 
   async exec(msg: Message, args: string[]) {
 
