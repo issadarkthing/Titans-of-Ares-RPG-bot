@@ -302,6 +302,65 @@ export class TeamArena {
     await this.updateScoreboard();
   }
 
+  private async rewardUser(teamArenaMember: TeamArenaMember, teamReward: number) {
+    const score = teamArenaMember.score;
+    await teamArenaMember.player.addArenaCoin(teamReward + score);
+  }
+
+  private async rewardTeam(
+    teamArenaMembers: TeamArenaMember[], 
+    result: "win" | "lose" | "draw",
+  ) {
+
+    for (const member of teamArenaMembers) {
+      const reward = result === "win" ? 5 : result === "draw" ? 2 : 0;
+      await this.rewardUser(member, reward);
+    }
+  }
+
+  async onReward() {
+    const { teamRed, teamBlue } = this.candidates.toArray().reduce((acc, member) => {
+      if (member.team === "RED") {
+        acc.teamRed.push(member);
+      } else {
+        acc.teamBlue.push(member);
+      }
+      return acc;
+    }, { teamRed: [] as TeamArenaMember[], teamBlue: [] as TeamArenaMember[] })
+
+    const teamRedScore = teamRed.reduce((acc, member) => acc + member.score, 0);
+    const teamBlueScore = teamBlue.reduce((acc, member) => acc + member.score, 0);
+
+    const isDraw = teamRedScore === teamBlueScore;
+    const winningTeam = teamRedScore > teamBlueScore ? 
+      `Team ${RED_BUTTON}` : `Team ${BLUE_BUTTON}`;
+
+    if (isDraw) {
+      client.teamArenaChannel.send(
+        oneLine`It's a draw between team ${RED_BUTTON} and team ${BLUE_BUTTON}
+        for this week's Team Arena!`
+      )
+      this.rewardTeam(teamRed, "draw");
+      this.rewardTeam(teamBlue, "draw");
+
+    } else {
+      client.teamArenaChannel.send(
+        `${winningTeam} has won this week's Team Arena!`
+      )
+
+      // team red wins
+      if (teamRedScore > teamBlueScore) {
+        this.rewardTeam(teamRed, "win");
+        this.rewardTeam(teamBlue, "lose");
+
+      } else { // team blue wins
+        this.rewardTeam(teamRed, "lose");
+        this.rewardTeam(teamBlue, "win");
+
+      }
+    }
+  }
+
   /** updates phase upon every second */
   static async mainLoop() {
     const arena = await TeamArena.getCurrentArena();
@@ -360,6 +419,9 @@ export class TeamArena {
           oneLine`${mention} Notice: You have 12 hours left to battle in the
           Team Arena by using \`$TeamArena\`!`
         );
+        break;
+      case Phase.REWARD:
+        arena.onReward();
         break;
     }
 
