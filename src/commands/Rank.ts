@@ -38,6 +38,7 @@ export default class extends Command {
 
   async exec(msg: Message, args: string[]) {
 
+    const author = msg.author;
     const channel = msg.guild?.channels.resolve(client.rankChannelID);
     if (!channel) throw Error("No rank channel");
 
@@ -49,12 +50,10 @@ export default class extends Command {
     const messages = await channel.messages.fetch();
     let count = 10;
 
-    if (client.isDev) {
-      const rankCount = parseInt(args[0]);
+    const rankCount = parseInt(args[0]);
 
-      if (rankCount) {
-        count = rankCount;
-      }
+    if (rankCount) {
+      count = rankCount;
     }
 
     if (messages.size > 0) {
@@ -79,8 +78,17 @@ export default class extends Command {
     const files = await Promise.all(players.map(x => x.getProfile()));
     channel.stopTyping();
 
-    for (const file of files) {
-      await channel.send(file);
+    if (count === 10) {
+      await channel.send({ files });
+
+    } else {
+      try {
+        for (const file of files) {
+          await author.send(file);
+        }
+      } catch {
+        console.error(`${author.username} closed their DM`);
+      }
     }
   }
 }
