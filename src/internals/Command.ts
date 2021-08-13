@@ -89,6 +89,15 @@ export class CommandManager {
     if (!command)
       return;
 
+    const initial = performance.now();
+    const printTimeTaken = () => {
+      const timeTaken = (performance.now() - initial).toFixed(4);
+      this.verbose && console.log(
+        oneLine`${chalk.blue(command.name)} command took
+        ${chalk.yellow(timeTaken, "ms")} to complete`
+      )
+    }
+
     if (command.block) {
       const id = `${command.name}_${msg.author.id}`;
       if (this.blockList.has(id)) {
@@ -99,10 +108,12 @@ export class CommandManager {
         this.blockList.add(id);
         await command.exec(msg, args);
         this.blockList.delete(id);
+        printTimeTaken();
       }
       return;
     }
 
-    command.exec(msg, args);
+    await command.exec(msg, args);
+    printTimeTaken();
   }
 }
