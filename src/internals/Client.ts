@@ -34,16 +34,6 @@ export default class Client {
     this.db = new sqlite3.Database(dbPath);
   }
 
-  registerCommands(cmdPath: string) {
-    const initial = performance.now();
-    this.commandManager
-      .registerCommands(cmdPath)
-      .then(() => {
-        const timeTaken = performance.now() - initial;
-        console.log(`Registering commands took ${timeTaken.toFixed(4)} ms`);
-      })
-  }
-
   addPollHandler(fn: () => void) {
     this.pollHandlers.push(fn);
   }

@@ -17,7 +17,7 @@ client.addPollHandler(energyMainLoop);
 client.addPollHandler(Buff.mainLoop);
 client.addPollHandler(TeamArena.mainLoop);
 
-client.registerCommands(path.resolve(__dirname, "./commands"));
+client.commandManager.registerCommands(path.resolve(__dirname, "./commands"));
 
 client.bot.once('ready', async () => {
   console.log('Bot is ready');
