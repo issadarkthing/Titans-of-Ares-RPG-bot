@@ -2,6 +2,7 @@ import { Message, TextChannel } from "discord.js";
 import { getUsers } from "../db/player";
 import Command from "../internals/Command";
 import { Player } from "../internals/Player";
+import { nukeChannel } from "../internals/utils";
 import { client } from "../main";
 
 const first = "https://cdn.discordapp.com/attachments/852546444086214676/860427588589846568/image0.jpg";
@@ -24,18 +25,6 @@ export const backgrounds = [
 export default class extends Command {
   name = "rank";
 
-  async nukeChannel(channel: TextChannel) {
-      let deleted = 0;
-      do {
-        const messages = await channel.messages.fetch({ limit: 100 });
-        for (const message of messages.values()) {
-          await message.delete();
-        }
-        deleted = messages.size;
-      } while (deleted > 0);
-  }
-
-
   async exec(msg: Message, args: string[]) {
 
     const author = msg.author;
@@ -56,10 +45,6 @@ export default class extends Command {
       count = rankCount;
     }
 
-    if (messages.size > 0) {
-      await this.nukeChannel(channel);
-    }
-
     channel.startTyping();
     const users = await getUsers();
 
@@ -78,15 +63,24 @@ export default class extends Command {
     const files = await Promise.all(players.map(x => x.getProfile()));
     channel.stopTyping();
 
-    if (count === 10) {
+    if (args.length === 0) {
+      if (messages.size > 0) {
+        await nukeChannel(channel);
+      }
+
       await channel.send({ files });
 
-    } else {
+    } else if (args.length > 0) {
       try {
+
+        const dmChannel = await author.createDM();
+        await nukeChannel(dmChannel);
+
         for (const file of files) {
           await author.send(file);
         }
-      } catch {
+      } catch (err) {
+        console.error(err);
         console.error(`${author.username} closed their DM`);
       }
     }

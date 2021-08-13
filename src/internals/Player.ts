@@ -16,6 +16,7 @@ import { List } from "./List"
 import { Gear } from "./Gear";
 import { getGears } from "../db/gear";
 import { ArenaGear } from "./ArenaGear";
+import { client } from "../main";
 
 export const CRIT_RATE = 0.1;
 export const CRIT_DAMAGE = 2;
@@ -252,15 +253,17 @@ export class Player extends Fighter {
     const users = await getUsers();
     const cards: { 
       id: string,
-      point: number,
       xp: number,
     }[] = [];
 
-
+    client.logChannel.guild.members.fetch();
     for (const user of users) {
       const xp = await getTotalXp(user.DiscordID);
-      const point = await getTotalPoints(user.DiscordID);
-      cards.push({ id: user.DiscordID, xp, point });
+      const inServer = client.logChannel.guild.members.cache.has(user.DiscordID);
+
+      if (inServer) {
+        cards.push({ id: user.DiscordID, xp });
+      }
     }
 
     cards.sort((a, b) => b.xp - a.xp);

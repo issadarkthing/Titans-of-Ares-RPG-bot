@@ -1,5 +1,6 @@
-import { MersenneTwister19937, Random } from "random-js";
 import crypto from "crypto";
+import { DMChannel, TextChannel } from "discord.js";
+import { MersenneTwister19937, Random } from "random-js";
 
 export const RED = "#FF0000";
 export const GREEN = "#008000";
@@ -144,4 +145,16 @@ export function totalLevelPassed(current: number, step: number) {
 export function roundTo(num: number, decimalPlace: number) {
   if (Number.isInteger(num)) return num.toString();
   return num.toFixed(decimalPlace);
+}
+
+
+export async function nukeChannel(channel: TextChannel | DMChannel) {
+  let deleted = 0;
+  do {
+    const messages = await channel.messages.fetch({ limit: 100 });
+    for (const message of messages.values()) {
+      await message.delete();
+    }
+    deleted = messages.size;
+  } while (deleted > 0);
 }
