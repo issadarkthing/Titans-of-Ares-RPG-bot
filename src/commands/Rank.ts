@@ -1,8 +1,8 @@
-import { TextChannel, Message } from "discord.js";
+import { Message, TextChannel } from "discord.js";
 import { getUsers } from "../db/player";
-import { client } from "../main";
-import { Player } from "../internals/Player";
 import Command from "../internals/Command";
+import { Player } from "../internals/Player";
+import { client } from "../main";
 
 const first = "https://cdn.discordapp.com/attachments/852546444086214676/860427588589846568/image0.jpg";
 const second = "https://cdn.discordapp.com/attachments/574852830125359126/860430411423416360/unknown.png";
@@ -36,8 +36,7 @@ export default class extends Command {
   }
 
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  async exec(msg: Message, _args: string[]) {
+  async exec(msg: Message, args: string[]) {
 
     const channel = msg.guild?.channels.resolve(client.rankChannelID);
     if (!channel) throw Error("No rank channel");
@@ -48,6 +47,15 @@ export default class extends Command {
     }
 
     const messages = await channel.messages.fetch();
+    let count = 10;
+
+    if (client.isDev) {
+      const rankCount = parseInt(args[0]);
+
+      if (rankCount) {
+        count = rankCount;
+      }
+    }
 
     if (messages.size > 0) {
       await this.nukeChannel(channel);
@@ -66,10 +74,13 @@ export default class extends Command {
     let players = await Promise.all(playersPromise);
 
     players.sort((a, b) => b.xp - a.xp);
-    players = players.slice(0, 10);
+    players = players.slice(0, count);
 
     const files = await Promise.all(players.map(x => x.getProfile()));
     channel.stopTyping();
-    await channel.send({ files });
+
+    for (const file of files) {
+      await channel.send(file);
+    }
   }
 }
