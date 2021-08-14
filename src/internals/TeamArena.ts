@@ -306,7 +306,7 @@ export class TeamArena {
     const score = teamArenaMember.score;
     const totalReward = teamReward + score;
     client.logChannel.send(
-      `${teamArenaMember.player} has been rewarded total ${totalReward} arena coins!`
+      `${teamArenaMember.player.member} has been rewarded total ${totalReward} arena coins!`
     )
 
     await teamArenaMember.player.addArenaCoin(teamReward + score);
