@@ -1,13 +1,11 @@
 import { oneLine } from "common-tags";
-import { MessageEmbed } from "discord.js";
+import { MessageEmbed, TextChannel } from "discord.js";
 import { DateTime } from "luxon";
 import { dbRun } from "../db/promiseWrapper";
 import {
   createArena,
   getCandidates,
-  getCurrentArena,
-  setMessage,
-  setPhase,
+  getCurrentArena, setPhase,
   setTeam,
   TeamArena as TeamArenaDB,
   TeamArenaMember as TeamArenaMemberDB
@@ -15,7 +13,7 @@ import {
 import { client } from "../main";
 import { List } from "./List";
 import { Player } from "./Player";
-import { BLUE_BUTTON, CDN_LINK, CROWN, GOLD, random, RED_BUTTON } from "./utils";
+import { BLUE_BUTTON, CDN_LINK, CROWN, GOLD, nukeChannel, random, RED_BUTTON } from "./utils";
 
 enum Days {
   MONDAY = 1,
@@ -262,23 +260,8 @@ export class TeamArena {
   }
 
   async updateScoreboard() {
-    try {
-      const scoreBoard = this.scoreBoard();
-
-      const messages = client.teamArenaChannel.messages;
-      await messages.fetch();
-      const oldScoreboard = messages.cache.get(this.messageID);
-
-      // delete old scoreboard
-      oldScoreboard && await oldScoreboard.delete();
-
-      // send a new one
-      const newScoreboard = await client.teamArenaChannel.send(scoreBoard);
-      this.messageID = newScoreboard.id;
-      await setMessage(this.id, newScoreboard.id);
-
-    // eslint-disable-next-line no-empty
-    } catch {}
+    const scoreBoard = this.scoreBoard();
+    await client.teamArenaChannel.send(scoreBoard);
   }
 
   async onSignUp() {
@@ -287,10 +270,11 @@ export class TeamArena {
       .setImage(this.teamArenaBanner)
       .setTitle("Team Arena Battle");
 
-    client.teamArenaChannel.send(embed);
+    await client.teamArenaChannel.send(embed);
     // monday at 7.00 a.m.
-    const now = DateTime.now().set({ hour: 7, minute: 0 });
-    await createArena(now.toISO());
+    // TODO uncomment these
+    /* const now = DateTime.now().set({ hour: 7, minute: 0 });
+    await createArena(now.toISO()); */
   }
 
   async onPrepare() {
@@ -415,60 +399,67 @@ export class TeamArena {
       return;
     }
 
+    try {
+      const teamArenaChannelID = client.teamArenaChannelID;
+      const teamArenaChannel = await client.bot.channels.fetch(teamArenaChannelID);
+      await nukeChannel(teamArenaChannel as TextChannel);
+    // eslint-disable-next-line no-empty
+    } catch {}
+
     switch (currentPhase) {
       case Phase.SIGNUP_1:
-        client.teamArenaChannel.send(
+        await client.teamArenaChannel.send(
           oneLine`${mention} Notice: You can now sign up for the Team Arena
           battles of this week! Use the \`${prefix}TeamArena\` command to
           participate.  You have 48 hours to sign up!`
         );
-        arena.onSignUp();
+        await arena.onSignUp();
         break;
       case Phase.SIGNUP_2:
-        client.teamArenaChannel.send(
+        await client.teamArenaChannel.send(
           oneLine`${mention} Notice: You can now sign up for the Team Arena
           battles of this week! Use the \`${prefix}TeamArena\` command to
           participate.  You have 24 hours to sign up!`
         );
         break;
       case Phase.SIGNUP_3:
-        client.teamArenaChannel.send(
+        await client.teamArenaChannel.send(
           oneLine`${mention} Notice: You can now sign up for the Team Arena
           battles of this week! Use the \`${prefix}TeamArena\` command to
           participate.  You have 12 hours to sign up!`
         );
         break;
       case Phase.PREPARING:
-        client.teamArenaChannel.send(
+        await client.teamArenaChannel.send(
           oneLine`${mention} The teams for the Team Arena have been formed! You
           can no longer sign up for Team Arena this week. Battles will start in
           24 hours!`
         );
-        arena.onPrepare();
+        await arena.onPrepare();
         break;
       case Phase.BATTLE_1:
-        client.teamArenaChannel.send(
+        await client.teamArenaChannel.send(
           oneLine`${mention} You can now battle the opponents team by using
           \`${prefix}TeamArena\` and earn points for your team!`
         );
         break;
       case Phase.BATTLE_2:
-        client.teamArenaChannel.send(
+        await client.teamArenaChannel.send(
           oneLine`${mention} Notice: You have 24 hours left to battle in the
           Team Arena by using \`${prefix}TeamArena\`!`
         );
         break;
       case Phase.BATTLE_3:
-        client.teamArenaChannel.send(
+        await client.teamArenaChannel.send(
           oneLine`${mention} Notice: You have 12 hours left to battle in the
           Team Arena by using \`${prefix}TeamArena\`!`
         );
         break;
       case Phase.REWARD:
-        arena.onReward();
+        await arena.onReward();
         break;
     }
 
-    setPhase(arena.id, currentPhase);
+    await setPhase(arena.id, currentPhase);
   }
 }

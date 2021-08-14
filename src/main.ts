@@ -15,7 +15,7 @@ if (client.isDev) {
 
 client.addPollHandler(energyMainLoop);
 client.addPollHandler(Buff.mainLoop);
-client.addPollHandler(TeamArena.mainLoop);
+client.addBlockingPollHandler(TeamArena.mainLoop);
 
 client.commandManager.registerCommands(path.resolve(__dirname, "./commands"));
 
