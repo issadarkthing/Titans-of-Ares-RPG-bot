@@ -327,6 +327,13 @@ export class TeamArena {
         oneLine`${member} has been rewarded ${score} Arena Coins for individual
         effort in Team Arena!`
       )
+
+    } else if (teamReward === 2) {
+      client.logChannel.send(
+        oneLine`has been rewarded ${score} Arena Coins for individual effort and
+        ${teamReward} Arena Coins for team effort in Team Arena!`
+      )
+
     }
 
     await teamArenaMember.player.addArenaCoin(totalReward);
