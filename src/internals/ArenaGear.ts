@@ -45,8 +45,7 @@ export abstract class ArenaGear extends Gear {
     }
 
     const description =
-      oneLine`${this.set} Set Penetration Skill \`Penetrate +${bonus * 100}% of
-      opponents first attack\``;
+      oneLine`${this.set} Set Armor Penetration \`Armor Penetration +${bonus * 100}%\``;
 
     return { bonus, description };
   }
