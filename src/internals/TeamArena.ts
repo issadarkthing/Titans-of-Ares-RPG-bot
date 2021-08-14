@@ -83,7 +83,8 @@ export class TeamArena {
   static async getCurrentArena() {
     let arena = await getCurrentArena();
     if (!arena) {
-      await createArena(TeamArena.getMondayDate(DateTime.now()).toISO());
+      const now = DateTime.now().plus({ days: 7 });
+      await createArena(TeamArena.getMondayDate(now).toISO());
       arena = await getCurrentArena();
     }
 
