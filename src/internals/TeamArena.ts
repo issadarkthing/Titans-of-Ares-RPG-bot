@@ -469,12 +469,14 @@ export class TeamArena {
           oneLine`${mention} Notice: You have 24 hours left to battle in the
           Team Arena by using \`${prefix}TeamArena\`!`
         );
+        await arena.updateScoreboard();
         break;
       case Phase.BATTLE_3:
         await client.teamArenaChannel.send(
           oneLine`${mention} Notice: You have 12 hours left to battle in the
           Team Arena by using \`${prefix}TeamArena\`!`
         );
+        await arena.updateScoreboard();
         break;
       case Phase.REWARD:
         await arena.onReward();
