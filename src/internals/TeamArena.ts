@@ -66,6 +66,7 @@ export class TeamArena {
   candidates: List<TeamArenaMember>;
   private teamArenaBanner = CDN_LINK + 
     "852530378916888626/876009234918158347/red-team-vs-blue-team.jpg";
+  static MAX_ENERGY = 10;
 
   constructor(teamArena: TeamArenaDB, candidates: List<TeamArenaMember>) {
     this.id = teamArena.ID;

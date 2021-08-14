@@ -1,22 +1,23 @@
-import { getLevel, getStats, GOLD, numberFormat, roundTo, STAR } from "./utils";
-import { GuildMember, MessageEmbed } from "discord.js";
-import { IFighter, Fighter, BaseStats } from "./Fighter";
-import { setArenaCoin, setCoin } from "../db/coin";
-import { createUser, getTotalPoints, getTotalXp, getUser, getUsers } from "../db/player";
 import { stripIndents } from "common-tags";
-import { MAX_ENERGY, showTimeLeft } from "./energy";
-import { Buff, BuffID } from "./Buff";
-import { TimerType } from "../db/timer";
-import { Profile } from "./Profile";
-import { Inventory } from "./Inventory";
-import { getInventory, Item } from "../db/inventory";
-import { Manticore, Pet } from "./Pet";
-import { getAllPets } from "../db/pet";
-import { List } from "./List"
-import { Gear } from "./Gear";
+import { GuildMember, MessageEmbed } from "discord.js";
+import { setArenaCoin, setCoin } from "../db/coin";
 import { getGears } from "../db/gear";
-import { ArenaGear } from "./ArenaGear";
+import { getInventory, Item } from "../db/inventory";
+import { getAllPets } from "../db/pet";
+import { createUser, getTotalPoints, getTotalXp, getUser, getUsers } from "../db/player";
+import { TimerType } from "../db/timer";
 import { client } from "../main";
+import { ArenaGear } from "./ArenaGear";
+import { Buff, BuffID } from "./Buff";
+import { MAX_ENERGY, showTimeLeft } from "./energy";
+import { BaseStats, Fighter, IFighter } from "./Fighter";
+import { Gear } from "./Gear";
+import { Inventory } from "./Inventory";
+import { List } from "./List";
+import { Manticore, Pet } from "./Pet";
+import { Profile } from "./Profile";
+import { Phase, TeamArena } from "./TeamArena";
+import { getLevel, getStats, GOLD, numberFormat, roundTo, STAR } from "./utils";
 
 export const CRIT_RATE = 0.1;
 export const CRIT_DAMAGE = 2;
@@ -307,6 +308,15 @@ export class Player extends Fighter {
     const setBonus = Gear.getBonus(equippedGears);
     const armorBonusSetDesc = setBonus?.description || "";
 
+    const arena = await TeamArena.getCurrentArena();
+    const teamArenaMember = arena.candidates
+      .find(member => member.player.id === this.id);
+    const isBattlePhase = arena.phase === Phase.BATTLE_1;
+
+    const teamArenaEnergyText = teamArenaMember && isBattlePhase ?
+      `${teamArenaMember.charge}/${TeamArena.MAX_ENERGY} Team Arena Energy` 
+        : "";
+
     const embed = new MessageEmbed()
       .setColor(GOLD)
       .setTitle(this.name)
@@ -325,7 +335,8 @@ export class Player extends Fighter {
         \`${this.arenaCoins}\` Arena Coins
 
         **Energy**
-        ${this.energy}/${MAX_ENERGY} ${energyTimer}
+        ${this.energy}/${MAX_ENERGY} Battle Energy ${energyTimer}
+        ${teamArenaEnergyText}
 
         **Buffs**
         ${this.buff?.name || "None"} ${buffTimer || ""}
