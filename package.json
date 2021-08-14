@@ -7,7 +7,7 @@
     "start": "pm2 start --no-daemon --node-args=\"-r dotenv/config\" dist/index.js",
     "build": "tsc",
     "lint": "eslint src",
-    "dev": "ENV=DEV nodemon -r dotenv/config ./dist/index.js --exec 'npm run lint && node'",
+    "dev": "ENV=DEV nodemon -r dotenv/config -r source-map-support/register ./dist/index.js --exec 'npm run lint && node'",
     "test": "echo \"Error: no test specified\" && exit 1",
     "clean": "rm -rf dist tsconfig.tsbuildinfo"
   },
