@@ -13,3 +13,4 @@ data/
 
 MainDB.db-shm
 MainDB.db-wal
+error.log
