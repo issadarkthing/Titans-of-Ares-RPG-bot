@@ -29,7 +29,7 @@ export function createArena($dateISO: string) {
 
 export function getCurrentArena() {
   const sql = `
-    SELECT * FROM TeamArena LIMIT 1
+    SELECT * FROM TeamArena ORDER BY ID DESC LIMIT 1
   `
 
   return dbGet<TeamArena>(sql);
