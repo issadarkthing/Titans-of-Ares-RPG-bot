@@ -1,9 +1,10 @@
-import { Message } from "discord.js";
-import fs from "fs";
-import util from "util";
-import path from "path";
 import chalk from "chalk";
 import { oneLine } from "common-tags";
+import { Message } from "discord.js";
+import fs from "fs";
+import path from "path";
+import util from "util";
+import { sha1 } from "./utils";
 
 export default abstract class Command {
   abstract name: string;
@@ -89,31 +90,49 @@ export class CommandManager {
     if (!command)
       return;
 
-    const initial = performance.now();
-    const printTimeTaken = () => {
-      const timeTaken = (performance.now() - initial).toFixed(4);
-      this.verbose && console.log(
-        oneLine`${chalk.blue(command.name)} command took
-        ${chalk.yellow(timeTaken, "ms")} to complete`
-      )
-    }
-
-    if (command.block) {
-      const id = `${command.name}_${msg.author.id}`;
-      if (this.blockList.has(id)) {
-        msg.channel.send(
-          `There's already an instance of ${command.name} command running`
-        );
-      } else {
-        this.blockList.add(id);
-        await command.exec(msg, args);
-        this.blockList.delete(id);
-        printTimeTaken();
+    try {
+      const initial = performance.now();
+      const printTimeTaken = () => {
+        const timeTaken = (performance.now() - initial).toFixed(4);
+        this.verbose && console.log(
+          oneLine`${chalk.blue(command.name)} command took
+          ${chalk.yellow(timeTaken, "ms")} to complete`
+        )
       }
-      return;
-    }
 
-    await command.exec(msg, args);
-    printTimeTaken();
+      if (command.block) {
+        const id = `${command.name}_${msg.author.id}`;
+        if (this.blockList.has(id)) {
+          msg.channel.send(
+            `There's already an instance of ${command.name} command running`
+          );
+        } else {
+          this.blockList.add(id);
+          await command.exec(msg, args);
+          this.blockList.delete(id);
+          printTimeTaken();
+        }
+        return;
+      }
+
+      await command.exec(msg, args);
+      printTimeTaken();
+
+    } catch (err) {
+      const commandName = command.name;
+      const argList = args.join(", ");
+      const time = (new Date()).toString();
+      const stackTrace = err.stack;
+      const id = sha1(stackTrace);
+
+      console.error(chalk.red("=== Error ==="));
+      console.error(chalk.yellow("ID:"), id);
+      console.error(chalk.yellow("Command:"), commandName);
+      console.error(chalk.yellow("Args:"), argList);
+      console.error(chalk.yellow("Time:"), chalk.magenta(time));
+      console.error(chalk.yellow("Caused by:"), msg.author.username);
+      console.error(stackTrace);
+
+    }
   }
 }

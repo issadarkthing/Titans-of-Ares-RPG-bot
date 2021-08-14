@@ -1,4 +1,4 @@
-import crypto from "crypto";
+import crypto, { createHash } from "crypto";
 import { DMChannel, TextChannel } from "discord.js";
 import { MersenneTwister19937, Random } from "random-js";
 
@@ -157,4 +157,10 @@ export async function nukeChannel(channel: TextChannel | DMChannel) {
     }
     deleted = messages.size;
   } while (deleted > 0);
+}
+
+export function sha1(data: string) {
+  return createHash("sha1")
+    .update(data)
+    .digest('hex');
 }
