@@ -265,16 +265,19 @@ export class TeamArena {
   }
 
   async onSignUp() {
+    // monday at 7.00 a.m.
+    // TODO uncomment these
+    /* const now = DateTime.now().set({ hour: 7, minute: 0 });
+    await createArena(now.toISO()); */
+  }
+
+  async onBattle() {
     const embed = new MessageEmbed()
       .setColor(GOLD)
       .setImage(this.teamArenaBanner)
       .setTitle("Team Arena Battle");
 
     await client.teamArenaChannel.send(embed);
-    // monday at 7.00 a.m.
-    // TODO uncomment these
-    /* const now = DateTime.now().set({ hour: 7, minute: 0 });
-    await createArena(now.toISO()); */
   }
 
   async onPrepare() {
@@ -442,6 +445,7 @@ export class TeamArena {
           oneLine`${mention} You can now battle the opponents team by using
           \`${prefix}TeamArena\` and earn points for your team!`
         );
+        await arena.onBattle();
         break;
       case Phase.BATTLE_2:
         await client.teamArenaChannel.send(
