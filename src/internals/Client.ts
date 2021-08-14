@@ -49,7 +49,7 @@ export default class Client {
   startPollEvent() {
     setInterval(() => {
       // runs all normal poll without having to wait if previous poll handler
-      // finished
+      // not finished
       this.pollHandlers.forEach(fn => fn());
 
       // does not run poll handlers which have not finished running yet
