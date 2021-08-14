@@ -5,7 +5,7 @@ import { dbRun } from "../db/promiseWrapper";
 import {
   createArena,
   getCandidates,
-  getCurrentArena, setPhase,
+  getCurrentArena, setMessage, setPhase,
   setTeam,
   TeamArena as TeamArenaDB,
   TeamArenaMember as TeamArenaMemberDB
@@ -262,15 +262,29 @@ export class TeamArena {
   }
 
   async updateScoreboard() {
-    const scoreBoard = this.scoreBoard();
-    await client.teamArenaChannel.send(scoreBoard);
+    try {
+      const scoreBoard = this.scoreBoard();
+
+      const messages = client.teamArenaChannel.messages;
+      await messages.fetch();
+      const oldScoreboard = messages.cache.get(this.messageID);
+
+      // delete old scoreboard
+      oldScoreboard?.delete();
+
+      // send a new one
+      const newScoreBoard = await client.teamArenaChannel.send(scoreBoard);
+      this.messageID = newScoreBoard.id;
+      await setMessage(this.id, this.messageID);
+
+    // eslint-disable-next-line no-empty
+    } catch {}
   }
 
   async onSignUp() {
     // monday at 7.00 a.m.
-    // TODO uncomment these
-    /* const now = DateTime.now().set({ hour: 7, minute: 0 });
-    await createArena(now.toISO()); */
+    const now = DateTime.now().set({ hour: 7, minute: 0 });
+    await createArena(now.toISO());
   }
 
   async onBattle() {
@@ -293,16 +307,17 @@ export class TeamArena {
       return;
     }
 
-    dbRun("BEGIN TRANSACTION");
+    await dbRun("BEGIN TRANSACTION");
     for (const candidate of teamRed) {
       await setTeam(this.id, candidate.id, "RED");
     }
     for (const candidate of teamBlue) {
       await setTeam(this.id, candidate.id, "BLUE");
     }
-    dbRun("COMMIT");
+    await dbRun("COMMIT");
 
-    await this.updateScoreboard();
+    const arena = await TeamArena.getCurrentArena();
+    await arena.updateScoreboard();
   }
 
   private async rewardUser(teamArenaMember: TeamArenaMember, teamReward: number) {
@@ -389,7 +404,7 @@ export class TeamArena {
       }
     }
 
-    this.updateScoreboard();
+    await this.updateScoreboard();
   }
 
   /** updates phase upon every second */
