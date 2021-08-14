@@ -232,8 +232,8 @@ export class TeamArena {
     const redTeam = this.candidates.filter(x => x.team === "RED");
     const blueTeam = this.candidates.filter(x => x.team === "BLUE");
 
-    redTeam.sort((b, a) => b.score - a.score);
-    blueTeam.sort((b, a) => b.score - a.score);
+    redTeam.sort((a, b) => b.score - a.score);
+    blueTeam.sort((a, b) => b.score - a.score);
 
     const score = (team: TeamArenaMember[]) => 
       team.reduce((acc, v) => acc + v.score, 0);
