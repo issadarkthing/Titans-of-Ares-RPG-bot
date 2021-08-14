@@ -15,7 +15,7 @@ import {
 import { client } from "../main";
 import { List } from "./List";
 import { Player } from "./Player";
-import { BLUE_BUTTON, CROWN, random, RED_BUTTON } from "./utils";
+import { BLUE_BUTTON, CDN_LINK, CROWN, GOLD, random, RED_BUTTON } from "./utils";
 
 enum Days {
   MONDAY = 1,
