@@ -304,6 +304,11 @@ export class TeamArena {
 
   private async rewardUser(teamArenaMember: TeamArenaMember, teamReward: number) {
     const score = teamArenaMember.score;
+    const totalReward = teamReward + score;
+    client.logChannel.send(
+      `${teamArenaMember.player} has been rewarded total ${totalReward} arena coins!`
+    )
+
     await teamArenaMember.player.addArenaCoin(teamReward + score);
   }
 
@@ -359,6 +364,10 @@ export class TeamArena {
 
       }
     }
+
+    // next monday at 7.00 a.m.
+    const now = DateTime.now().plus({ days: 2 }).set({ hour: 7, minute: 0 });
+    await createArena(now.toISO());
   }
 
   /** updates phase upon every second */
