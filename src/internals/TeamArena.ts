@@ -311,11 +311,25 @@ export class TeamArena {
   private async rewardUser(teamArenaMember: TeamArenaMember, teamReward: number) {
     const score = teamArenaMember.score;
     const totalReward = teamReward + score;
-    client.logChannel.send(
-      `${teamArenaMember.player.member} has been rewarded total ${totalReward} arena coins!`
-    )
+    const member = teamArenaMember.player.member;
 
-    await teamArenaMember.player.addArenaCoin(teamReward + score);
+    if (totalReward === 0) return;
+
+    if (teamReward === 5) {
+      client.logChannel.send(
+        oneLine`${member} has been rewarded ${score} Arena Coins for individual
+        effort and ${teamReward} Arena Coins for being part of the winning team
+        in Team Arena!`
+      )
+
+    } else if (teamReward === 0) {
+      client.logChannel.send(
+        oneLine`${member} has been rewarded ${score} Arena Coins for individual
+        effort in Team Arena!`
+      )
+    }
+
+    await teamArenaMember.player.addArenaCoin(totalReward);
   }
 
   private async rewardTeam(
@@ -370,6 +384,8 @@ export class TeamArena {
 
       }
     }
+
+    this.updateScoreboard();
   }
 
   /** updates phase upon every second */
