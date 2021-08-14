@@ -153,7 +153,7 @@ export async function nukeChannel(channel: TextChannel | DMChannel) {
   do {
     const messages = await channel.messages.fetch({ limit: 100 });
     for (const message of messages.values()) {
-      await message.delete();
+      message.delete().catch(() => null);
     }
     deleted = messages.size;
   } while (deleted > 0);
