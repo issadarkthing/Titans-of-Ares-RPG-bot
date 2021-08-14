@@ -66,6 +66,8 @@ export class TeamArena {
   phase: Phase;
   messageID: string;
   candidates: List<TeamArenaMember>;
+  private teamArenaBanner = CDN_LINK + 
+    "852530378916888626/876009234918158347/red-team-vs-blue-team.jpg";
 
   constructor(teamArena: TeamArenaDB, candidates: List<TeamArenaMember>) {
     this.id = teamArena.ID;
@@ -280,6 +282,12 @@ export class TeamArena {
   }
 
   async onSignUp() {
+    const embed = new MessageEmbed()
+      .setColor(GOLD)
+      .setImage(this.teamArenaBanner)
+      .setTitle("Team Arena Battle");
+
+    client.teamArenaChannel.send(embed);
     // monday at 7.00 a.m.
     const now = DateTime.now().set({ hour: 7, minute: 0 });
     await createArena(now.toISO());
