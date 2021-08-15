@@ -70,8 +70,8 @@ export default class extends Command {
         };
 
         menu.addButton(BLUE_BUTTON, "buy 1 fragment", buyMany(1));
-        menu.addButton(RED_BUTTON, "buy 10 fragments", buyMany(10));
-        menu.addButton(WHITE_BUTTON, "buy 100 fragments", buyMany(100));
+        menu.addButton(RED_BUTTON, "buy 5 fragments", buyMany(5));
+        menu.addButton(WHITE_BUTTON, "buy 10 fragments", buyMany(10));
 
       }
 
