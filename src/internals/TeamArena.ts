@@ -431,7 +431,7 @@ export class TeamArena {
         await client.teamArenaChannel.send(
           oneLine`${mention} Notice: You can now sign up for the Team Arena
           battles of this week! Use the \`${prefix}TeamArena\` command to
-          participate.  You have 48 hours to sign up!`
+          participate. You have 48 hours to sign up!`
         );
         await arena.onSignUp();
         break;
@@ -439,14 +439,14 @@ export class TeamArena {
         await client.teamArenaChannel.send(
           oneLine`${mention} Notice: You can now sign up for the Team Arena
           battles of this week! Use the \`${prefix}TeamArena\` command to
-          participate.  You have 24 hours to sign up!`
+          participate. You have 24 hours to sign up!`
         );
         break;
       case Phase.SIGNUP_3:
         await client.teamArenaChannel.send(
           oneLine`${mention} Notice: You can now sign up for the Team Arena
           battles of this week! Use the \`${prefix}TeamArena\` command to
-          participate.  You have 12 hours to sign up!`
+          participate. You have 12 hours to sign up!`
         );
         break;
       case Phase.PREPARING:
