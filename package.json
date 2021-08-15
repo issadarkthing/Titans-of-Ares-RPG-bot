@@ -4,7 +4,7 @@
   "description": "",
   "main": "dist/index.js",
   "scripts": {
-    "start": "pm2 start --no-daemon --node-args=\"-r dotenv/config\" dist/index.js",
+    "start": "pm2 start --no-daemon --node-args=\"-r dotenv/config -r source-map-support/register\" dist/index.js",
     "build": "tsc",
     "lint": "eslint src",
     "dev": "ENV=DEV nodemon -r dotenv/config -r source-map-support/register ./dist/index.js --exec 'npm run lint && node'",
