@@ -98,7 +98,7 @@ export default class extends Command {
     }
 
     const description = oneLine`Arena full set bonus penetrates +20%/40%/60% of
-                    armor penetration (Full set +0, +5 or +10)`
+                    armor (Full set +0, +5 or +10)`
 
     const embed = new MessageEmbed()
     .setColor(BROWN)

@@ -96,9 +96,9 @@ export default class extends Command {
       }
 
       const arenaBonus = stripIndents`
-      Full Arena Set +0  | +20% penetrate | \`${lvl1}/11\` ${active === 1 ? "Active" : ""}
-      Full Arena Set +5  | +40% penetrate | \`${lvl2}/11\` ${active === 2 ? "Active" : ""}
-      Full Arena Set +10 | +60% penetrate | \`${lvl3}/11\` ${active === 3 ? "Active" : ""}`
+      Full Arena Set +0  | +20% armor penetration | \`${lvl1}/11\` ${active === 1 ? "Active" : ""}
+      Full Arena Set +5  | +40% armor penetration | \`${lvl2}/11\` ${active === 2 ? "Active" : ""}
+      Full Arena Set +10 | +60% armor penetration | \`${lvl3}/11\` ${active === 3 ? "Active" : ""}`
 
       const embed = new MessageEmbed()
         .setColor(SILVER)
