@@ -123,15 +123,15 @@ export class CommandManager {
       const argList = args.join(", ");
       const time = (new Date()).toString();
       const stackTrace = err.stack;
-      const id = sha1(stackTrace);
+      const checksum = sha1(stackTrace);
 
       console.error(chalk.red("=== Error ==="));
-      console.error(chalk.yellow("ID:"), id);
       console.error(chalk.yellow("Command:"), commandName);
       console.error(chalk.yellow("Args:"), argList);
       console.error(chalk.yellow("Time:"), chalk.magenta(time));
+      console.error(chalk.yellow("Checksum:"), checksum);
       console.error(chalk.yellow("Caused by:"), msg.author.username);
-      console.error(stackTrace);
+      console.error(err)
 
     }
   }
