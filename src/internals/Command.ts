@@ -5,6 +5,7 @@ import fs from "fs";
 import path from "path";
 import util from "util";
 import { sha1 } from "./utils";
+import { performance } from "perf_hooks";
 
 export default abstract class Command {
   abstract name: string;
