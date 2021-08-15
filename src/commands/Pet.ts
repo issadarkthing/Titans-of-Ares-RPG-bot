@@ -10,6 +10,7 @@ import Command from "../internals/Command";
 
 export default class extends Command {
   name = "pet";
+  aliases = ["pets"];
 
   async exec(msg: Message, args: string[]) {
 
