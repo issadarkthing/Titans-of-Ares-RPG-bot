@@ -15,22 +15,26 @@ export default class extends Command {
 
     __**Channel information**__
     #ranks - This shows the top 10 highest level Titans currently in the game
-    #log - This log will show most of the activities regarding players. For example: when someone gains XP, gains a buff or if a player is awarded with items.
+    #log - This log will show most of the activities regarding players. For
+           example: when someone gains XP, gains a buff or if a player is
+           awarded with items.
     #daily-commands - This channel is for all commands that you can use in the game
+    #ranks-top10 - This shows the top 10 highest level Titans currently in the
+                   game. To see all the Titans use the $rank 100.
 
     __**All commands**__
-    **$profile**
+    **$profile ($p)**
     This will show your profile with all your ranking, level, stats, buffs and
     energy. This is your main overview of your character.
 
-    **$battle**
+    **$battle ($b)**
     This will allow you to battle Ares Challengers from level 1 to level 50. You
     can only challenge 1 level higher than your maximum defeated level. Winning
     against challengers award coins. You can only battle if you have energy, it
     replenishes automatically every 8 hours to a max of 5. Check your current
     energy with $profile!
 
-    **$inventory**
+    **$inventory ($inv)**
     This command shows your items; within this command, you can also use the item.
 
     **$pet**
@@ -43,7 +47,13 @@ export default class extends Command {
 
     **$gear**
     This will show all your equipped gear and their stats. You can upgrade
-    equipped gear by inspecting items here.
+    equipped gear by inspecting items here. To equip gear, inspect gear pieces
+    in the inventory.
+
+    **$teamarena ($ta)**
+    The Team Arena is an event that will occur every week. Every Monday and
+    Tuesday you can sign up for this event by using the command. You can compete
+    from Thursday to Saturday and earn Arena Coins.
     `
 
 
