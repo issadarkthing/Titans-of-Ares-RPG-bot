@@ -410,7 +410,7 @@ export class TeamArena {
   /** updates phase upon every second */
   static async mainLoop() {
     const arena = await TeamArena.getCurrentArena();
-    const currentPhase = client.isDev && client.arenaPhase ? 
+    const currentPhase = client.isDev ? 
       client.arenaPhase : TeamArena.currentPhase();
     const mention = client.isDev ? "@all" : "@everyone";
     const prefix = client.prefix;
