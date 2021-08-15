@@ -8,6 +8,8 @@ import {
 import CoinShop from "./CoinShop";
 import ArenaShop from "./ArenaShop";
 import Command from "../internals/Command";
+import { oneLine } from "common-tags";
+import { client } from "../main";
 
 export default class Shop extends Command {
   name = "shop";
@@ -19,7 +21,11 @@ export default class Shop extends Command {
     const embed = new MessageEmbed()
       .setColor(BROWN)
       .setTitle("Shop")
-      .setDescription("Please select shop you want to open");
+      .setDescription("Please select shop you want to open")
+      .addField("\u200b", 
+        oneLine`This will open all the possible shops. You can buy gear
+        and upgrade scrolls here. When you buy items from the shop, they
+        will appear in the \`${client.prefix}inventory\``)
 
     const menu = new ButtonHandler(msg, embed, msg.author.id);
     const coinShop = new CoinShop();
