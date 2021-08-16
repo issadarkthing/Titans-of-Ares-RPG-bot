@@ -37,7 +37,7 @@ client.bot.on('message', (msg) => {
     && (msg.author.id === client.oldBotID || msg.author.id === client.devID)
   ) {
     const rank = new Rank();
-    rank.exec(msg, ["10"]);
+    rank.exec(msg, []);
     xpLog(msg);
     
   } else if (command.startsWith("!") && !msg.author.bot) {
