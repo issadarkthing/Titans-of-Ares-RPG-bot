@@ -65,8 +65,8 @@ export default class extends Command {
         };
 
         menu.addButton(BLUE_BUTTON, "buy 1 scroll", buyMany(1));
-        menu.addButton(RED_BUTTON, "buy 5 scrolls", buyMany(5));
-        menu.addButton(WHITE_BUTTON, "buy 10 scrolls", buyMany(10));
+        menu.addButton(RED_BUTTON, "buy 10 scrolls", buyMany(10));
+        menu.addButton(WHITE_BUTTON, "buy 100 scrolls", buyMany(100));
       }
 
       menu.addButton(RETURN_BUTTON, "return back to menu", () => {
