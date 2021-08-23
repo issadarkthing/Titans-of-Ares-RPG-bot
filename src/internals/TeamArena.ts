@@ -36,7 +36,7 @@ export enum Phase {
   REWARD = "reward",
 }
 
-class TeamArenaMember {
+export class TeamArenaMember {
   id: string;
   created: DateTime;
   teamArenaID: number;
