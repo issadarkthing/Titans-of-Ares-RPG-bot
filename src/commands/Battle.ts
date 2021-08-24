@@ -108,31 +108,19 @@ export default class extends Command {
       await msg.channel.send(`Starting challenge level ${selectedLevel}`);
       const challenger = await Challenger.getChallenger(selectedLevel);
 
-      if (index === 0) {
-        const embed = new MessageEmbed()
-          .setTitle("Daily Challenge")
-          .setDescription("Please select how many battle");
+      const embed = new MessageEmbed()
+        .setTitle("Daily Challenge")
+        .setDescription("Please select how many battle");
 
-        const menu = new ButtonHandler(msg, embed, player.id);
+      const menu = new ButtonHandler(msg, embed, player.id);
+      const battle = (count: number) => 
+        () => this.battleMultiple(msg, player, challenger, count);
 
-        menu.addButton(utils.BLUE_BUTTON, "battle 1 time", () => {
-          return this.battleMultiple(msg, player, challenger, 1);
-        })
+      menu.addButton(utils.BLUE_BUTTON, "battle 1 time", battle(1));
+      menu.addButton(utils.RED_BUTTON, "battle 5 times", battle(5));
 
-        menu.addButton(utils.RED_BUTTON, "battle 5 times", () => {
-          return this.battleMultiple(msg, player, challenger, 5);
-        })
-
-        menu.addButton(utils.WHITE_BUTTON, "battle 10 times", () => {
-          return this.battleMultiple(msg, player, challenger, 10);
-        })
-
-        menu.addCloseButton();
-        menu.run();
-
-      } else {
-        await this.battleMultiple(msg, player, challenger, 1);
-      }
+      menu.addCloseButton();
+      menu.run();
 
     } catch (e) {
       if (e instanceof Collection) {
