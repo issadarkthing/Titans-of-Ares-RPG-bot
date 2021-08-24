@@ -1,13 +1,15 @@
-import { Collection, Message, MessageReaction, User } from "discord.js";
+import { Collection, Message, MessageEmbed, MessageReaction, User } from "discord.js";
 import { DateTime } from "luxon";
 import { setMaxChallenger } from "../db/challenger";
 import { hasTimer, setEnergy, setTimer, TimerType } from "../db/timer";
 import { Battle } from "../internals/Battle";
+import { ButtonHandler } from "../internals/ButtonHandler";
 import { Challenger } from "../internals/Challenger";
 import Command from "../internals/Command";
 import { ENERGY_TIMEOUT, showTimeLeft } from "../internals/energy";
 import { Player } from "../internals/Player";
 import * as utils from "../internals/utils";
+import { sleep } from "../internals/utils";
 
 const emojis = [
   utils.LEFT_ARROW_BUTTON,
@@ -21,19 +23,16 @@ export default class extends Command {
   block = true;
 
   async exec(msg: Message, args: string[]) {
-
     let question;
 
     try {
-
       const opponentID = args[0];
       const player = await Player.getPlayer(msg.member!);
 
       if (opponentID) {
         const memberOpponent = await msg.guild?.members.fetch(opponentID);
 
-        if (!memberOpponent)
-          return msg.channel.send("member not found");
+        if (!memberOpponent) return msg.channel.send("member not found");
 
         const opponent = await Player.getPlayer(memberOpponent);
         const battle = new Battle(msg, player, opponent);
@@ -41,16 +40,15 @@ export default class extends Command {
 
         return;
       }
-        
 
       if (player.energy <= 0) {
-
         const timeText = await showTimeLeft(TimerType.Energy, player.id);
-        return msg.channel.send(`You have 0 energy left. Please wait for ${timeText}`);
+        return msg.channel.send(
+          `You have 0 energy left. Please wait for ${timeText}`
+        );
       }
 
       const maxLevel = player.challengerMaxLevel;
-
 
       let validEmojis: string[] = [];
 
@@ -64,11 +62,15 @@ export default class extends Command {
         validEmojis = emojis;
       }
 
-      const levelHint = validEmojis.map(emoji => {
-        return emoji === emojis[0] ? emojis[0] + ` ${maxLevel - 1}`
-             : emoji === emojis[1] ? emojis[1] + ` ${maxLevel}`
-             : emojis[2] + ` ${maxLevel + 1}`
-      }).join(" ");
+      const levelHint = validEmojis
+        .map((emoji) => {
+          return emoji === emojis[0]
+            ? emojis[0] + ` ${maxLevel - 1}`
+            : emoji === emojis[1]
+            ? emojis[1] + ` ${maxLevel}`
+            : emojis[2] + ` ${maxLevel + 1}`;
+        })
+        .join(" ");
 
       question = await msg.channel.send(
         `Which level you want to challenge? ${levelHint}`
@@ -79,16 +81,21 @@ export default class extends Command {
       }
 
       const filter = (reaction: MessageReaction, user: User) => {
-        return validEmojis.includes(reaction.emoji.name) && user.id === msg.author.id;
-      }
+        return (
+          validEmojis.includes(reaction.emoji.name) && user.id === msg.author.id
+        );
+      };
 
-      const colllected = await question.awaitReactions(filter, 
-        { max: 1, time: 30 * 1000, errors: ["time"] });
+      const colllected = await question.awaitReactions(filter, {
+        max: 1,
+        time: 30 * 1000,
+        errors: ["time"],
+      });
 
       await question.delete();
 
       const reacted = colllected.first()!;
-      const index = emojis.findIndex(e => e === reacted.emoji.name)! - 1;
+      const index = emojis.findIndex((e) => e === reacted.emoji.name)! - 1;
 
       const expireDate = DateTime.now().plus(ENERGY_TIMEOUT).toISO();
       await setEnergy(player.id, -1);
@@ -98,8 +105,56 @@ export default class extends Command {
         await setTimer(TimerType.Energy, player.id, expireDate);
 
       const selectedLevel = player.challengerMaxLevel + index;
-      msg.channel.send(`Starting challenge level ${selectedLevel}`);
+      await msg.channel.send(`Starting challenge level ${selectedLevel}`);
       const challenger = await Challenger.getChallenger(selectedLevel);
+
+      if (index === 0) {
+        const embed = new MessageEmbed()
+          .setTitle("Daily Challenge")
+          .setDescription("Please select how many battle");
+
+        const menu = new ButtonHandler(msg, embed, player.id);
+
+        menu.addButton(utils.BLUE_BUTTON, "battle 1 time", () => {
+          return this.battleMultiple(msg, player, challenger, 1);
+        })
+
+        menu.addButton(utils.RED_BUTTON, "battle 5 times", () => {
+          return this.battleMultiple(msg, player, challenger, 5);
+        })
+
+        menu.addButton(utils.WHITE_BUTTON, "battle 10 times", () => {
+          return this.battleMultiple(msg, player, challenger, 10);
+        })
+
+        menu.addCloseButton();
+        menu.run();
+
+      } else {
+        await this.battleMultiple(msg, player, challenger, 1);
+      }
+
+    } catch (e) {
+      if (e instanceof Collection) {
+        await question?.reactions.removeAll();
+        await msg.channel.send("No level was chosen");
+      } else {
+        console.log(e);
+      }
+    }
+  }
+
+  private async battleMultiple(
+    msg: Message,
+    player: Player,
+    challenger: Challenger,
+    count: number
+  ) {
+
+    let energy = player.energy;
+
+    while (energy > 0 && count > 0) {
+
       const battle = new Battle(msg, player, challenger);
       const isWon = await battle.run();
 
@@ -108,7 +163,6 @@ export default class extends Command {
         `${player.name} has ${battleResult} ${challenger.name}!`
       );
 
-
       if (isWon) {
         const loot = challenger.loot;
         await player.addCoin(loot);
@@ -116,14 +170,12 @@ export default class extends Command {
         player.challengerMaxLevel = challenger.level;
         await msg.channel.send(`${player.name} has earned **${loot}** coins!`);
       }
-    } catch (e) {
-      if (e instanceof Collection) {
-        await question?.reactions.removeAll();
-        await msg.channel.send("No level was chosen");
-      } else {
-        console.log(e)
-      }
+
+      player = await Player.getPlayer(player.member);
+      challenger = await Challenger.getChallenger(challenger.level);
+      energy--;
+      count--;
+      await sleep(1000);
     }
   }
 }
-
