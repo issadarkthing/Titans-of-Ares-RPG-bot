@@ -14,15 +14,6 @@ export interface IFighter {
   imageUrl: string;
 }
 
-export enum Attributes {
-  HP = "HP",
-  STRENGTH = "Strength",
-  SPEED = "Speed",
-  ARMOR = "Armor",
-  CRIT_RATE = "Crit Rate",
-  CRIT_DAMAGE = "Crit Damage",
-}
-
 /** stats that are not affected by any buff or boost */
 export interface BaseStats {
   hp: number;
@@ -31,11 +22,12 @@ export interface BaseStats {
   armor: number;
   critRate: number;
   critDamage: number;
+  armorPenetration: number;
 }
+
 
 // Fighter implements battle fight
 export class Fighter {
-
   name: string;
   level: number;
   hp: number;

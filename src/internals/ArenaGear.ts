@@ -1,5 +1,6 @@
 import { oneLine } from "common-tags";
-import { Attributes, Fighter } from "./Fighter";
+import { Fighter } from "./Fighter";
+import { Attributes } from "./Attributes";
 import { Gear } from "./Gear";
 import { List } from "./List";
 import { ArenaScroll } from "./Scroll";
@@ -61,7 +62,7 @@ export class Helmet extends ArenaGear {
 
   use(fighter: Fighter) {
     fighter.armor += this.increment;
-    return { attrib: Attributes.ARMOR, amount: this.increment };
+    return { attrib: Attributes.armor, amount: this.increment };
   }
 }
 
@@ -76,7 +77,7 @@ export class Amulet extends ArenaGear {
 
   use(fighter: Fighter) {
     fighter.hp += this.increment;
-    return { attrib: Attributes.HP, amount: this.increment };
+    return { attrib: Attributes.hp, amount: this.increment };
   }
 }
 
@@ -90,7 +91,7 @@ export class Chest extends ArenaGear {
 
   use(fighter: Fighter) {
     fighter.armor += this.increment;
-    return { attrib: Attributes.ARMOR, amount: this.increment };
+    return { attrib: Attributes.armor, amount: this.increment };
   }
 }
 
@@ -104,7 +105,7 @@ export class Pants extends ArenaGear {
 
   use(fighter: Fighter) {
     fighter.armor += this.increment;
-    return { attrib: Attributes.ARMOR, amount: this.increment };
+    return { attrib: Attributes.armor, amount: this.increment };
   }
 }
 
@@ -118,7 +119,7 @@ export class Boots extends ArenaGear {
 
   use(fighter: Fighter) {
     fighter.speed += this.increment;
-    return { attrib: Attributes.SPEED, amount: this.increment };
+    return { attrib: Attributes.speed, amount: this.increment };
   }
 }
 
@@ -132,7 +133,7 @@ export class Gauntlets extends ArenaGear {
 
   use(fighter: Fighter) {
     fighter.armor += this.increment;
-    return { attrib: Attributes.ARMOR, amount: this.increment };
+    return { attrib: Attributes.armor, amount: this.increment };
   }
 }
 
@@ -146,7 +147,7 @@ export class Belt extends ArenaGear {
 
   use(fighter: Fighter) {
     fighter.armor += this.increment;
-    return { attrib: Attributes.ARMOR, amount: this.increment };
+    return { attrib: Attributes.armor, amount: this.increment };
   }
 }
 
@@ -160,7 +161,7 @@ export class Wrist extends ArenaGear {
 
   use(fighter: Fighter) {
     fighter.armor += this.increment;
-    return { attrib: Attributes.ARMOR, amount: this.increment };
+    return { attrib: Attributes.armor, amount: this.increment };
   }
 }
 
@@ -175,7 +176,7 @@ export class LeftRing extends ArenaGear {
 
   use(fighter: Fighter) {
     fighter.critRate += this.increment;
-    return { attrib: Attributes.CRIT_RATE, amount: this.increment };
+    return { attrib: Attributes.critRate, amount: this.increment };
   }
 }
 
@@ -189,7 +190,7 @@ export class RightRing extends ArenaGear {
 
   use(fighter: Fighter) {
     fighter.critDamage += this.increment;
-    return { attrib: Attributes.CRIT_DAMAGE, amount: this.increment };
+    return { attrib: Attributes.critDamage, amount: this.increment };
   }
 }
 
@@ -203,6 +204,6 @@ export class Sword extends ArenaGear {
 
   use(fighter: Fighter) {
     fighter.strength += this.increment;
-    return { attrib: Attributes.STRENGTH, amount: this.increment };
+    return { attrib: Attributes.strength, amount: this.increment };
   }
 }

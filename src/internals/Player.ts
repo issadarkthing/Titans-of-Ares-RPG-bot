@@ -95,16 +95,17 @@ export class Player extends Fighter {
       armor: this.armor,
       critRate: this.critRate,
       critDamage: this.critDamage,
+      armorPenetration: 0,
     }
 
     this.buff?.use(this);
     const stats = this.equippedGears.toArray().reduce((acc, gear) => {
-      const {attrib, amount} = gear.use(this);
+      const { attrib, amount } = gear.use(this);
 
-      if (acc.has(attrib)) {
-        acc.set(attrib, acc.get(attrib)! + amount);
+      if (acc.has(attrib.name)) {
+        acc.set(attrib.name, acc.get(attrib.name)! + amount);
       } else {
-        acc.set(attrib, amount);
+        acc.set(attrib.name, amount);
       }
 
       return acc;
@@ -218,6 +219,7 @@ export class Player extends Fighter {
       armor: this.armor,
       critRate: this.critRate,
       critDamage: this.critDamage,
+      armorPenetration: this.baseStats.armorPenetration,
     }
 
 
@@ -225,10 +227,10 @@ export class Player extends Fighter {
     const stats = this.equippedGears.toArray().reduce((acc, gear) => {
       const {attrib, amount} = gear.use(this);
 
-      if (acc.has(attrib)) {
-        acc.set(attrib, acc.get(attrib)! + amount);
+      if (acc.has(attrib.name)) {
+        acc.set(attrib.name, acc.get(attrib.name)! + amount);
       } else {
-        acc.set(attrib, amount);
+        acc.set(attrib.name, amount);
       }
 
       return acc;
