@@ -44,12 +44,23 @@ export class List<T extends Identifiable> {
     return random().pick(this.values);
   }
 
-  /** @param {value} fn callback that returns the weight of item */
+  /** @param {fn} fn callback that returns the weight of item 
+   *  @returns selected sample based on weight
+   *  
+   *  NOTE that weight of the item must be integer
+   * */
   weightedRandom(fn: (id: T) => number) {
     const items: { value: T, weight: number }[] = [];
+
     for (const item of this) {
-      items.push({ value: item, weight: fn(item) });
+      const weight = fn(item);
+      
+      if (!Number.isInteger(weight))
+        throw new Error(`weight must only be integer value`);
+
+      items.push({ value: item, weight });
     }
+
     const samples = items.flatMap<T>(x => Array(x.weight).fill(x.value));
     return random().pick(samples);
   }
