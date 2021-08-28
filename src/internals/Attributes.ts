@@ -9,44 +9,44 @@ export abstract class Attribute {
 
 class HP extends Attribute {
   name = "HP";
-  key = "hp";
   id = "hp";
+  key = "hp";
 }
 
 class Strength extends Attribute {
   name = "Strength";
-  key = "strength";
   id = "strength";
+  key = "strength";
 }
 
 class Speed extends Attribute {
   name = "Speed";
-  key = "speed";
   id = "speed";
+  key = "speed";
 }
 
 class Armor extends Attribute {
   name = "Armor";
-  key = "armor";
   id = "armor";
+  key = "armor";
 }
 
 class CritRate extends Attribute {
   name = "Crit Rate";
-  key = "crit_rate";
-  id = "critRate";
+  id = "crit_rate";
+  key = "critRate";
 }
 
 class CritDamage extends Attribute {
   name = "Crit Damage";
-  key = "crit_damage";
-  id = "critDamage";
+  id = "crit_damage";
+  key = "critDamage";
 }
 
 class ArmorPenetration extends Attribute {
   name = "Armor Penetration";
-  key = "armor_penetration";
-  id = "armorPenetration";
+  id = "armor_penetration";
+  key = "armorPenetration";
 }
 
 export class Attributes {
