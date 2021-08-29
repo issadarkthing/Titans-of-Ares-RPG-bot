@@ -107,3 +107,12 @@ schema += `
     Score       DEFAULT 0
   );
 `
+
+schema += `
+  CREATE TABLE IF NOT EXISTS Gem (
+    ID          INTEGER PRIMARY KEY,
+    Created     TEXT NOT NULL,
+    InventoryID INTEGER NOT NULL,
+    GearID      INTEGER
+  );
+`
