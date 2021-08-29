@@ -1,8 +1,10 @@
 import { MessageEmbed } from "discord.js";
 import { Gear as GearDB } from "../db/gear";
-import { Fighter, Attributes } from "./Fighter";
+import { Fighter } from "./Fighter";
+import { Attribute } from "./Attributes";
 import { Item } from "./Item";
 import { List } from "./List";
+import { Stone } from "./Mining";
 import { Scroll } from "./Scroll";
 import { BROWN, CDN_LINK, GOLD, random } from "./utils";
 
@@ -11,10 +13,13 @@ export interface GearBonus {
   bonus: number;
 }
 
+export interface Socketable {
+  stone: Stone;
+}
 
 export abstract class Gear extends Item {
   abstract name: string;
-  abstract use(fighter: Fighter): { attrib: Attributes, amount: number };
+  abstract use(fighter: Fighter): { attrib: Attribute, amount: number };
   abstract description: string;
   abstract price: number;
   abstract set: string;
