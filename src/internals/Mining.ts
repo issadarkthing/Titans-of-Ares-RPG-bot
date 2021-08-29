@@ -4,7 +4,19 @@ import { random } from "./utils";
 import { List } from "./List";
 
 export abstract class Stone {
+  abstract id: string;
   abstract rarity: number;
+
+  static random() {
+    return Stone.all.weightedRandom(x => x.rarity * 1000);
+  }
+
+  static get all(): List<Stone> {
+    return List.from([
+      new RoughStone(),
+      ...Gem.all,
+    ])
+  }
 }
 
 
