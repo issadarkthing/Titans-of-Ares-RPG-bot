@@ -4,8 +4,6 @@ import { random } from "./utils";
 import { List } from "./List";
 
 export abstract class Stone {
-  abstract attribute: Attribute;
-  abstract attributeValue: number;
   abstract rarity: number;
 }
 
@@ -44,7 +42,19 @@ export abstract class Gem extends Stone {
     throw new Error(`invalid rarity "${name}"`);
   }
 
-  static random() {
+  static random(): Gem {
+    const name = this.name;
+
+    // subclass
+    if (name !== "Gem") {
+      const attributes: [string, number][] = Object.entries(this.baseStats);
+      const [attributeName, attributeValue] = random().pick(attributes);
+      const attribute = Attributes.fromString(attributeName);
+      // eslint-disable-next-line
+      // @ts-ignore
+      return new this.prototype.constructor(attribute, attributeValue);
+    }
+
     const allGems = List.from([
       Common.random(),
       Uncommon.random(),
@@ -54,6 +64,30 @@ export abstract class Gem extends Stone {
     ]);
 
     return allGems.weightedRandom(gem => gem.rarity * 1000);
+  }
+
+  static get all(): List<Gem> {
+    const name = this.name;
+
+    // subclass
+    if (name !== "Gem") {
+      const attributes: [string, number][] = Object.entries(this.baseStats);
+      const gems = attributes.map(([attributeName, attributeValue]) => {
+        const attribute = Attributes.fromString(attributeName);
+        // eslint-disable-next-line
+        // @ts-ignore
+        return new this.prototype.constructor(attribute, attributeValue);
+      });
+      return List.from(gems);
+    }
+
+    return List.from([
+      ...Common.all,
+      ...Uncommon.all,
+      ...Rare.all,
+      ...Epic.all,
+      ...Legendary.all,
+    ]);
   }
 
   get name() {
@@ -68,7 +102,8 @@ export abstract class Gem extends Stone {
   }
 }
 
-export class RoughStone {
+export class RoughStone extends Stone {
+  rarity = 0.85;
   name = "Rough Stone";
   id = "stone_rough";
 }
@@ -85,13 +120,6 @@ export class Common extends Gem {
     critDamage: 0.2,
     armorPenetration: 0.04,
   }
-
-  static random() {
-    const attributes: [string, number][] = Object.entries(this.baseStats);
-    const [attributeName, attributeValue] = random().pick(attributes);
-    const attribute = Attributes.fromString(attributeName);
-    return new Common(attribute, attributeValue);
-  }
 }
 
 
@@ -106,13 +134,6 @@ export class Uncommon extends Gem {
     critRate: 0.064,
     critDamage: 0.3,
     armorPenetration: 0.06,
-  }
-
-  static random() {
-    const attributes: [string, number][] = Object.entries(this.baseStats);
-    const [attributeName, attributeValue] = random().pick(attributes);
-    const attribute = Attributes.fromString(attributeName);
-    return new Uncommon(attribute, attributeValue);
   }
 }
 
@@ -129,13 +150,6 @@ export class Rare extends Gem {
     critDamage: 0.3,
     armorPenetration: 0.06,
   }
-
-  static random() {
-    const attributes: [string, number][] = Object.entries(this.baseStats);
-    const [attributeName, attributeValue] = random().pick(attributes);
-    const attribute = Attributes.fromString(attributeName);
-    return new Rare(attribute, attributeValue);
-  }
 }
 
 export class Epic extends Gem {
@@ -149,13 +163,6 @@ export class Epic extends Gem {
     critRate: 0.12,
     critDamage: 0.6,
     armorPenetration: 0.12,
-  }
-
-  static random() {
-    const attributes: [string, number][] = Object.entries(this.baseStats);
-    const [attributeName, attributeValue] = random().pick(attributes);
-    const attribute = Attributes.fromString(attributeName);
-    return new Epic(attribute, attributeValue);
   }
 }
 
@@ -171,12 +178,5 @@ export class Legendary extends Gem {
     critRate: 0.16,
     critDamage: 0.8,
     armorPenetration: 0.15,
-  }
-
-  static random() {
-    const attributes: [string, number][] = Object.entries(this.baseStats);
-    const [attributeName, attributeValue] = random().pick(attributes);
-    const attribute = Attributes.fromString(attributeName);
-    return new Legendary(attribute, attributeValue);
   }
 }
