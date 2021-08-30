@@ -2,6 +2,7 @@ import { BaseStats } from "./Fighter";
 import { Attributes, Attribute } from "./Attributes"
 import { random } from "./utils";
 import { List } from "./List";
+import { GemDB } from "../db/gem";
 
 export class MiningPick {
   name = "mining pick";
@@ -36,11 +37,15 @@ export abstract class Gem extends Stone {
     this.attributeValue = attributeValue;
   }
 
-  static fromDB(stoneID: string) {
+  static fromID(stoneID: string) {
     const [, rarity, attribID, attribValue] = stoneID.split("_");
     const attribute = Attributes.fromString(attribID);
     const attributeValue = parseInt(attribValue);
     return Gem.fromRarity(rarity, attribute, attributeValue);
+  }
+
+  static fromDB(stoneDB: GemDB) {
+   return Gem.fromID(stoneDB.ItemID);
   }
 
   static fromRarity(

@@ -6,16 +6,22 @@ export interface GemDB {
   ID: number;
   Created: string;
   InventoryID: number;
-  GearID: number;
+  ItemID: string;
+  GearID?: number;
 }
 
 export async function getGem($userID: string, $itemID: string) {
   const sql = `
-  SELECT * FROM Gem
-  WHERE ID = (
-    SELECT ID FROM Inventory 
-    WHERE OwnerID = $userID AND ItemID = $itemID
-  )
+  SELECT 
+    ID,
+    Created,
+    InventoryID,
+    Inventory.ItemID AS ItemID,
+    GearID
+  FROM Gem
+  INNER JOIN Inventory
+  ON Inventory.ID = Gem.InventoryID
+  WHERE Inventory.OwnerID = $userID AND Inventory.ItemID = $itemID
   `
 
   return dbGet<GemDB>(sql, { $userID, $itemID });
