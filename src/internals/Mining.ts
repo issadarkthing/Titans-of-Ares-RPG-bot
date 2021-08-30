@@ -3,6 +3,11 @@ import { Attributes, Attribute } from "./Attributes"
 import { random } from "./utils";
 import { List } from "./List";
 
+export class MiningPick {
+  name = "mining pick";
+  id = "pick_mining";
+}
+
 export abstract class Stone {
   abstract id: string;
   abstract rarity: number;
