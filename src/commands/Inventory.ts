@@ -7,6 +7,7 @@ import { Chest } from "../internals/Chest";
 import Command from "../internals/Command";
 import { Fragment, FragmentID } from "../internals/Fragment";
 import { Gear } from "../internals/Gear";
+import { Stone } from "../internals/Mining";
 import { upgrade } from "../internals/multipleUpgrade";
 import { Pet, PetID } from "../internals/Pet";
 import { Player } from "../internals/Player";
@@ -37,6 +38,7 @@ export default class extends Command {
       ...inv.fragments.aggregate(),
       ...inv.gears.aggregate(),
       ...inv.scrolls.aggregate(),
+      ...inv.stones.aggregate(),
     ];
     const [index] = args;
 
@@ -249,6 +251,7 @@ export default class extends Command {
     const chestList = [];
     const fragmentList = [];
     const gearList = [];
+    const stonesList = [];
     const othersList = [];
 
     let i = 1;
@@ -265,6 +268,9 @@ export default class extends Command {
           line = `${i}. \`x${count} ${item.name} Lvl ${(item as Gear).level}\``;
           gearList.push(line);
           break;
+        case item instanceof Stone:
+          stonesList.push(line);
+          break;
         default:
           othersList.push(line);
       }
@@ -280,6 +286,9 @@ export default class extends Command {
 
     **Gear**
     ${gearList.join("\n") || "none"}
+
+    **Stones**
+    ${stonesList.join("\n") || "none"}
 
     **Other Materials**
     ${othersList.join("\n") || "none"}
