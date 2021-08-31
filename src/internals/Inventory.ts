@@ -5,7 +5,7 @@ import { List } from "./List";
 import { Gear } from "./Gear";
 import { Gear as GearDB } from "../db/gear";
 import { ArenaScroll, Scroll } from "./Scroll";
-import { MiningPick, Stone, Gem } from "./Mining";
+import { MiningPick, Stone, Gem, RoughStone } from "./Mining";
 
 /** manage items to be easily filtered and accessed */
 export class Inventory {
@@ -42,8 +42,12 @@ export class Inventory {
         case "pick":
           this.picks.push(new MiningPick());
           break;
+        case "stone":
+          this.stones.push(new RoughStone());
+          break
         case "gem":
           this.stones.push(Gem.fromID(itemID));
+          break;
       }
     }
   }
@@ -54,6 +58,7 @@ export class Inventory {
       ...this.fragments,
       ...this.gears,
       ...this.scrolls,
+      ...this.stones,
     ]);
   }
 }
