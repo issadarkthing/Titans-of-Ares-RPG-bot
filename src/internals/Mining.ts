@@ -1,8 +1,9 @@
 import { BaseStats } from "./Fighter";
 import { Attributes, Attribute } from "./Attributes"
-import { random } from "./utils";
+import { BROWN, random } from "./utils";
 import { List } from "./List";
 import { GemDB } from "../db/gem";
+import { MessageEmbed } from "discord.js";
 
 export class MiningPick {
   name = "mining pick";
@@ -11,7 +12,10 @@ export class MiningPick {
 
 export abstract class Stone {
   abstract id: string;
+  abstract name: string;
   abstract rarity: number;
+  abstract product: Gem;
+  abstract show(count: number): MessageEmbed;
 
   static random() {
     return Stone.all.weightedRandom(x => x.rarity * 1000);
@@ -122,16 +126,50 @@ export abstract class Gem extends Stone {
     const attribID = this.attribute.id;
     return `gem_${rarityName}_${attribID}_${this.attributeValue}`;
   }
+
+  show(count: number) {
+
+    const embed = new MessageEmbed()
+      .setColor(BROWN)
+      .setTitle(this.name)
+      .setDescription(
+        `${this.name} is used to combine and produce ${this.product.name}`
+      )
+      .addField("Count", count, true)
+
+    return embed;
+  }
 }
 
 export class RoughStone extends Stone {
   rarity = 0.85;
   name = "Rough Stone";
   id = "stone_rough";
+  description = 
+    `Rough stone is used to combine and produce ${this.product.name}`;
+
+  get product() {
+    return Common.random();
+  }
+
+  show(count: number) {
+
+    const embed = new MessageEmbed()
+      .setColor(BROWN)
+      .setTitle(this.name)
+      .setDescription(this.description)
+      .addField("Count", count, true)
+
+    return embed;
+  }
 }
 
 export class Common extends Gem {
   rarity = 0.1;
+
+  get product() {
+    return Uncommon.random();
+  }
 
   static baseStats: BaseStats = {
     hp: 50,
@@ -148,6 +186,10 @@ export class Common extends Gem {
 export class Uncommon extends Gem {
   rarity = 0.04;
 
+  get product() {
+    return Rare.random();
+  }
+
   static baseStats: BaseStats = {
     hp: 80,
     strength: 16,
@@ -163,6 +205,10 @@ export class Uncommon extends Gem {
 export class Rare extends Gem {
   rarity = 0.007;
 
+  get product() {
+    return Epic.random();
+  }
+
   static baseStats: BaseStats = {
     hp: 120,
     strength: 24,
@@ -176,6 +222,10 @@ export class Rare extends Gem {
 
 export class Epic extends Gem {
   rarity = 0.002;
+
+  get product() {
+    return Legendary.random();
+  }
 
   static baseStats: BaseStats = {
     hp: 150,
@@ -191,6 +241,10 @@ export class Epic extends Gem {
 
 export class Legendary extends Gem {
   rarity = 0.001;
+
+  get product() {
+    return Legendary.random();
+  }
 
   static baseStats: BaseStats = {
     hp: 200,
