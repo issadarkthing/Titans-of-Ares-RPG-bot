@@ -305,7 +305,7 @@ export default class extends Command {
     **Gear**
     ${gearList.join("\n") || "none"}
 
-    **Stones**
+    **Gems**
     ${stonesList.join("\n") || "none"}
 
     **Other Materials**
