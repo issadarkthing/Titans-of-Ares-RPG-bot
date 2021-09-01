@@ -15,6 +15,7 @@ export abstract class Stone {
   abstract name: string;
   abstract rarity: number;
   abstract product: Gem;
+  abstract requirement: number;
   abstract show(count: number): MessageEmbed;
 
   static random() {
@@ -145,6 +146,7 @@ export class RoughStone extends Stone {
   rarity = 0.85;
   name = "Rough Stone";
   id = "stone_rough";
+  requirement = 12;
   description = 
     `Rough stone is used to combine and produce ${this.product.name}`;
 
@@ -166,6 +168,7 @@ export class RoughStone extends Stone {
 
 export class Common extends Gem {
   rarity = 0.1;
+  requirement = 5;
 
   get product() {
     return Uncommon.random();
@@ -185,6 +188,7 @@ export class Common extends Gem {
 
 export class Uncommon extends Gem {
   rarity = 0.04;
+  requirement = 5;
 
   get product() {
     return Rare.random();
@@ -204,6 +208,7 @@ export class Uncommon extends Gem {
 
 export class Rare extends Gem {
   rarity = 0.007;
+  requirement = 5;
 
   get product() {
     return Epic.random();
@@ -222,6 +227,7 @@ export class Rare extends Gem {
 
 export class Epic extends Gem {
   rarity = 0.002;
+  requirement = 5;
 
   get product() {
     return Legendary.random();
@@ -241,6 +247,7 @@ export class Epic extends Gem {
 
 export class Legendary extends Gem {
   rarity = 0.001;
+  requirement = 3;
 
   get product() {
     return Legendary.random();
