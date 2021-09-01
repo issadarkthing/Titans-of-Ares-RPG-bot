@@ -6,7 +6,7 @@ import { GemDB } from "../db/gem";
 import { MessageEmbed } from "discord.js";
 
 export class MiningPick {
-  name = "mining pick";
+  name = "Mining Pick";
   id = "pick_mining";
 }
 
