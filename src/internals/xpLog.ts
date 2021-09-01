@@ -66,8 +66,7 @@ export async function xpLog(msg: Message) {
     const convertTable = await getConvertTable();
     const multiplier = convertTable.get(tag);
 
-    if (!multiplier)
-      return msg.channel.send("Invalid channel");
+    if (!multiplier) return;
 
     const point = parseInt(value) * multiplier;
     const xp = Math.round(getXp(point));
