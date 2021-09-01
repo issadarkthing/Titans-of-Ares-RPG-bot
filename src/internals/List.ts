@@ -27,6 +27,10 @@ export class List<T extends Identifiable> {
     return this.values.reduce((acc, item) => item.id === id ? acc + 1 : acc, 0);
   }
 
+  countBy(filter: (item: T) => boolean) {
+    return this.values.reduce((acc, item) => filter(item) ? acc + 1 : acc, 0);
+  }
+
   includes(id: string) {
     return this.values.map(x => x.id).includes(id);
   }
