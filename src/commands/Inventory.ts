@@ -8,7 +8,7 @@ import Command from "../internals/Command";
 import { Fragment, FragmentID } from "../internals/Fragment";
 import { Gear } from "../internals/Gear";
 import { Inventory } from "../internals/Inventory";
-import { Stone } from "../internals/Mining";
+import { MiningPick, Stone } from "../internals/Mining";
 import { upgrade } from "../internals/multipleUpgrade";
 import { Pet, PetID } from "../internals/Pet";
 import { Player } from "../internals/Player";
@@ -31,6 +31,128 @@ export default class extends Command {
   name = "inventory";
   aliases = ["inv"];
   private inventory!: Inventory;
+
+  async exec(msg: Message, args: string[]) {
+    const player = await Player.getPlayer(msg.member!);
+    const inv = player.inventory;
+    const itemsList = [
+      ...inv.chests.aggregate(),
+      ...inv.fragments.aggregate(),
+      ...inv.gears.aggregate(),
+      ...inv.scrolls.aggregate(),
+      ...inv.picks.aggregate(),
+      ...inv.stones.aggregate(),
+    ];
+    const [index] = args;
+
+    if (index) {
+      const i = parseInt(index) - 1;
+      if (Number.isNaN(i)) return msg.channel.send("Please give valid index");
+
+      const accItem = itemsList[i];
+      if (!accItem) return msg.channel.send(`No item found at index ${index}`);
+
+      const item = inv.all.get(accItem.value.id)!;
+      const itemCount = accItem.count;
+
+      if (item instanceof Fragment) {
+        const pet = player.pets.get(item.pet.id);
+        if (pet) {
+          item.pet = pet;
+        }
+      }
+
+      let button = new ButtonHandler(msg, item.show(itemCount), player.id);
+
+      // attach handlers to every types of item
+      if (item instanceof Chest) {
+        this.handleChest(button, item, player, msg);
+      } else if (item instanceof Fragment) {
+        this.handleFragment(button, item, player, msg);
+      } else if (item instanceof Gear) {
+        const scrollCount = player.inventory.all.count(item.scroll.id);
+        button = new ButtonHandler(msg, item.inspect(scrollCount), player.id);
+
+        this.handleGear(button, item, player, msg);
+      }
+
+      button.addButton(RETURN_BUTTON, "return to inventory list", () => {
+        this.exec(msg, []);
+      });
+      button.addCloseButton();
+      await button.run();
+
+      return;
+    }
+
+    const chestList = [];
+    const fragmentList = [];
+    const gearList = [];
+    const stonesList = [];
+    const picks = [];
+    const othersList = [];
+
+    let i = 1;
+    for (const { value: item, count } of itemsList) {
+      let line = `${i}. \`x${count} ${item.name}\``;
+      switch (true) {
+        case item instanceof Chest:
+          chestList.push(line);
+          break;
+        case item instanceof Fragment:
+          fragmentList.push(line);
+          break;
+        case item instanceof Gear:
+          line = `${i}. \`x${count} ${item.name} Lvl ${(item as Gear).level}\``;
+          gearList.push(line);
+          break;
+        case item instanceof Stone:
+          stonesList.push(line);
+          break;
+        case item instanceof MiningPick:
+          picks.push(line);
+          break;
+        default:
+          othersList.push(line);
+      }
+      i++;
+    }
+
+    const list = stripIndents`
+    **Treasure Chests**
+    ${chestList.join("\n") || "none"}
+
+    **Pet Fragments**
+    ${fragmentList.join("\n") || "none"}
+
+    **Gear**
+    ${gearList.join("\n") || "none"}
+
+    **Gems**
+    ${picks.join("\n") || "none"}
+    ${stonesList.join("\n") || "none"}
+
+    **Other Materials**
+    ${othersList.join("\n") || "none"}
+
+    **Coins**
+    \`${player.coins}\` Coins
+    \`${player.arenaCoins}\` Arena Coins
+    `;
+
+    const embed = new MessageEmbed()
+      .setColor(GOLD)
+      .addField("Inventory", list)
+      .addField(
+        "\u200b",
+        stripIndents`
+        Use command \`${client.prefix}inventory <number>\` to inspect item in the inventory.
+        Use command \`${client.prefix}gear\` to see your current equipped gear.
+        `
+      );
+
+    msg.channel.send(embed);
+  }
 
   private handleChest(
     button: ButtonHandler,
@@ -212,121 +334,5 @@ export default class extends Command {
         upgrade(item, msg, player, 50)
       );
     }
-  }
-
-  async exec(msg: Message, args: string[]) {
-    const player = await Player.getPlayer(msg.member!);
-    const inv = player.inventory;
-    const itemsList = [
-      ...inv.chests.aggregate(),
-      ...inv.fragments.aggregate(),
-      ...inv.gears.aggregate(),
-      ...inv.scrolls.aggregate(),
-      ...inv.stones.aggregate(),
-    ];
-    const [index] = args;
-
-    if (index) {
-      const i = parseInt(index) - 1;
-      if (Number.isNaN(i)) return msg.channel.send("Please give valid index");
-
-      const accItem = itemsList[i];
-      if (!accItem) return msg.channel.send(`No item found at index ${index}`);
-
-      const item = inv.all.get(accItem.value.id)!;
-      const itemCount = accItem.count;
-
-      if (item instanceof Fragment) {
-        const pet = player.pets.get(item.pet.id);
-        if (pet) {
-          item.pet = pet;
-        }
-      }
-
-      let button = new ButtonHandler(msg, item.show(itemCount), player.id);
-
-      // attach handlers to every types of item
-      if (item instanceof Chest) {
-        this.handleChest(button, item, player, msg);
-      } else if (item instanceof Fragment) {
-        this.handleFragment(button, item, player, msg);
-      } else if (item instanceof Gear) {
-        const scrollCount = player.inventory.all.count(item.scroll.id);
-        button = new ButtonHandler(msg, item.inspect(scrollCount), player.id);
-
-        this.handleGear(button, item, player, msg);
-      }
-
-      button.addButton(RETURN_BUTTON, "return to inventory list", () => {
-        this.exec(msg, []);
-      });
-      button.addCloseButton();
-      await button.run();
-
-      return;
-    }
-
-    const chestList = [];
-    const fragmentList = [];
-    const gearList = [];
-    const stonesList = [];
-    const othersList = [];
-
-    let i = 1;
-    for (const { value: item, count } of itemsList) {
-      let line = `${i}. \`x${count} ${item.name}\``;
-      switch (true) {
-        case item instanceof Chest:
-          chestList.push(line);
-          break;
-        case item instanceof Fragment:
-          fragmentList.push(line);
-          break;
-        case item instanceof Gear:
-          line = `${i}. \`x${count} ${item.name} Lvl ${(item as Gear).level}\``;
-          gearList.push(line);
-          break;
-        case item instanceof Stone:
-          stonesList.push(line);
-          break;
-        default:
-          othersList.push(line);
-      }
-      i++;
-    }
-
-    const list = stripIndents`
-    **Treasure Chests**
-    ${chestList.join("\n") || "none"}
-
-    **Pet Fragments**
-    ${fragmentList.join("\n") || "none"}
-
-    **Gear**
-    ${gearList.join("\n") || "none"}
-
-    **Gems**
-    ${stonesList.join("\n") || "none"}
-
-    **Other Materials**
-    ${othersList.join("\n") || "none"}
-
-    **Coins**
-    \`${player.coins}\` Coins
-    \`${player.arenaCoins}\` Arena Coins
-    `;
-
-    const embed = new MessageEmbed()
-      .setColor(GOLD)
-      .addField("Inventory", list)
-      .addField(
-        "\u200b",
-        stripIndents`
-        Use command \`${client.prefix}inventory <number>\` to inspect item in the inventory.
-        Use command \`${client.prefix}gear\` to see your current equipped gear.
-        `
-      );
-
-    msg.channel.send(embed);
   }
 }
