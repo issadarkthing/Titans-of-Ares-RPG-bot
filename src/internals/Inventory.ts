@@ -59,6 +59,7 @@ export class Inventory {
       ...this.gears,
       ...this.scrolls,
       ...this.stones,
+      ...this.picks,
     ]);
   }
 }
