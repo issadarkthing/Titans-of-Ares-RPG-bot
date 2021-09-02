@@ -136,7 +136,7 @@ export abstract class Gem extends Stone {
 
   get id() {
     const rarityName = this.constructor.name.toLowerCase();
-    const attribID = this.attribute.id;
+    const attribID = this.attribute.key;
     return `gem_${rarityName}_${attribID}_${this.attributeValue}`;
   }
 
