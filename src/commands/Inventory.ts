@@ -167,10 +167,13 @@ export default class extends Command {
     button.addButton(BLUE_BUTTON, "mine", async () => {
 
       const gem = Stone.random();
+      const miningMsg = await msg.channel.send(item.showMiningAnimation());
+      await sleep(4000);
+
       await addInventory(player.id, gem.id);
       await removeInventory(player.id, item.id);
-      msg.channel.send(`You obtained ${gem.name}!`);
 
+      miningMsg.edit(`You obtained ${gem.name}!`);
     })
   }
 

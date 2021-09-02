@@ -1,6 +1,6 @@
 import { BaseStats } from "./Fighter";
 import { Attributes, Attribute } from "./Attributes"
-import { BROWN, random } from "./utils";
+import { BROWN, CDN_LINK, random } from "./utils";
 import { List } from "./List";
 import { GemDB } from "../db/gem";
 import { MessageEmbed } from "discord.js";
@@ -9,6 +9,8 @@ export class MiningPick {
   name = "Mining Pick";
   id = "pick_mining";
   description = "mining pick is used to mine gem";
+  miningAnimationUrl = 
+    CDN_LINK + "574852830125359126/882898676111003658/mining.gif";
 
   show(count: number) {
 
@@ -17,6 +19,16 @@ export class MiningPick {
       .setTitle(this.name)
       .setDescription(this.description)
       .addField("count", count, true)
+
+    return embed;
+  }
+
+  showMiningAnimation() {
+
+    const embed = new MessageEmbed()
+      .setColor(BROWN)
+      .setTitle("Mining")
+      .setImage(this.miningAnimationUrl);
 
     return embed;
   }
