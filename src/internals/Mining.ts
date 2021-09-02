@@ -8,6 +8,18 @@ import { MessageEmbed } from "discord.js";
 export class MiningPick {
   name = "Mining Pick";
   id = "pick_mining";
+  description = "mining pick is used to mine gem";
+
+  show(count: number) {
+
+    const embed = new MessageEmbed()
+      .setColor(BROWN)
+      .setTitle(this.name)
+      .setDescription(this.description)
+      .addField("count", count, true)
+
+    return embed;
+  }
 }
 
 export abstract class Stone {
