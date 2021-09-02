@@ -23,6 +23,7 @@ import {
   RETURN_BUTTON,
   sleep,
   STAR,
+  toList,
   WHITE_BUTTON,
 } from "../internals/utils";
 import { client } from "../main";
@@ -88,8 +89,8 @@ export default class extends Command {
     const chestList = [];
     const fragmentList = [];
     const gearList = [];
-    const stonesList = [];
-    const picks = [];
+    const stoneList = [];
+    const pickList = [];
     const othersList = [];
 
     let i = 1;
@@ -107,10 +108,10 @@ export default class extends Command {
           gearList.push(line);
           break;
         case item instanceof Stone:
-          stonesList.push(line);
+          stoneList.push(line);
           break;
         case item instanceof MiningPick:
-          picks.push(line);
+          pickList.push(line);
           break;
         default:
           othersList.push(line);
@@ -120,20 +121,20 @@ export default class extends Command {
 
     const list = stripIndents`
     **Treasure Chests**
-    ${chestList.join("\n") || "none"}
+    ${toList(chestList)}
 
     **Pet Fragments**
-    ${fragmentList.join("\n") || "none"}
+    ${toList(fragmentList)}
 
     **Gear**
-    ${gearList.join("\n") || "none"}
+    ${toList(gearList)}
 
     **Gems**
-    ${picks.join("\n") || "none"}
-    ${stonesList.join("\n") || "none"}
+    ${toList(pickList)}
+    ${toList(stoneList)}
 
     **Other Materials**
-    ${othersList.join("\n") || "none"}
+    ${toList(othersList)}
 
     **Coins**
     \`${player.coins}\` Coins

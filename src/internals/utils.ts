@@ -164,3 +164,15 @@ export function sha1(data: string) {
     .update(data)
     .digest('hex');
 }
+
+
+/** Converts array to list form. If the list is empty, it will return "none"
+ * @example toList(["a", "b"])
+ * -> "a"
+ *    "b"
+ * @example toList([]) -> "none"
+ * */
+export function toList(items: string[]) {
+  if (items.length < 0) return "none";
+  return items.join("\n");
+}
