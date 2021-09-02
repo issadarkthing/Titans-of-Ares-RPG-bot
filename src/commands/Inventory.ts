@@ -75,6 +75,8 @@ export default class extends Command {
         button = new ButtonHandler(msg, item.inspect(scrollCount), player.id);
 
         this.handleGear(button, item, player, msg);
+      } else if (item instanceof MiningPick) {
+        this.handlePick(button, item, player, msg);
       }
 
       button.addButton(RETURN_BUTTON, "return to inventory list", () => {
@@ -153,6 +155,23 @@ export default class extends Command {
       );
 
     msg.channel.send(embed);
+  }
+
+  private handlePick(
+    button: ButtonHandler,
+    item: MiningPick,
+    player: Player,
+    msg: Message,
+  ) {
+
+    button.addButton(BLUE_BUTTON, "mine", async () => {
+
+      const gem = Stone.random();
+      await addInventory(player.id, gem.id);
+      await removeInventory(player.id, item.id);
+      msg.channel.send(`You obtained ${gem.name}!`);
+
+    })
   }
 
   private handleChest(
