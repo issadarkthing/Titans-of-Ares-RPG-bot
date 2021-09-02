@@ -1,4 +1,5 @@
 import { DateTime } from "luxon";
+import { RoughStone } from "../internals/Mining";
 import { addInventory } from "./inventory";
 import { dbGet, dbRun } from "./promiseWrapper";
 
@@ -28,6 +29,11 @@ export async function getGem($userID: string, $itemID: string) {
 }
 
 export async function addGem($userID: string, $itemID: string) {
+
+  if ($itemID === (new RoughStone()).id) {
+    await addInventory($userID, $itemID);
+    return;
+  }
   
   const $inventoryID = await addInventory($userID, $itemID);
   const $created = DateTime.now().toISO();
