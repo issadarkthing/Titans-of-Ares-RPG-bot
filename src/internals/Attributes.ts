@@ -57,7 +57,7 @@ export class Attributes {
   static critRate = new CritRate();
   static critDamage = new CritDamage();
   static armorPenetration = new ArmorPenetration();
-  static attributes = [
+  static all = [
     Attributes.hp,
     Attributes.strength,
     Attributes.speed,
@@ -69,7 +69,7 @@ export class Attributes {
 
   static fromString(identifier: string) {
 
-    for (const attr of this.attributes) {
+    for (const attr of this.all) {
 
       let isEqual = attr.id === identifier;
       isEqual ||= attr.key === identifier;
