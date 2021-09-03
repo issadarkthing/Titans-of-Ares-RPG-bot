@@ -11,11 +11,7 @@ export default class extends Command {
   async exec(msg: Message, _args: string[]) {
 
     const player = await Player.getPlayer(msg.member!);
-
-    const itemList = [
-      ...player.inventory.picks.aggregate(),
-      ...player.inventory.stones.aggregate(),
-    ];
+    const itemList = player.inventory.stones.aggregate();
 
     const displayList = 
       toNList(itemList.map(x => `${x.value.name} \`x${x.count}\``));
