@@ -4,6 +4,8 @@ import { BROWN, CDN_LINK, random } from "./utils";
 import { List } from "./List";
 import { GemDB } from "../db/gem";
 import { MessageEmbed } from "discord.js";
+import { oneLine } from "common-tags";
+import { client } from "../main";
 
 export class MiningPick {
   name = "Mining Pick";
@@ -152,14 +154,18 @@ export abstract class Gem extends Stone {
     return `gem_${rarityName}_${attribID}_${this.attributeValue}`;
   }
 
+  get description() {
+    return oneLine`This is a ${this.name}. You can combine multiple gems of the
+    same quality to craft a better gem. You can do this in the
+    \`${client.prefix}gemcrafting\` menu`;
+  }
+
   show(count: number) {
 
     const embed = new MessageEmbed()
       .setColor(BROWN)
       .setTitle(this.name)
-      .setDescription(
-        `${this.name} is used to combine and produce ${this.product.name}`
-      )
+      .setDescription(this.description)
       .addField("Count", count, true)
 
     return embed;
@@ -171,8 +177,9 @@ export class RoughStone extends Stone {
   name = "Rough Stone";
   id = "stone_rough";
   requirement = 12;
-  description = 
-    `Rough stone is used to combine and produce ${this.product.name}`;
+  description = oneLine`These are rough stones.  You can combine 12 of them to
+  make a common gem. You can do this in the \`${client.prefix}gemcrafting\`
+  menu`;
 
   get product() {
     return Common.random();
