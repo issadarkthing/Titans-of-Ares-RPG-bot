@@ -176,3 +176,8 @@ export function toList(items: string[]) {
   if (items.length < 0) return "none";
   return items.join("\n");
 }
+
+export function toNList(items: string[], start = 1) {
+  if (items.length < 0) return "none";
+  return items.map((x, i) => `${i + start}. ${x}`).join("\n");
+}
