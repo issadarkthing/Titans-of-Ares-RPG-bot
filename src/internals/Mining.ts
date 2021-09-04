@@ -43,6 +43,7 @@ export abstract class Stone {
   abstract product: Gem;
   abstract requirement: number;
   abstract show(count: number): MessageEmbed;
+  abstract inspect(count: number, sameRarityCount: number): MessageEmbed;
 
   static random() {
     return Stone.all.weightedRandom(x => x.rarity * 1000);
@@ -148,6 +149,10 @@ export abstract class Gem extends Stone {
     return `${gemName} ${this.attribute.name} Gem`;
   }
 
+  get rarityName() {
+    return this.constructor.name.toLowerCase();
+  }
+
   get id() {
     const rarityName = this.constructor.name.toLowerCase();
     const attribID = this.attribute.key;
@@ -169,6 +174,12 @@ export abstract class Gem extends Stone {
       .addField("Count", count, true)
 
     return embed;
+  }
+
+  inspect(count: number, sameRarityCount: number) {
+    const gemInfo = this.show(count);
+    gemInfo.addField(`${this.rarityName} count`, sameRarityCount, true);
+    return gemInfo;
   }
 }
 
@@ -194,6 +205,11 @@ export class RoughStone extends Stone {
       .addField("Count", count, true)
 
     return embed;
+  }
+
+  // eslint-disable-next-line
+  inspect(count: number, _: number) {
+    return this.show(count);
   }
 }
 
