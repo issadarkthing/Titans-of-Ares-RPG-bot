@@ -1,52 +1,53 @@
+import { BaseStats } from "./Fighter";
 
 
 
 export abstract class Attribute {
   abstract name: string;
-  abstract key: string;
+  abstract key: keyof BaseStats;
   abstract id: string;
 }
 
 class HP extends Attribute {
   name = "HP";
   id = "hp";
-  key = "hp";
+  key = "hp" as keyof BaseStats;
 }
 
 class Strength extends Attribute {
   name = "Strength";
   id = "strength";
-  key = "strength";
+  key = "strength" as keyof BaseStats;
 }
 
 class Speed extends Attribute {
   name = "Speed";
   id = "speed";
-  key = "speed";
+  key = "speed" as keyof BaseStats;
 }
 
 class Armor extends Attribute {
   name = "Armor";
   id = "armor";
-  key = "armor";
+  key = "armor" as keyof BaseStats;
 }
 
 class CritRate extends Attribute {
   name = "Crit Rate";
   id = "crit_rate";
-  key = "critRate";
+  key = "critRate" as keyof BaseStats;
 }
 
 class CritDamage extends Attribute {
   name = "Crit Damage";
   id = "crit_damage";
-  key = "critDamage";
+  key = "critDamage" as keyof BaseStats;
 }
 
 class ArmorPenetration extends Attribute {
   name = "Armor Penetration";
   id = "armor_penetration";
-  key = "armorPenetration";
+  key = "armorPenetration" as keyof BaseStats;
 }
 
 export class Attributes {

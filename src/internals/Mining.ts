@@ -58,10 +58,13 @@ export abstract class Stone {
 }
 
 
+type ImagesUrl = Record<keyof BaseStats, string>;
+
 export abstract class Gem extends Stone {
   readonly attribute: Attribute;
   readonly attributeValue: number;
   static baseStats: BaseStats;
+  static imagesUrl: ImagesUrl;
 
   constructor(attribute: Attribute, attributeValue: number) {
     super();
@@ -165,11 +168,18 @@ export abstract class Gem extends Stone {
     \`${client.prefix}gemcrafting\` menu`;
   }
 
+  get imageUrl() {
+    const gem = (this.constructor as unknown as typeof Gem);
+    const shortUrl = gem.imagesUrl[this.attribute.key];
+    return CDN_LINK + shortUrl;
+  }
+
   show(count: number) {
 
     const embed = new MessageEmbed()
       .setColor(BROWN)
       .setTitle(this.name)
+      .setThumbnail(this.imageUrl)
       .setDescription(this.description)
       .addField("Count", count, true)
 
@@ -188,6 +198,7 @@ export class RoughStone extends Stone {
   name = "Rough Stone";
   id = "stone_rough";
   requirement = 12;
+  imageUrl = CDN_LINK + "852530378916888626/883343839006457856/68.png";
   description = oneLine`These are rough stones.  You can combine 12 of them to
   make a common gem. You can do this in the \`${client.prefix}gemcrafting\`
   menu`;
@@ -201,6 +212,7 @@ export class RoughStone extends Stone {
     const embed = new MessageEmbed()
       .setColor(BROWN)
       .setTitle(this.name)
+      .setThumbnail(this.imageUrl)
       .setDescription(this.description)
       .addField("Count", count, true)
 
@@ -230,6 +242,16 @@ export class Common extends Gem {
     critDamage: 0.2,
     armorPenetration: 0.04,
   }
+
+  static imagesUrl: ImagesUrl = {
+    hp: "852530378916888626/883344119517282314/Common_HP_Gem.png",
+    strength: "852530378916888626/883346582546837564/Common_Strength_Gem.png",
+    armor: "852530378916888626/883344368344391730/Common_Armor_Gem.png",
+    speed: "852530378916888626/883346343643471922/Common_Speed_Gem.png",
+    critRate: "852530378916888626/883345606096068638/Common_Crit_Chance_Gem.png",
+    critDamage: "852530378916888626/883345926213759037/Common_Crit_Damage_Gem.png",
+    armorPenetration: "852530378916888626/883344730564485150/Common_Armor_Pen_Gem.png",
+  }
 }
 
 
@@ -249,6 +271,16 @@ export class Uncommon extends Gem {
     critRate: 0.064,
     critDamage: 0.3,
     armorPenetration: 0.06,
+  }
+
+  static imagesUrl: ImagesUrl = {
+    hp: "852530378916888626/883344155261161552/Uncommon_HP_Gem.png",
+    strength: "852530378916888626/883346601614147634/Uncommon_Strength_Gem.png",
+    armor: "852530378916888626/883344391262048287/Uncommon_Armor_Gem.png",
+    speed: "852530378916888626/883346390825185330/Rare_Speed_Gem.png",
+    critRate: "852530378916888626/883348525138706452/76_1.png",
+    critDamage: "852530378916888626/883345951798984714/Uncommon_crit_Damage_Gem.png",
+    armorPenetration: "852530378916888626/883357018533007370/Uncommon_Armor_Pen.png",
   }
 }
 
@@ -270,6 +302,16 @@ export class Rare extends Gem {
     critDamage: 0.3,
     armorPenetration: 0.06,
   }
+
+  static imagesUrl: ImagesUrl = {
+    hp: "852530378916888626/883344178652786708/Rare_HP_Gem.png",
+    strength: "852530378916888626/883346625391648778/Rare_Strength_Gem.png",
+    armor: "852530378916888626/883344438317953165/Rare_Armor_Gem.png",
+    speed: "852530378916888626/883346375109148702/Uncommon_Speed_Gem.png",
+    critRate: "852530378916888626/883348690021015552/Uncommon_Crit_Gem.png",
+    critDamage: "852530378916888626/883345971902296114/Rare_crit_Damage_Gem.png",
+    armorPenetration: "852530378916888626/883344798784835584/Rare_Armor_Pen_Gem.png",
+  }
 }
 
 export class Epic extends Gem {
@@ -288,6 +330,16 @@ export class Epic extends Gem {
     critRate: 0.12,
     critDamage: 0.6,
     armorPenetration: 0.12,
+  }
+
+  static imagesUrl: ImagesUrl = {
+    hp: "852530378916888626/883344209296392232/Epic_HP_Gem.png",
+    strength: "852530378916888626/883346640222687322/Epic_Strength_Gem.png",
+    armor: "852530378916888626/883344463538323576/Epic_Armor_Gem.png",
+    speed: "852530378916888626/883346412220350484/Epic_Speed_Gem.png",
+    critRate: "852530378916888626/883348573616480317/48.png",
+    critDamage: "852530378916888626/883346000826224730/Epic_Crit_damage_Gem.png",
+    armorPenetration: "852530378916888626/883344859564490763/Epic_Armor_Pen_Gem.png",
   }
 }
 
@@ -308,5 +360,15 @@ export class Legendary extends Gem {
     critRate: 0.16,
     critDamage: 0.8,
     armorPenetration: 0.15,
+  }
+
+  static imagesUrl: ImagesUrl = {
+    hp: "852530378916888626/883344236035047454/Legendary_HP_Gem.png",
+    strength: "852530378916888626/883346658342084629/Legendary_Strength_Gem.png",
+    armor: "852530378916888626/883344490046308382/Legendary_Armor_Gem.png",
+    speed: "852530378916888626/883346432965365790/Legendary_Speed_Gem.png",
+    critRate: "852530378916888626/883348762603454514/Epic_Crit_chance_Gem.png",
+    critDamage: "852530378916888626/883346028798046258/Legendary_Crit_Damage_Gem.png",
+    armorPenetration: "852530378916888626/883344881634914355/Legendary_Armor_Pen_Gem.png",
   }
 }
