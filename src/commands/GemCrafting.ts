@@ -3,6 +3,7 @@ import Command from "../internals/Command";
 import { Stone } from "../internals/Mining";
 import { Player } from "../internals/Player";
 import { BROWN, toNList } from "../internals/utils";
+import { client } from "../main";
 
 export default class extends Command {
   name = "gemcrafting";
@@ -13,7 +14,11 @@ export default class extends Command {
     const itemList = player.inventory.stones.aggregate();
 
     const [index] = args;
-    if (index) {
+    if (index === "all" && client.isDev) {
+      this.showAll(msg);
+      return;
+
+    } if (index) {
       const i = parseInt(index) - 1;
       if (Number.isNaN(i)) return msg.channel.send("Please give valid index");
 
@@ -34,6 +39,14 @@ export default class extends Command {
       .addField("---", displayList)
 
     msg.channel.send(embed);
+  }
+
+  private showAll(msg: Message) {
+    const stones = Stone.all.map(x => x.show(0));
+
+    for (const stone of stones) {
+      msg.channel.send(stone);
+    }
   }
 
   private inspect(gem: Stone, player: Player, msg: Message) {
