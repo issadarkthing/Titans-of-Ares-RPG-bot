@@ -10,7 +10,8 @@ import { client } from "../main";
 export class MiningPick {
   name = "Mining Pick";
   id = "pick_mining";
-  description = "mining pick is used to mine gem";
+  description = "This is a mining pick. You can use it to mine gems.";
+  imageUrl = CDN_LINK + "853949658795081738/879066526790082570/Pickaxe.jpg";
   miningAnimationUrl = 
     CDN_LINK + "574852830125359126/882898676111003658/mining.gif";
 
@@ -19,6 +20,7 @@ export class MiningPick {
     const embed = new MessageEmbed()
       .setColor(BROWN)
       .setTitle(this.name)
+      .setThumbnail(this.imageUrl)
       .setDescription(this.description)
       .addField("count", count, true)
 
