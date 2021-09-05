@@ -117,7 +117,7 @@ export default class extends Command {
           break;
         case item instanceof Gem: {
             const rarity = capitalize((item as Gem).rarityName);
-            line = `${i}. \`x${count} ${rarity}\``;
+            line = `${i}. \`x${count} ${rarity} Gem\``;
             stoneList.push(line);
           }
           break;
