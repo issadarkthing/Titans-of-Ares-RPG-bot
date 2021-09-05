@@ -187,3 +187,7 @@ export function toNList(items: string[], start = 1) {
 export function inlineCode(str: string) {
   return `\`${str}\``;
 }
+
+export function bold(str: string) {
+  return `**${str}**`;
+}

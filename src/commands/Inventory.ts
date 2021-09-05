@@ -17,6 +17,7 @@ import {
   aggregateBy,
   BLACK_BUTTON,
   BLUE_BUTTON,
+  bold,
   BROWN,
   GOLD,
   NUMBER_BUTTONS,
@@ -174,7 +175,7 @@ export default class extends Command {
       await addGem(player.id, gem.id);
       await removeInventory(player.id, item.id);
 
-      miningMsg.edit(`You obtained ${gem.name}!`);
+      miningMsg.edit(`You obtained ${bold(gem.name)}!`);
       msg.channel.send(gem.show(-1));
     })
   }
