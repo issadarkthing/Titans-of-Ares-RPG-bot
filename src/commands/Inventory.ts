@@ -143,8 +143,7 @@ export default class extends Command {
 
     const list2 = stripIndents`
     **Gems and Mining Equipment**
-    ${toList(pickList)}
-    ${toList(stoneList)}
+    ${toList([...pickList, ...stoneList])}
 
     **Other Materials**
     ${toList(othersList)}
