@@ -192,7 +192,11 @@ export abstract class Gem extends Stone {
       .setTitle(this.name)
       .setThumbnail(this.imageUrl)
       .setDescription(this.description)
-      .addField("Count", count, true)
+
+    if (count !== -1)
+      embed.addField("Count", count, true);
+
+    embed
       .addField("Stat", inlineCode(this.stat), true)
       .addField("Gems required to upgrade", inlineCode(gems), true)
 
@@ -228,7 +232,9 @@ export class RoughStone extends Stone {
       .setTitle(this.name)
       .setThumbnail(this.imageUrl)
       .setDescription(this.description)
-      .addField("Count", count, true)
+
+    if (count !== -1)
+      embed.addField("Count", count, true);
 
     return embed;
   }

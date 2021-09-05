@@ -175,6 +175,7 @@ export default class extends Command {
       await removeInventory(player.id, item.id);
 
       miningMsg.edit(`You obtained ${gem.name}!`);
+      msg.channel.send(gem.show(-1));
     })
   }
 
