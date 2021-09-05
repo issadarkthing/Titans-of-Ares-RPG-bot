@@ -1,6 +1,7 @@
 import { Message, MessageEmbed } from "discord.js";
 import Command from "../internals/Command";
 import { Stone } from "../internals/Mining";
+import { Pagination } from "../internals/Pagination";
 import { Player } from "../internals/Player";
 import { BROWN, toNList } from "../internals/utils";
 import { client } from "../main";
@@ -15,7 +16,7 @@ export default class extends Command {
 
     const [index] = args;
     if (index === "all" && client.isDev) {
-      this.showAll(msg);
+      this.showAll(player, msg);
       return;
 
     } if (index) {
@@ -41,12 +42,11 @@ export default class extends Command {
     msg.channel.send(embed);
   }
 
-  private showAll(msg: Message) {
+  private showAll(player: Player, msg: Message) {
     const stones = Stone.all.map(x => x.show(0));
+    const pagination = new Pagination(msg, stones, player.id)
 
-    for (const stone of stones) {
-      msg.channel.send(stone);
-    }
+    pagination.run();
   }
 
   private inspect(gem: Stone, player: Player, msg: Message) {
