@@ -121,6 +121,30 @@ export class List<T extends Identifiable> {
     return [...aggregate.values()];
   }
 
+
+  /** aggregates values inside List by other identifier */
+  aggregateBy(fn: (value: T) => string) {
+
+    const aggregate = new Map<string, { value: T, count: number }>();
+
+    this.forEach(v => {
+      const id = fn(v);
+      const acc = aggregate.get(id);
+      if (acc) {
+        aggregate.set(id, {
+          value: v,
+          count: acc.count + 1,
+        })
+
+        return;
+      }
+
+      aggregate.set(id, { value: v, count: 1 });
+    })
+
+    return [...aggregate.values()];
+  }
+
   [Symbol.iterator]() {
     return this.values[Symbol.iterator]();
   }

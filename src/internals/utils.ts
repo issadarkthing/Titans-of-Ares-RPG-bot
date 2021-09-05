@@ -175,7 +175,7 @@ export function sha1(data: string) {
  * @example toList([]) -> "none"
  * */
 export function toList(items: string[]) {
-  if (items.length < 0) return "none";
+  if (items.length <= 0) return "none";
   return items.join("\n");
 }
 

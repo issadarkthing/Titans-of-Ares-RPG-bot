@@ -9,7 +9,7 @@ import Command from "../internals/Command";
 import { Fragment, FragmentID } from "../internals/Fragment";
 import { Gear } from "../internals/Gear";
 import { Inventory } from "../internals/Inventory";
-import { MiningPick, Stone } from "../internals/Mining";
+import { Gem, MiningPick, RoughStone, Stone } from "../internals/Mining";
 import { upgrade } from "../internals/multipleUpgrade";
 import { Pet, PetID } from "../internals/Pet";
 import { Player } from "../internals/Player";
@@ -19,6 +19,7 @@ import {
   BLUE_BUTTON,
   bold,
   BROWN,
+  capitalize,
   GOLD,
   NUMBER_BUTTONS,
   RED_BUTTON,
@@ -39,12 +40,12 @@ export default class extends Command {
     const player = await Player.getPlayer(msg.member!);
     const inv = player.inventory;
     const itemsList = [
-      // ...inv.chests.aggregate(),
-      // ...inv.fragments.aggregate(),
+      ...inv.chests.aggregate(),
+      ...inv.fragments.aggregate(),
       ...inv.gears.aggregate(),
-      ...inv.scrolls.aggregate(),
       ...inv.picks.aggregate(),
-      ...inv.stones.aggregate(),
+      ...inv.stones.aggregateBy(x => x.rarity.toString()),
+      ...inv.scrolls.aggregate(),
     ];
     const [index] = args;
 
@@ -111,8 +112,14 @@ export default class extends Command {
           line = `${i}. \`x${count} ${item.name} Lvl ${(item as Gear).level}\``;
           gearList.push(line);
           break;
-        case item instanceof Stone:
+        case item instanceof RoughStone:
           stoneList.push(line);
+          break;
+        case item instanceof Gem: {
+            const rarity = capitalize((item as Gem).rarityName);
+            line = `${i}. \`x${count} ${rarity}\``;
+            stoneList.push(line);
+          }
           break;
         case item instanceof MiningPick:
           pickList.push(line);
@@ -132,8 +139,10 @@ export default class extends Command {
 
     **Gear**
     ${toList(gearList)}
+    `;
 
-    **Gems**
+    const list2 = stripIndents`
+    **Gems and Mining Equipment**
     ${toList(pickList)}
     ${toList(stoneList)}
 
@@ -143,11 +152,15 @@ export default class extends Command {
     **Coins**
     \`${player.coins}\` Coins
     \`${player.arenaCoins}\` Arena Coins
-    `;
+    `
 
     const embed = new MessageEmbed()
       .setColor(GOLD)
       .addField("Inventory", list)
+
+    const embed2 = new MessageEmbed()
+      .setColor(GOLD)
+      .addField("\u200b", list2)
       .addField(
         "\u200b",
         stripIndents`
@@ -156,7 +169,8 @@ export default class extends Command {
         `
       );
 
-    msg.channel.send(embed);
+    await msg.channel.send(embed);
+    await msg.channel.send(embed2);
   }
 
   private handlePick(
