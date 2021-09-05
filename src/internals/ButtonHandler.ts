@@ -9,11 +9,15 @@ interface Button {
 export class ButtonHandler {
   private buttons: Button[] = [];
   private msgCollector?: Message;
-  constructor(
-    private msg: Message,
-    private embed: MessageEmbed,
-    private userID: string,
-  ) {}
+  private msg: Message;
+  private embed: MessageEmbed;
+  private userID: string;
+
+  constructor(msg: Message, embed: MessageEmbed, userID: string) {
+    this.msg = msg;
+    this.userID = userID;
+    this.embed = new MessageEmbed(embed);
+  }
 
   private get emojis() {
     return this.buttons.map(x => x.emoji);
