@@ -29,7 +29,7 @@ export class MiningPick {
 
     const embed = new MessageEmbed()
       .setColor(BROWN)
-      .setTitle("Mining")
+      .setTitle("Mining for gems")
       .setImage(this.miningAnimationUrl);
 
     return embed;
