@@ -16,9 +16,11 @@ export const WHITE_BUTTON = "⚪";
 export const RED_BUTTON = "🔴";
 export const BLACK_BUTTON = "⚫";
 export const RETURN_BUTTON = "↩️";
+export const LEFTMOST_ARROW_BUTTON = "⏮️";
 export const LEFT_ARROW_BUTTON = "◀️";
 export const CURRENT_BUTTON = "⏺️";
 export const RIGHT_ARROW_BUTTON = "▶️";
+export const RIGHTMOST_ARROW_BUTTON = "⏭️";
 export const CROWN = "👑";
 
 export const NUMBER_BUTTONS = [
