@@ -78,7 +78,7 @@ export class ButtonHandler {
       const reaction = collected.first()!;
       const cb = this.getCB(reaction.emoji.name)!;
       await this.msgCollector.delete();
-      await cb(reaction.emoji.name);
+      cb(reaction.emoji.name);
 
     } catch {
       this.msgCollector?.delete();
