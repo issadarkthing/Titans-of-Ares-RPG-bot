@@ -19,7 +19,6 @@ export default class Client {
   readonly devID = process.env.DEV_ID!;
   readonly isDev = process.env.ENV === "DEV";
   readonly commandManager = new CommandManager();
-  readonly onMultiUpgrade = new Set<string>();
   readonly safeFn = new SafeFn();
   readonly blockingPoll = new Set<BlockingPollHandler>();
   readonly bot = new Discord.Client();

@@ -13,13 +13,9 @@ export function upgrade(
   player: Player, 
   count: number,
 ) {
-  return async () => {
 
-    if (client.onMultiUpgrade.has(player.id)) {
-      return msg.channel.send("There is already multiple upgrade running");
-    } else {
-      client.onMultiUpgrade.add(player.id);
-    }
+  const safeFnID = `multi_upgrade_${player.id}`;
+  const handler = async () => {
 
     const scroll = item.scroll;
     let scrollCount = player.inventory.all.count(scroll.id);
@@ -28,10 +24,8 @@ export function upgrade(
 
     for (let i = 0; i < count; i++) {
       if (item.level >= 10) {
-        client.onMultiUpgrade.delete(player.id);
         return msg.channel.send("Gear is on max level");
       } else if (scrollCount === 0) {
-        client.onMultiUpgrade.delete(player.id);
         // bulk remove on failed upgrade midway
         await removeInventory(player.id, scroll.id, scrollLost);
         return msg.channel.send("Insufficient scroll");
@@ -56,8 +50,6 @@ export function upgrade(
       }
     }
 
-    client.onMultiUpgrade.delete(player.id);
-
     try {
       // bulk remove on finish
       await removeInventory(player.id, scroll.id, scrollLost);
@@ -66,6 +58,16 @@ export function upgrade(
       }
     } catch (err) {
       console.error(err);
+    }
+  }
+
+  client.safeFn.add(safeFnID, handler);
+
+  return async () => {
+    try {
+      await client.safeFn.exec(safeFnID)
+    } catch {
+      msg.channel.send("There is already multiple upgrade running");
     }
   }
 }

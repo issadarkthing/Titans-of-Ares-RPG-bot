@@ -39,8 +39,8 @@ export default class extends Command {
     const player = await Player.getPlayer(msg.member!);
     const inv = player.inventory;
     const itemsList = [
-      ...inv.chests.aggregate(),
-      ...inv.fragments.aggregate(),
+      // ...inv.chests.aggregate(),
+      // ...inv.fragments.aggregate(),
       ...inv.gears.aggregate(),
       ...inv.scrolls.aggregate(),
       ...inv.picks.aggregate(),
@@ -166,7 +166,7 @@ export default class extends Command {
     msg: Message,
   ) {
 
-    const safeFnID = "handle_pick";
+    const safeFnID = `handle_pick_${player.id}`;
     const mineHandler = async () => {
       const gem = Stone.random();
       const miningMsg = await msg.channel.send(item.showMiningAnimation());
