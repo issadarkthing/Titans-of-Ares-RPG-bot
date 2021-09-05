@@ -66,17 +66,17 @@ export abstract class Gem extends Stone {
   static baseStats: BaseStats;
   static imagesUrl: ImagesUrl;
 
-  constructor(attribute: Attribute, attributeValue: number) {
+  constructor(attribute: Attribute) {
     super();
     this.attribute = attribute;
-    this.attributeValue = attributeValue;
+    const gem = (this.constructor as unknown as typeof Gem);
+    this.attributeValue = gem.baseStats[this.attribute.key];
   }
 
   static fromID(stoneID: string) {
-    const [, rarity, attribID, attribValue] = stoneID.split("_");
+    const [, rarity, attribID] = stoneID.split("_");
     const attribute = Attributes.fromString(attribID);
-    const attributeValue = parseInt(attribValue);
-    return Gem.fromRarity(rarity, attribute, attributeValue);
+    return Gem.fromRarity(rarity, attribute);
   }
 
   static fromDB(stoneDB: GemDB) {
@@ -86,14 +86,13 @@ export abstract class Gem extends Stone {
   static fromRarity(
     name: string, 
     attribute: Attribute, 
-    attributeValue: number,
   ) {
     switch (name) {
-      case "common": return new Common(attribute, attributeValue);
-      case "uncommon": return new Uncommon(attribute, attributeValue);
-      case "rare": return new Rare(attribute, attributeValue);
-      case "epic": return new Epic(attribute, attributeValue);
-      case "legendary": return new Legendary(attribute, attributeValue);
+      case "common": return new Common(attribute);
+      case "uncommon": return new Uncommon(attribute);
+      case "rare": return new Rare(attribute);
+      case "epic": return new Epic(attribute);
+      case "legendary": return new Legendary(attribute);
     }
 
     throw new Error(`invalid rarity "${name}"`);
@@ -159,7 +158,7 @@ export abstract class Gem extends Stone {
   get id() {
     const rarityName = this.constructor.name.toLowerCase();
     const attribID = this.attribute.key;
-    return `gem_${rarityName}_${attribID}_${this.attributeValue}`;
+    return `gem_${rarityName}_${attribID}`;
   }
 
   get description() {
@@ -202,7 +201,8 @@ export abstract class Gem extends Stone {
 
   inspect(count: number, sameRarityCount: number) {
     const gemInfo = this.show(count);
-    gemInfo.addField(`${this.rarityName} count`, sameRarityCount, true);
+    const title = `${capitalize(this.rarityName)} gem(s) count`;
+    gemInfo.addField(title, sameRarityCount, true);
     return gemInfo;
   }
 }
