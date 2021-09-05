@@ -1,6 +1,6 @@
 import { BaseStats } from "./Fighter";
 import { Attributes, Attribute } from "./Attributes"
-import { BROWN, CDN_LINK, random } from "./utils";
+import { BROWN, capitalize, CDN_LINK, inlineCode, random } from "./utils";
 import { List } from "./List";
 import { GemDB } from "../db/gem";
 import { MessageEmbed } from "discord.js";
@@ -174,7 +174,19 @@ export abstract class Gem extends Stone {
     return CDN_LINK + shortUrl;
   }
 
+  get stat() {
+    switch (this.attribute.key) {
+      case Attributes.critRate.key:
+      case Attributes.armorPenetration.key:
+        return `+${Math.round(this.attributeValue * 100)}% ${this.attribute.name}`;
+      default:
+        return `+${this.attributeValue} ${this.attribute.name}`;
+    }
+  }
+
   show(count: number) {
+    // gems required to upgrade text
+    const gems = `x${this.requirement} ${capitalize(this.rarityName)} Gem`;
 
     const embed = new MessageEmbed()
       .setColor(BROWN)
@@ -182,6 +194,8 @@ export abstract class Gem extends Stone {
       .setThumbnail(this.imageUrl)
       .setDescription(this.description)
       .addField("Count", count, true)
+      .addField("Stat", inlineCode(this.stat), true)
+      .addField("Gems required to upgrade", inlineCode(gems), true)
 
     return embed;
   }
