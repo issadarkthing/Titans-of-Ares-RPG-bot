@@ -1,6 +1,7 @@
 import { oneLine, stripIndents } from "common-tags";
 import { Message, MessageEmbed } from "discord.js";
 import { equipGear, unequipGear } from "../db/gear";
+import { addGem } from "../db/gem";
 import { addInventory, removeInventory } from "../db/inventory";
 import { ButtonHandler } from "../internals/ButtonHandler";
 import { Chest } from "../internals/Chest";
@@ -170,7 +171,7 @@ export default class extends Command {
       const miningMsg = await msg.channel.send(item.showMiningAnimation());
       await sleep(4000);
 
-      await addInventory(player.id, gem.id);
+      await addGem(player.id, gem.id);
       await removeInventory(player.id, item.id);
 
       miningMsg.edit(`You obtained ${gem.name}!`);
