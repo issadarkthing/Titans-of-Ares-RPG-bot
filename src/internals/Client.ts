@@ -3,6 +3,7 @@ import { CommandManager } from "./Command";
 import Discord, { TextChannel } from "discord.js";
 import { schema } from "../db/schema";
 import { Phase } from "./TeamArena";
+import { SafeFn } from "./SafeFn";
 
 type PollHandler = () => void;
 type BlockingPollHandler = () => Promise<void>;
@@ -19,6 +20,7 @@ export default class Client {
   readonly isDev = process.env.ENV === "DEV";
   readonly commandManager = new CommandManager();
   readonly onMultiUpgrade = new Set<string>();
+  readonly safeFn = new SafeFn();
   readonly blockingPoll = new Set<BlockingPollHandler>();
   readonly bot = new Discord.Client();
   db: Database;

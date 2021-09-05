@@ -166,8 +166,8 @@ export default class extends Command {
     msg: Message,
   ) {
 
-    button.addButton(BLUE_BUTTON, "mine", async () => {
-
+    const safeFnID = "handle_pick";
+    const mineHandler = async () => {
       const gem = Stone.random();
       const miningMsg = await msg.channel.send(item.showMiningAnimation());
       await sleep(4000);
@@ -177,6 +177,16 @@ export default class extends Command {
 
       miningMsg.edit(`You obtained ${bold(gem.name)}!`);
       msg.channel.send(gem.show(-1));
+    };
+
+    client.safeFn.add(safeFnID, mineHandler);
+
+    button.addButton(BLUE_BUTTON, "mine", async () => { 
+      try { 
+        await client.safeFn.exec(safeFnID); 
+      } catch {
+        msg.channel.send("There is already mining instance running");
+      }
     })
   }
 
