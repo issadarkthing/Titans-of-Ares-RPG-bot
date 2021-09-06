@@ -9,6 +9,7 @@ import Command from "../internals/Command";
 import { Fragment, FragmentID } from "../internals/Fragment";
 import { Gear } from "../internals/Gear";
 import { Inventory } from "../internals/Inventory";
+import { List } from "../internals/List";
 import { Gem, MiningPick, RoughStone, Stone } from "../internals/Mining";
 import { upgrade } from "../internals/multipleUpgrade";
 import { Pet, PetID } from "../internals/Pet";
@@ -39,6 +40,7 @@ export default class extends Command {
   async exec(msg: Message, args: string[]) {
     const player = await Player.getPlayer(msg.member!);
     const inv = player.inventory;
+    this.inventory = inv;
     const itemsList = [
       ...inv.chests.aggregate(),
       ...inv.fragments.aggregate(),
@@ -71,16 +73,24 @@ export default class extends Command {
       // attach handlers to every types of item
       if (item instanceof Chest) {
         this.handleChest(button, item, player, msg);
+
       } else if (item instanceof Fragment) {
         this.handleFragment(button, item, player, msg);
+
       } else if (item instanceof Gear) {
         const scrollCount = player.inventory.all.count(item.scroll.id);
         button = new ButtonHandler(msg, item.inspect(scrollCount), player.id);
 
         this.handleGear(button, item, player, msg);
+
       } else if (item instanceof MiningPick) {
         this.handlePick(button, item, player, msg);
+
+      } else if (item instanceof Gem) {
+        this.handleGem(item, msg);
+        return;
       }
+
 
       button.addButton(RETURN_BUTTON, "return to inventory list", () => {
         this.exec(msg, []);
@@ -170,6 +180,27 @@ export default class extends Command {
 
     await msg.channel.send(embed);
     await msg.channel.send(embed2);
+  }
+
+  private async handleGem(
+    item: Gem,
+    msg: Message,
+  ) {
+
+    let gems = this.inventory.stones
+      .filter(x => x instanceof Gem) as Gem[];
+
+    gems = gems.filter(x => x.rarityName === item.rarityName);
+
+    const gemList = List.from(gems).aggregate();
+
+    let i = 0;
+    for (const { value: gem, count } of gemList) {
+      i++;
+      const info = new MessageEmbed(gem.show(count));
+      info.setTitle(`${i}. ${info.title}`);
+      await msg.channel.send(info);
+    }
   }
 
   private handlePick(
