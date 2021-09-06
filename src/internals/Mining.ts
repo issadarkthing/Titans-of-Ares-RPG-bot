@@ -148,6 +148,10 @@ export abstract class Gem extends Stone {
     ]);
   }
 
+  static isValidQuality(quality: string) {
+    return this.all.map(x => x.quality).some(x => x === quality);
+  }
+
   get name() {
     const gemName = this.constructor.name;
     return `${gemName} ${this.attribute.name} Gem`;
