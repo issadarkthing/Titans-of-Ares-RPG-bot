@@ -153,7 +153,7 @@ export abstract class Gem extends Stone {
     return `${gemName} ${this.attribute.name} Gem`;
   }
 
-  get rarityName() {
+  get quality() {
     return this.constructor.name.toLowerCase();
   }
 
@@ -187,7 +187,7 @@ export abstract class Gem extends Stone {
 
   show(count: number) {
     // gems required to upgrade text
-    const gems = `x${this.requirement} ${capitalize(this.rarityName)} Gem`;
+    const gems = `x${this.requirement} ${capitalize(this.quality)} Gem`;
 
     const embed = new MessageEmbed()
       .setColor(BROWN)
@@ -207,7 +207,7 @@ export abstract class Gem extends Stone {
 
   inspect(count: number, sameRarityCount: number) {
     const gemInfo = this.show(count);
-    const title = `${capitalize(this.rarityName)} gem(s) count`;
+    const title = `${capitalize(this.quality)} gem(s) count`;
     gemInfo.addField(title, sameRarityCount, true);
     return gemInfo;
   }

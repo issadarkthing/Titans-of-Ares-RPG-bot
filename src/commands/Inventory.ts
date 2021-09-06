@@ -126,7 +126,7 @@ export default class extends Command {
           stoneList.push(line);
           break;
         case item instanceof Gem: {
-            const rarity = capitalize((item as Gem).rarityName);
+            const rarity = capitalize((item as Gem).quality);
             line = `${i}. \`x${count} ${rarity} Gem\``;
             stoneList.push(line);
           }
@@ -190,7 +190,7 @@ export default class extends Command {
     let gems = this.inventory.stones
       .filter(x => x instanceof Gem) as Gem[];
 
-    gems = gems.filter(x => x.rarityName === item.rarityName);
+    gems = gems.filter(x => x.quality === item.quality);
 
     const gemList = List.from(gems).aggregate();
 
