@@ -197,8 +197,7 @@ export default class extends Command {
     let i = 0;
     for (const { value: gem, count } of gemList) {
       i++;
-      const info = new MessageEmbed(gem.show(count));
-      info.setTitle(`${i}. ${info.title}`);
+      const info = gem.inspect(count, i);
       await msg.channel.send(info);
     }
   }
