@@ -229,8 +229,8 @@ export class RoughStone extends Stone {
   requirement = 12;
   imageUrl = CDN_LINK + "852530378916888626/883343839006457856/68.png";
   description = oneLine`These are rough stones.  You can combine 12 of them to
-  make a common gem. You can do this in the \`${client.prefix}gemcrafting\`
-  menu`;
+  make a common gem. You can do this by inspecting the rough stones in your
+  inventory.`;
 
   get product() {
     return Common.random();
