@@ -5,7 +5,6 @@ import { List } from "./List";
 import { GemDB } from "../db/gem";
 import { MessageEmbed } from "discord.js";
 import { oneLine } from "common-tags";
-import { client } from "../main";
 
 export class MiningPick {
   name = "Mining Pick";
@@ -169,8 +168,7 @@ export abstract class Gem extends Stone {
 
   get description() {
     return oneLine`This is a ${this.name}. You can combine multiple gems of the
-    same quality to craft a better gem. You can do this in the
-    \`${client.prefix}gemcrafting\` menu`;
+    same quality to craft a better gem.`;
   }
 
   get imageUrl() {
@@ -229,8 +227,7 @@ export class RoughStone extends Stone {
   requirement = 12;
   imageUrl = CDN_LINK + "852530378916888626/883343839006457856/68.png";
   description = oneLine`These are rough stones.  You can combine 12 of them to
-  make a common gem. You can do this by inspecting the rough stones in your
-  inventory.`;
+  make a common gem.`;
 
   get product() {
     return Common.random();

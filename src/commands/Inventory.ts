@@ -219,6 +219,12 @@ export default class extends Command {
       await removeInventory(player.id, item.id);
 
       miningMsg.edit(`You obtained ${bold(gem.name)}!`);
+      const gemShow = new MessageEmbed(gem.show(-1));
+
+      const newDesc = oneLine`${gemShow.description} You can do this by
+      inspecting a group of gems in your inventory.`;
+
+      gemShow.setDescription(newDesc);
       msg.channel.send(gem.show(-1));
     };
 
