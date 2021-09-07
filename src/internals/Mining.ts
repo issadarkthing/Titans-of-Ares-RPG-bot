@@ -207,10 +207,8 @@ export abstract class Gem extends Stone {
     return embed;
   }
 
-  inspect(count: number, sameRarityCount: number, index?: number) {
+  inspect(count: number, index: number) {
     const gemInfo = this.show(count);
-    const fieldTitle = `${capitalize(this.quality)} gem(s) count`;
-    gemInfo.addField(fieldTitle, sameRarityCount, true);
 
     if (index) {
       gemInfo.setTitle(`${index}. ${gemInfo.title}`);
