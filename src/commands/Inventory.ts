@@ -233,13 +233,21 @@ export default class extends Command {
 
     client.safeFn.add(safeFnID, mineHandler);
 
-    button.addButton(BLUE_BUTTON, "mine", async () => { 
-      try { 
-        await client.safeFn.exec(safeFnID); 
-      } catch {
-        msg.channel.send("There is already mining instance running");
+    const multiMine = (count: number) => {
+      return async () => {
+        try { 
+          for (let i = 0; i < count; i++) {
+            await client.safeFn.exec(safeFnID); 
+          }
+        } catch {
+          msg.channel.send("There is already mining instance running");
+        }
       }
-    })
+    }
+
+    button.addButton(BLUE_BUTTON, "mine", multiMine(1));
+    button.addButton(RED_BUTTON, "mine 5", multiMine(5));
+    button.addButton(WHITE_BUTTON, "mine 10", multiMine(10));
   }
 
   private handleChest(
