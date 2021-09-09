@@ -240,7 +240,7 @@ export default class extends Command {
             await client.safeFn.exec(safeFnID); 
           }
         } catch {
-          msg.channel.send("There is already mining instance running");
+          msg.channel.send("There is already instance of mining command running");
         }
       }
     }
