@@ -1,7 +1,7 @@
 import { oneLine, stripIndents } from "common-tags";
 import { Message, MessageEmbed } from "discord.js";
 import { equipGear, unequipGear } from "../db/gear";
-import { addGem, removeGem } from "../db/gem";
+import { addGem } from "../db/gem";
 import { addInventory, removeInventory } from "../db/inventory";
 import { ButtonHandler } from "../internals/ButtonHandler";
 import { Chest } from "../internals/Chest";
