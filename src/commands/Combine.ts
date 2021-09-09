@@ -1,3 +1,4 @@
+import { oneLine } from "common-tags";
 import { Message, MessageEmbed } from "discord.js";
 import { addGem, removeGem } from "../db/gem";
 import { ButtonHandler } from "../internals/ButtonHandler";
@@ -5,7 +6,7 @@ import Command from "../internals/Command";
 import { List } from "../internals/List";
 import { Gem } from "../internals/Mining";
 import { Player } from "../internals/Player";
-import { BLUE_BUTTON, BROWN, inlineCode, sleep } from "../internals/utils";
+import { BLUE_BUTTON, BROWN, capitalize, inlineCode, sleep } from "../internals/utils";
 
 export default class Combine extends Command {
   name = "combine";
@@ -21,6 +22,8 @@ export default class Combine extends Command {
       return msg.channel.send("invalid Gem quality");
     else if (indexes.some(x => Number.isNaN(x)))
       return msg.channel.send("invalid index was given");
+    else if (indexes.length === 0)
+      return msg.channel.send("you need to pick gems you want to combine");
 
     const player = await Player.getPlayer(msg.member!);
 
@@ -45,6 +48,7 @@ export default class Combine extends Command {
 
     const aggregatedSelectedGem = selected.aggregate();
 
+    // check for owned gem quantity
     for (const { value: gem, count } of aggregatedSelectedGem) {
       const ownedGemCount = player.inventory.all.count(gem.id);
 
@@ -53,6 +57,15 @@ export default class Combine extends Command {
       }
     }
 
+    // check for gem upgrade requirement
+    const gem = selected.get(0)!;
+    if (selected.length < gem.requirement) {
+      const errMsg = oneLine`${gem.requirement} ${capitalize(gem.quality)} Gems
+      are required to upgrade to 1 ${capitalize(gem.product.quality)} Gem`;
+
+      msg.channel.send(errMsg);
+      return;
+    }
 
     const gemListText = aggregatedSelectedGem
       .map(x => inlineCode(`${x.count}x ${x.value.name}`))
