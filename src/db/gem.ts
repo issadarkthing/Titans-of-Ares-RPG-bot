@@ -14,8 +14,8 @@ export interface GemDB {
 export async function getGem($userID: string, $itemID: string) {
   const sql = `
   SELECT 
-    ID,
-    Created,
+    Gem.ID,
+    Gem.Created,
     InventoryID,
     Inventory.ItemID AS ItemID,
     GearID

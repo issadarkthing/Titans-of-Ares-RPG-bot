@@ -45,6 +45,8 @@ export abstract class Stone {
   abstract requirement: number;
   abstract show(count: number): MessageEmbed;
   abstract inspect(count: number, sameRarityCount: number): MessageEmbed;
+  combineAnimationUrl = 
+    CDN_LINK + "574852830125359126/884774042899447838/ezgif.com-gif-maker.gif";
 
   static random() {
     return Stone.all.weightedRandom(x => x.rarity * 1000);
@@ -55,6 +57,15 @@ export abstract class Stone {
       new RoughStone(),
       ...Gem.all,
     ])
+  }
+
+  showCombineAnimation() {
+    const embed = new MessageEmbed()
+      .setColor(BROWN)
+      .setTitle("Combining gems")
+      .setImage(this.combineAnimationUrl);
+
+    return embed;
   }
 }
 
