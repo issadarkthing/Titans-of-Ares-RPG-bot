@@ -1,7 +1,7 @@
 import { oneLine, stripIndents } from "common-tags";
 import { Message, MessageEmbed } from "discord.js";
 import { equipGear, unequipGear } from "../db/gear";
-import { addGem } from "../db/gem";
+import { addGem, removeGem } from "../db/gem";
 import { addInventory, removeInventory } from "../db/inventory";
 import { ButtonHandler } from "../internals/ButtonHandler";
 import { Chest } from "../internals/Chest";
@@ -89,6 +89,9 @@ export default class extends Command {
       } else if (item instanceof Gem) {
         this.handleGem(item, msg);
         return;
+
+      } else if (item instanceof RoughStone) {
+        this.handleStone(button, item, player, msg);
       }
 
 
@@ -268,6 +271,42 @@ export default class extends Command {
 
       msg.channel.send(`You got ${fragment}!`);
       cards.forEach((x) => msg.channel.send(x));
+    });
+  }
+
+  private handleStone(
+    button: ButtonHandler,
+    item: RoughStone,
+    player: Player,
+    msg: Message
+  ) {
+
+    button.addButton(BLUE_BUTTON, "combine 12 rough stones", async () => {
+      const gem = item;
+
+      // check for gem upgrade requirement
+      const count = player.inventory.all.count(gem.id);
+      if (count < gem.requirement) {
+        const errMsg = oneLine`${gem.requirement} Rough Stones are required to
+        upgrade to 1 ${capitalize(gem.product.quality)} Gem`;
+
+        msg.channel.send(errMsg);
+        return;
+      }
+
+      await removeInventory(player.id, gem.id, gem.requirement);
+
+      const combineAnimation = gem.showCombineAnimation();
+      const animation = await msg.channel.send(combineAnimation);
+      await sleep(4000);
+
+      await animation.delete();
+
+      const upgrade = gem.product;
+
+      await addGem(player.id, upgrade.id);
+      await msg.channel.send(`You obtained ${upgrade.name}!`);
+      await msg.channel.send(upgrade.show(-1));
     });
   }
 
