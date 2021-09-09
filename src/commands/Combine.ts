@@ -26,11 +26,7 @@ export default class Combine extends Command {
       return msg.channel.send("you need to pick gems you want to combine");
 
     const player = await Player.getPlayer(msg.member!);
-
-    let gems = player.inventory.stones
-      .filter(x => x instanceof Gem) as Gem[];
-
-    gems = gems.filter(x => x.quality === quality);
+    const gems = player.inventory.gems.filter(x => x.quality === quality);
 
     if (gems.length <= 0)
       return msg.channel.send(`You don't have any gem of ${quality} quality`);

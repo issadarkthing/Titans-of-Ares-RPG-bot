@@ -16,6 +16,7 @@ export class Inventory {
   scrolls = new List<Scroll>();
   picks = new List<MiningPick>();
   stones = new List<Stone>();
+  gems = new List<Gem>();
 
   constructor(items: Item[]) {
 
@@ -46,10 +47,13 @@ export class Inventory {
           this.stones.push(new RoughStone());
           break
         case "gem":
-          this.stones.push(Gem.fromID(itemID));
+          this.gems.push(Gem.fromID(itemID));
           break;
       }
     }
+
+    // sort gems
+    this.gems.sort((a, b) => b.rarity - a.rarity);
   }
 
   get all() {
@@ -59,6 +63,7 @@ export class Inventory {
       ...this.gears,
       ...this.scrolls,
       ...this.stones,
+      ...this.gems,
       ...this.picks,
     ]);
   }

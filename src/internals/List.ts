@@ -99,6 +99,10 @@ export class List<T extends Identifiable> {
     return this.values.reduce(fn);
   }
 
+  sort(fn: (a: T, b: T) => number) {
+    return this.values.sort(fn);
+  }
+
   /** aggregates values inside List */
   aggregate() {
 

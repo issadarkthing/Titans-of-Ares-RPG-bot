@@ -41,12 +41,14 @@ export default class extends Command {
     const player = await Player.getPlayer(msg.member!);
     const inv = player.inventory;
     this.inventory = inv;
+
     const itemsList = [
       ...inv.chests.aggregate(),
       ...inv.fragments.aggregate(),
       ...inv.gears.aggregate(),
       ...inv.picks.aggregate(),
-      ...inv.stones.aggregateBy(x => x.rarity.toString()),
+      ...inv.stones.aggregate(),
+      ...inv.gems.aggregateBy(x => x.quality),
       ...inv.scrolls.aggregate(),
     ];
     const [index] = args;
@@ -190,11 +192,7 @@ export default class extends Command {
     msg: Message,
   ) {
 
-    let gems = this.inventory.stones
-      .filter(x => x instanceof Gem) as Gem[];
-
-    gems = gems.filter(x => x.quality === item.quality);
-
+    const gems = this.inventory.gems.filter(x => x.quality === item.quality);
     const gemList = List.from(gems).aggregate();
 
     let i = 0;
