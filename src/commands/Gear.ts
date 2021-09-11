@@ -7,9 +7,10 @@ import { Gear } from "../internals/Gear";
 import { ApprenticeGear } from "../internals/ApprenticeGear";
 import { upgrade } from "../internals/multipleUpgrade";
 import { Player } from "../internals/Player";
-import { BLACK_BUTTON, BLUE_BUTTON, RED_BUTTON, RETURN_BUTTON, SILVER, WHITE_BUTTON } from "../internals/utils";
+import { BLACK_BUTTON, BLUE_BUTTON, bold, RED_BUTTON, RETURN_BUTTON, SILVER, WHITE_BUTTON } from "../internals/utils";
 import Command from "../internals/Command";
 import { ArenaGear } from "../internals/ArenaGear";
+import { desocketGem } from "../db/gem";
 
 export default class extends Command {
   name = "gear";
@@ -32,6 +33,11 @@ export default class extends Command {
         msg.channel.send(
           `Successfully unequip **${gear.name}**!`
         )
+
+        if (gear.gem) {
+          desocketGem(player.id, gear.gem.id, gear.id);
+          msg.channel.send(`Successfully desocket ${bold(gear.gem.name)}!`);
+        }
       })
 
       if (gear.level < 10) {
