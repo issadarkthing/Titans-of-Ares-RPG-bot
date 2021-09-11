@@ -43,7 +43,12 @@ export async function removeInventory($ownerID: string, $itemID: string, count =
 
 export function getInventory($userID: string) {
   const sql = `
-  SELECT * FROM Inventory 
+  SELECT
+    Inventory.ID as ID,
+    OwnerID,
+    Created,
+    ItemID
+  FROM Inventory 
   LEFT JOIN Gear
   ON Gear.InventoryID = Inventory.ID
   WHERE 
