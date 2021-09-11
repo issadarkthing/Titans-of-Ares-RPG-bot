@@ -5,7 +5,7 @@ import Command from "../internals/Command";
 import { List } from "../internals/List";
 import { Gem } from "../internals/Mining";
 import { Player } from "../internals/Player";
-import { BLUE_BUTTON, GREEN, RED_BUTTON, WHITE_BUTTON } from "../internals/utils";
+import { BLUE_BUTTON, bold, GREEN, RED_BUTTON, WHITE_BUTTON } from "../internals/utils";
 
 
 export default class Socket extends Command {
@@ -62,7 +62,9 @@ export default class Socket extends Command {
 
       await socketGem(player.id, gem.id, piece.id);
       
-      msg.channel.send(`Successfully socket ${gem.name} into ${piece.name}`);
+      msg.channel.send(
+        `Successfully socket ${bold(gem.name)} into ${bold(piece.name)}!`
+      );
     }
 
     button.addButton(BLUE_BUTTON, "Helmet", buttonHandler);
