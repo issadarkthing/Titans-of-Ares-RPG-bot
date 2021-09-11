@@ -2,6 +2,7 @@ import { stripIndents } from "common-tags";
 import { GuildMember, MessageEmbed } from "discord.js";
 import { setArenaCoin, setCoin } from "../db/coin";
 import { getGears } from "../db/gear";
+import { getAllSocketedGem } from "../db/gem";
 import { getInventory, Item } from "../db/inventory";
 import { getAllPets } from "../db/pet";
 import { createUser, getTotalPoints, getTotalXp, getUser, getUsers } from "../db/player";
@@ -14,6 +15,7 @@ import { BaseStats, Fighter, IFighter } from "./Fighter";
 import { Gear } from "./Gear";
 import { Inventory } from "./Inventory";
 import { List } from "./List";
+import { Gem } from "./Mining";
 import { Manticore, Pet } from "./Pet";
 import { Profile } from "./Profile";
 import { Phase, TeamArena } from "./TeamArena";
@@ -136,9 +138,22 @@ export class Player extends Fighter {
     const totalPoints = await getTotalPoints(userId);
     const level = getLevel(totalXp);
     const stats = getStats(level);
-    const inventory = await getInventory(userId);
+    let inventory = await getInventory(userId);
+    const socketGems = await getAllSocketedGem(userId);
     const pets = (await getAllPets(userId)).map(x => Pet.fromDB(x));
-    const gears = (await getGears(userId)).map(x => Gear.fromDB(x));
+    const gears = (await getGears(userId))
+      .map(gearDB => {
+        const gear = Gear.fromDB(gearDB);
+        const socketedGem = socketGems.find(x => x.GearID === gear.id);
+
+        if (socketedGem) {
+          // remove socketed gems from inventory
+          inventory = inventory.filter(x => x.ID !== socketedGem.InventoryID);
+          gear.gem = Gem.fromDB(socketedGem);
+        }
+
+        return gear;
+      })
     const equippedGears = gears.filter(x => x.equipped);
 
     let player = await getUser(userId);

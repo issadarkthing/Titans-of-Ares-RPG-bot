@@ -29,7 +29,7 @@ export abstract class ArenaGear extends Gear {
       new Gauntlets(),
       new Belt(),
       new Wrist(),
-      new LeftRing(),
+      new LeftRing(), 
       new RightRing(),
       new Sword(),
     ]);
@@ -53,6 +53,7 @@ export abstract class ArenaGear extends Gear {
 }
 
 export class Helmet extends ArenaGear {
+  socketable = true;
   baseStat = 1.5;
   price = 30;
 
@@ -82,6 +83,7 @@ export class Amulet extends ArenaGear {
 }
 
 export class Chest extends ArenaGear {
+  socketable = true;
   baseStat = 1.8;
   price = 50;
 
@@ -96,6 +98,7 @@ export class Chest extends ArenaGear {
 }
 
 export class Pants extends ArenaGear {
+  socketable = true;
   baseStat = 1.7;
   price = 46;
 

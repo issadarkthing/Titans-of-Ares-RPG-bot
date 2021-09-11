@@ -4,7 +4,7 @@ import { Fighter } from "./Fighter";
 import { Attribute } from "./Attributes";
 import { Item } from "./Item";
 import { List } from "./List";
-import { Stone } from "./Mining";
+import { Gem } from "./Mining";
 import { Scroll } from "./Scroll";
 import { BROWN, CDN_LINK, GOLD, random } from "./utils";
 
@@ -14,10 +14,11 @@ export interface GearBonus {
 }
 
 export interface Socketable {
-  stone: Stone;
+  gem?: Gem;
+  socketable: boolean;
 }
 
-export abstract class Gear extends Item {
+export abstract class Gear extends Item implements Socketable {
   abstract name: string;
   abstract use(fighter: Fighter): { attrib: Attribute, amount: number };
   abstract description: string;
@@ -25,6 +26,8 @@ export abstract class Gear extends Item {
   abstract set: string;
   abstract baseStat: number;
   abstract bonus(gears: List<Gear>): GearBonus | undefined;
+  gem?: Gem;
+  socketable = false;
   scroll = new Scroll();
   equipped = false;
   upgradeAnimationUrl = CDN_LINK + "852530378916888626/867765847312826398/image0.gif";
@@ -58,7 +61,7 @@ export abstract class Gear extends Item {
     return Gear.all.get(id)!;
   }
 
-  static fromDB(gear: GearDB) {
+  static fromDB(gear: GearDB): Gear {
     const g = Gear.fromID(gear.ItemID)!;
     g.level = gear.Level;
     g.equipped = gear.Equipped;
@@ -116,6 +119,14 @@ export abstract class Gear extends Item {
   /** returns true if upgrade successfull */
   upgrade() {
     return random().bool(this.upgradeChance);
+  }
+
+  /** 
+   * gets the piece name
+   * @example "Arena Helmet" -> "helmet"
+   * */
+  get piece() {
+    return this.constructor.name.toLowerCase();
   }
 
   protected isBonus(gears: List<Gear>, minLevel: number) {

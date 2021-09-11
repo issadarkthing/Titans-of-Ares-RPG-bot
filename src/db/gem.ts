@@ -1,14 +1,14 @@
 import { DateTime } from "luxon";
 import { RoughStone } from "../internals/Mining";
 import { addInventory } from "./inventory";
-import { dbGet, dbRun } from "./promiseWrapper";
+import { dbAll, dbGet, dbRun } from "./promiseWrapper";
 
 export interface GemDB {
   ID: number;
   Created: string;
   InventoryID: number;
   ItemID: string;
-  GearID?: number;
+  GearID?: string;
 }
 
 export async function getGem($userID: string, $itemID: string) {
@@ -62,4 +62,47 @@ export async function removeGem($userID: string, $itemID: string) {
   `
 
   await dbRun(sql, { $gemID });
+}
+
+export async function getAllSocketedGem($userID: string) {
+  const sql = `
+  SELECT 
+    Gem.ID,
+    Gem.Created,
+    InventoryID,
+    Inventory.ItemID AS ItemID,
+    GearID
+  FROM Gem
+  INNER JOIN Inventory
+  ON Inventory.ID = Gem.InventoryID
+  WHERE Inventory.OwnerID = $userID AND GearID != ''
+  `
+
+  return dbAll<GemDB>(sql, { $userID });
+}
+
+export async function socketGem($userID: string, $gemID: string, $gearID: string) {
+  const sql = `
+    UPDATE Gem 
+    SET GearID = $gearID
+    WHERE InventoryID = (
+      SELECT ID FROM Inventory
+      WHERE OwnerID = $userID AND ItemID = $gemID
+    )
+  `
+
+  return dbRun(sql, { $userID, $gemID, $gearID });
+}
+
+export async function desocketGem($userID: string, $gemID: string, $gearID: string) {
+  const sql = `
+    UPDATE Gem 
+    SET GearID = NULL
+    WHERE InventoryID = (
+      SELECT ID FROM Inventory
+      WHERE OwnerID = $userID AND ItemID = $gemID
+    ) AND GearID = $gearID
+  `
+
+  return dbRun(sql, { $userID, $gemID, $gearID });
 }

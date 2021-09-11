@@ -67,6 +67,7 @@ export abstract class ApprenticeGear extends Gear {
 }
 
 export class Helmet extends ApprenticeGear {
+  socketable = true;
   baseStat = 1;
   price = 150;
 
@@ -95,6 +96,7 @@ export class Amulet extends ApprenticeGear {
 }
 
 export class Chest extends ApprenticeGear {
+  socketable = true;
   baseStat = 1.2;
   price = 250;
 
@@ -109,6 +111,7 @@ export class Chest extends ApprenticeGear {
 }
 
 export class Pants extends ApprenticeGear {
+  socketable = true;
   baseStat = 1.15;
   price = 225;
 
