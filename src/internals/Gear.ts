@@ -6,7 +6,7 @@ import { Item } from "./Item";
 import { List } from "./List";
 import { Gem } from "./Mining";
 import { Scroll } from "./Scroll";
-import { BROWN, CDN_LINK, GOLD, random } from "./utils";
+import { BROWN, CDN_LINK, GOLD, inlineCode, random } from "./utils";
 
 export interface GearBonus {
   description: string;
@@ -103,6 +103,10 @@ export abstract class Gear extends Item implements Socketable {
       .setDescription(`\`${this.description}\``)
       .addField("Upgrade Scrolls", scroll, true)
       .addField("Level", this.level == 10 ? "max" : this.level, true)
+
+    if (this.gem) {
+      embed.addField("Socketed Gem", inlineCode(this.gem.name), true);
+    }
 
     return embed;
   }
