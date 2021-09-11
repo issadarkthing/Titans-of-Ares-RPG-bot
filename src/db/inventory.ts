@@ -47,7 +47,9 @@ export function getInventory($userID: string) {
     Inventory.ID as ID,
     OwnerID,
     Created,
-    ItemID
+    ItemID,
+    Gear.Level,
+    Gear.Equipped
   FROM Inventory 
   LEFT JOIN Gear
   ON Gear.InventoryID = Inventory.ID
