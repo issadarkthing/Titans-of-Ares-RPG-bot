@@ -68,7 +68,7 @@ export default class Combine extends Command {
       .join(", ");
 
     const confirmationText = 
-      `You are about to combine ${gemListText}, do you want to continue`;
+      `You are about to combine ${gemListText}, do you want to continue?`;
 
     const embed = new MessageEmbed()
       .setTitle("Gem Combine")
@@ -86,7 +86,7 @@ export default class Combine extends Command {
 
       const combineAnimation = gem.showCombineAnimation();
       const animation = await msg.channel.send(combineAnimation);
-      await sleep(4000);
+      await sleep(6000);
 
       await animation.delete();
 
