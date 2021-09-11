@@ -30,7 +30,7 @@ export default class Socket extends Command {
       return msg.channel.send(`You don't have any gem of ${quality} quality`);
 
     const gemList = List.from(gems).aggregate();
-    const selected = gemList[index];
+    const selected = gemList[index - 1];
 
     if (!selected)
       return msg.channel.send(`Cannot find gem`);
