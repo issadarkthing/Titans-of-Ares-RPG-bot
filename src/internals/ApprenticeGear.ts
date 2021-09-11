@@ -1,10 +1,9 @@
 import { oneLine } from "common-tags";
 import { MessageEmbed } from "discord.js";
 import { Attributes } from "./Attributes";
-import { Fighter } from "./Fighter";
 import { Gear } from "./Gear";
 import { List } from "./List";
-import { CDN_LINK, GOLD, roundTo } from "./utils";
+import { CDN_LINK, GOLD } from "./utils";
 
 export abstract class ApprenticeGear extends Gear {
   set = "Apprentice";
@@ -71,36 +70,12 @@ export class Helmet extends ApprenticeGear {
   socketable = true;
   baseStat = 1;
   price = 150;
-
-  get description() {
-    const desc = `+${roundTo(this.attributeValue, 1)} Armor`;
-
-    if (this.gem) {
-      return desc + ` | ${this.gem.stat}`;
-    }
-
-    return desc;
-  }
-
-  use(fighter: Fighter) {
-    fighter.armor += this.attributeValue;
-    return { attrib: Attributes.armor, amount: this.attributeValue };
-  }
 }
 
 export class Amulet extends ApprenticeGear {
   attribute = Attributes.hp;
   baseStat = 100;
   price = 200;
-
-  get description() {
-    return `+${Math.round(this.attributeValue)} HP`;
-  }
-
-  use(fighter: Fighter) {
-    fighter.hp += this.attributeValue;
-    return { attrib: Attributes.hp, amount: this.attributeValue };
-  }
 }
 
 export class Chest extends ApprenticeGear {
@@ -108,21 +83,6 @@ export class Chest extends ApprenticeGear {
   socketable = true;
   baseStat = 1.2;
   price = 250;
-
-  get description() {
-    const desc = `+${roundTo(this.attributeValue, 1)} Armor`;
-
-    if (this.gem) {
-      return desc + ` | ${this.gem.stat}`;
-    }
-
-    return desc;
-  }
-
-  use(fighter: Fighter) {
-    fighter.armor += this.attributeValue;
-    return { attrib: Attributes.armor, amount: this.attributeValue };
-  }
 }
 
 export class Pants extends ApprenticeGear {
@@ -130,81 +90,30 @@ export class Pants extends ApprenticeGear {
   socketable = true;
   baseStat = 1.15;
   price = 225;
-
-  get description() {
-    const desc = `+${roundTo(this.attributeValue, 1)} Armor`;
-
-    if (this.gem) {
-      return desc + ` | ${this.gem.stat}`;
-    }
-
-    return desc;
-  }
-
-  use(fighter: Fighter) {
-    fighter.armor += this.attributeValue;
-    return { attrib: Attributes.armor, amount: this.attributeValue };
-  }
 }
 
 export class Boots extends ApprenticeGear {
   attribute = Attributes.speed;
   baseStat = 20;
   price = 125;
-
-  get description() {
-    return `+${Math.round(this.attributeValue)} Speed`;
-  }
-
-  use(fighter: Fighter) {
-    fighter.speed += this.attributeValue;
-    return { attrib: Attributes.speed, amount: this.attributeValue };
-  }
 }
 
 export class Gauntlets extends ApprenticeGear {
   attribute = Attributes.armor;
   baseStat = 0.5;
   price = 125;
-
-  get description() {
-    return `+${roundTo(this.attributeValue, 1)} Armor`;
-  }
-
-  use(fighter: Fighter) {
-    fighter.armor += this.attributeValue;
-    return { attrib: Attributes.armor, amount: this.attributeValue };
-  }
 }
 
 export class Belt extends ApprenticeGear {
   attribute = Attributes.armor;
   baseStat = 0.3;
   price = 75;
-
-  get description() {
-    return `+${roundTo(this.attributeValue, 1)} Armor`;
-  }
-
-  use(fighter: Fighter) {
-    fighter.armor += this.attributeValue;
-    return { attrib: Attributes.armor, amount: this.attributeValue };
-  }
 }
 
 export class Wrist extends ApprenticeGear {
   attribute = Attributes.armor;
   baseStat = 0.3;
   price = 75;
-
-  get description() {
-    return `+${roundTo(this.attributeValue, 1)} Armor`;
-  }
-
-  use(fighter: Fighter) {
-    fighter.armor += this.attributeValue;
-    return { attrib: Attributes.armor, amount: this.attributeValue };
-  }
 }
 
 export class LeftRing extends ApprenticeGear {
@@ -214,15 +123,6 @@ export class LeftRing extends ApprenticeGear {
 
   get name() {
     return `${this.set} Left Ring`;
-  }
-
-  get description() {
-    return `+${roundTo(this.attributeValue * 100, 1)}% Crit Rate`;
-  }
-
-  use(fighter: Fighter) {
-    fighter.critRate += this.attributeValue;
-    return { attrib: Attributes.critRate, amount: this.attributeValue };
   }
 }
 
@@ -234,28 +134,10 @@ export class RightRing extends ApprenticeGear {
   get name() {
     return `${this.set} Right Ring`;
   }
-
-  get description() {
-    return `+${roundTo(this.attributeValue, 2)} Crit Dmg`;
-  }
-
-  use(fighter: Fighter) {
-    fighter.critDamage += this.attributeValue;
-    return { attrib: Attributes.critDamage, amount: this.attributeValue };
-  }
 }
 
 export class Sword extends ApprenticeGear {
   attribute = Attributes.strength;
   baseStat = 20;
   price = 500;
-
-  get description() {
-    return `+${Math.round(this.attributeValue)} Strength`;
-  }
-
-  use(fighter: Fighter) {
-    fighter.strength += this.attributeValue;
-    return { attrib: Attributes.strength, amount: this.attributeValue };
-  }
 }

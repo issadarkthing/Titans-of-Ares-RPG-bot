@@ -36,6 +36,7 @@ export class Fighter {
   armor: number;
   critRate: number;
   critDamage: number;
+  armorPenetration: number;
   imageUrl: string;
 
   constructor(data: IFighter) {
@@ -47,6 +48,7 @@ export class Fighter {
     this.armor = data.armor;
     this.critRate = data.critRate;
     this.critDamage = data.critDamage;
+    this.armorPenetration = 0;
     this.imageUrl = data.imageUrl;
   }
 

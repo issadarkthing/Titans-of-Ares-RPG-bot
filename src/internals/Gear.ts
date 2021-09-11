@@ -20,8 +20,6 @@ export interface Socketable {
 
 export abstract class Gear extends Item implements Socketable {
   abstract name: string;
-  abstract use(fighter: Fighter): { attrib: Attribute, amount: number };
-  abstract description: string;
   abstract price: number;
   abstract set: string;
   abstract baseStat: number;
@@ -44,6 +42,10 @@ export abstract class Gear extends Item implements Socketable {
 
   get attributeValue() {
     return this.baseStat + this.baseStat * this.multiplier;
+  }
+
+  get description() {
+    return this.attribute.format(this.attributeValue);
   }
 
   static get all() {
@@ -83,6 +85,10 @@ export abstract class Gear extends Item implements Socketable {
       case 9: return 0.005;
       default: return 0;
     }
+  }
+
+  use(fighter: Fighter) {
+    fighter[this.attribute.key] += this.attributeValue;
   }
 
   show(count: number): MessageEmbed {

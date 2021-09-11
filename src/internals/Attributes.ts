@@ -1,4 +1,5 @@
 import { BaseStats } from "./Fighter";
+import { inlineCode, roundTo } from "./utils";
 
 
 
@@ -6,6 +7,29 @@ export abstract class Attribute {
   abstract name: string;
   abstract key: keyof BaseStats;
   abstract id: string;
+
+  format(attribValue: number, highlight = false) {
+    let stat = "";
+    switch (this.key) {
+      case "armor": 
+        stat = `+${roundTo(attribValue, 1)}`;
+      break;
+      case "critRate": 
+        stat = `+${roundTo(attribValue * 100, 1)}%`;
+      break;
+      case "critDamage": 
+        stat = `+x${roundTo(attribValue, 2)}`;
+      break;
+      default: 
+        stat = `+${Math.round(attribValue)}`;
+    }
+
+    if (highlight) {
+      stat = inlineCode(stat);
+    }
+
+    return `${stat} ${this.name}`;
+  }
 }
 
 class HP extends Attribute {
@@ -80,5 +104,35 @@ export class Attributes {
     }
 
     throw new Error(`${identifier} is not a valid attribute`);
+  }
+
+  static aggregate(attribs: [Attribute, number][]) {
+
+    const acc: BaseStats = {
+      hp: 0,
+      strength: 0,
+      speed: 0,
+      armor: 0,
+      critRate: 0,
+      critDamage: 0,
+      armorPenetration: 0,
+    };
+
+    for (const [attrib, attribValue] of attribs) {
+      acc[attrib.key] += attribValue;
+    }
+
+    return acc;
+  }
+
+  static toStats(stats: BaseStats) {
+    const result: string[] = [];
+
+    for (const [key, value] of Object.entries(stats)) {
+      const attribute = Attributes.fromString(key);
+      result.push(attribute.format(value, true));
+    }
+
+    return result;
   }
 }

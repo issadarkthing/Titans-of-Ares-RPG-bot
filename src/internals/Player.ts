@@ -9,6 +9,7 @@ import { createUser, getTotalPoints, getTotalXp, getUser, getUsers } from "../db
 import { TimerType } from "../db/timer";
 import { client } from "../main";
 import { ArenaGear } from "./ArenaGear";
+import { Attribute, Attributes } from "./Attributes";
 import { Buff, BuffID } from "./Buff";
 import { MAX_ENERGY, showTimeLeft } from "./energy";
 import { BaseStats, Fighter, IFighter } from "./Fighter";
@@ -69,7 +70,6 @@ export class Player extends Fighter {
   readonly member: GuildMember;
   petStat?: string;
   gearStat?: string;
-  gearStatsValue: Map<string, number>;
   setBonusActive: boolean;
 
   constructor(data: IPlayer) {
@@ -101,33 +101,16 @@ export class Player extends Fighter {
     }
 
     this.buff?.use(this);
-    const stats = this.equippedGears.toArray().reduce((acc, gear) => {
-      const { attrib, amount } = gear.use(this);
+    this.equippedGears.forEach(gear => gear.use(this));
 
-      if (acc.has(attrib.name)) {
-        acc.set(attrib.name, acc.get(attrib.name)! + amount);
-      } else {
-        acc.set(attrib.name, amount);
-      }
-
-      return acc;
-    }, new Map<string, number>());
-
-    const attribs: string[] = [];
-    for (const [attrib, amount] of stats) {
-      if (attrib === "Crit Damage") {
-        attribs.push(`\`+x${numberFormat(amount)}\` ${attrib}`);
-      } else if (attrib === "Crit Rate") {
-        attribs.push(`\`+${numberFormat(amount * 100)}%\` ${attrib}`);
-      } else if (attrib === "Armor") {
-        attribs.push(`\`+${roundTo(amount, 1)}\` ${attrib}`);
-      } else {
-        attribs.push(`\`+${Math.round(amount)}\` ${attrib}`);
-      }
+    const attribs: [Attribute, number][] = [];
+    for (const gear of this.equippedGears) {
+      attribs.push([gear.attribute, gear.attributeValue]);
     }
+    const aggregatedStats = Attributes.aggregate(attribs);
+    const stats = Attributes.toStats(aggregatedStats);
 
-    this.gearStatsValue = stats;
-    this.gearStat = attribs.join("\n");
+    this.gearStat = stats.join("\n");
     this.setBonusActive = this.equippedGears.length === 11;
     this.petStat = this.activePet?.use(this);
   }
@@ -239,28 +222,8 @@ export class Player extends Fighter {
 
 
     this.buff?.use(this);
-    const stats = this.equippedGears.toArray().reduce((acc, gear) => {
-      const {attrib, amount} = gear.use(this);
-
-      if (acc.has(attrib.name)) {
-        acc.set(attrib.name, acc.get(attrib.name)! + amount);
-      } else {
-        acc.set(attrib.name, amount);
-      }
-
-      return acc;
-    }, new Map<string, number>());
-
-    const attribs: string[] = [];
-    for (const [attrib, amount] of stats) {
-      if (attrib === "Crit Rate" || attrib === "Crit Damage") {
-        attribs.push(`\`+${numberFormat(amount)}\` ${attrib}`);
-      } else if (attrib === "Armor") {
-        attribs.push(`\`+${roundTo(amount, 1)}\` ${attrib}`);
-      } else {
-        attribs.push(`\`+${Math.round(amount)}\` ${attrib}`);
-      }
-    }
+    this.equippedGears.forEach(gear => gear.use(this));
+    const attribs = this.equippedGears.map(gear => gear.description);
 
     this.gearStat = attribs.join("\n");
     this.petStat = this.activePet?.use(this);

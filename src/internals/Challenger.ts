@@ -10,7 +10,6 @@ export interface IChallenger extends IFighter {
 }
 
 export class Challenger extends Fighter {
-
   readonly loot: number;
 
   constructor(data: IChallenger) {
