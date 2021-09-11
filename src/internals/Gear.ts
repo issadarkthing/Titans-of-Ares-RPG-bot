@@ -26,6 +26,7 @@ export abstract class Gear extends Item implements Socketable {
   abstract set: string;
   abstract baseStat: number;
   abstract bonus(gears: List<Gear>): GearBonus | undefined;
+  abstract attribute: Attribute;
   gem?: Gem;
   socketable = false;
   scroll = new Scroll();
@@ -41,7 +42,7 @@ export abstract class Gear extends Item implements Socketable {
     return 0.2 * this.level;
   }
 
-  get increment() {
+  get attributeValue() {
     return this.baseStat + this.baseStat * this.multiplier;
   }
 

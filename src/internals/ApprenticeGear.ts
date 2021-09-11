@@ -67,121 +67,148 @@ export abstract class ApprenticeGear extends Gear {
 }
 
 export class Helmet extends ApprenticeGear {
+  attribute = Attributes.armor;
   socketable = true;
   baseStat = 1;
   price = 150;
 
   get description() {
-    return `+${roundTo(this.increment, 1)} Armor`;
+    const desc = `+${roundTo(this.attributeValue, 1)} Armor`;
+
+    if (this.gem) {
+      return desc + ` | ${this.gem.stat}`;
+    }
+
+    return desc;
   }
 
   use(fighter: Fighter) {
-    fighter.armor += this.increment;
-    return { attrib: Attributes.armor, amount: this.increment };
+    fighter.armor += this.attributeValue;
+    return { attrib: Attributes.armor, amount: this.attributeValue };
   }
 }
 
 export class Amulet extends ApprenticeGear {
+  attribute = Attributes.hp;
   baseStat = 100;
   price = 200;
 
   get description() {
-    return `+${Math.round(this.increment)} HP`;
+    return `+${Math.round(this.attributeValue)} HP`;
   }
 
   use(fighter: Fighter) {
-    fighter.hp += this.increment;
-    return { attrib: Attributes.hp, amount: this.increment };
+    fighter.hp += this.attributeValue;
+    return { attrib: Attributes.hp, amount: this.attributeValue };
   }
 }
 
 export class Chest extends ApprenticeGear {
+  attribute = Attributes.armor;
   socketable = true;
   baseStat = 1.2;
   price = 250;
 
   get description() {
-    return `+${roundTo(this.increment, 1)} Armor`;
+    const desc = `+${roundTo(this.attributeValue, 1)} Armor`;
+
+    if (this.gem) {
+      return desc + ` | ${this.gem.stat}`;
+    }
+
+    return desc;
   }
 
   use(fighter: Fighter) {
-    fighter.armor += this.increment;
-    return { attrib: Attributes.armor, amount: this.increment };
+    fighter.armor += this.attributeValue;
+    return { attrib: Attributes.armor, amount: this.attributeValue };
   }
 }
 
 export class Pants extends ApprenticeGear {
+  attribute = Attributes.armor;
   socketable = true;
   baseStat = 1.15;
   price = 225;
 
   get description() {
-    return `+${roundTo(this.increment, 1)} Armor`;
+    const desc = `+${roundTo(this.attributeValue, 1)} Armor`;
+
+    if (this.gem) {
+      return desc + ` | ${this.gem.stat}`;
+    }
+
+    return desc;
   }
 
   use(fighter: Fighter) {
-    fighter.armor += this.increment;
-    return { attrib: Attributes.armor, amount: this.increment };
+    fighter.armor += this.attributeValue;
+    return { attrib: Attributes.armor, amount: this.attributeValue };
   }
 }
 
 export class Boots extends ApprenticeGear {
+  attribute = Attributes.speed;
   baseStat = 20;
   price = 125;
 
   get description() {
-    return `+${Math.round(this.increment)} Speed`;
+    return `+${Math.round(this.attributeValue)} Speed`;
   }
 
   use(fighter: Fighter) {
-    fighter.speed += this.increment;
-    return { attrib: Attributes.speed, amount: this.increment };
+    fighter.speed += this.attributeValue;
+    return { attrib: Attributes.speed, amount: this.attributeValue };
   }
 }
 
 export class Gauntlets extends ApprenticeGear {
+  attribute = Attributes.armor;
   baseStat = 0.5;
   price = 125;
 
   get description() {
-    return `+${roundTo(this.increment, 1)} Armor`;
+    return `+${roundTo(this.attributeValue, 1)} Armor`;
   }
 
   use(fighter: Fighter) {
-    fighter.armor += this.increment;
-    return { attrib: Attributes.armor, amount: this.increment };
+    fighter.armor += this.attributeValue;
+    return { attrib: Attributes.armor, amount: this.attributeValue };
   }
 }
 
 export class Belt extends ApprenticeGear {
+  attribute = Attributes.armor;
   baseStat = 0.3;
   price = 75;
 
   get description() {
-    return `+${roundTo(this.increment, 1)} Armor`;
+    return `+${roundTo(this.attributeValue, 1)} Armor`;
   }
 
   use(fighter: Fighter) {
-    fighter.armor += this.increment;
-    return { attrib: Attributes.armor, amount: this.increment };
+    fighter.armor += this.attributeValue;
+    return { attrib: Attributes.armor, amount: this.attributeValue };
   }
 }
 
 export class Wrist extends ApprenticeGear {
+  attribute = Attributes.armor;
   baseStat = 0.3;
   price = 75;
 
   get description() {
-    return `+${roundTo(this.increment, 1)} Armor`;
+    return `+${roundTo(this.attributeValue, 1)} Armor`;
   }
 
   use(fighter: Fighter) {
-    fighter.armor += this.increment;
-    return { attrib: Attributes.armor, amount: this.increment };
+    fighter.armor += this.attributeValue;
+    return { attrib: Attributes.armor, amount: this.attributeValue };
   }
 }
 
 export class LeftRing extends ApprenticeGear {
+  attribute = Attributes.critRate;
   baseStat = 0.01;
   price = 200;
 
@@ -190,16 +217,17 @@ export class LeftRing extends ApprenticeGear {
   }
 
   get description() {
-    return `+${roundTo(this.increment * 100, 1)}% Crit Rate`;
+    return `+${roundTo(this.attributeValue * 100, 1)}% Crit Rate`;
   }
 
   use(fighter: Fighter) {
-    fighter.critRate += this.increment;
-    return { attrib: Attributes.critRate, amount: this.increment };
+    fighter.critRate += this.attributeValue;
+    return { attrib: Attributes.critRate, amount: this.attributeValue };
   }
 }
 
 export class RightRing extends ApprenticeGear {
+  attribute = Attributes.critDamage;
   baseStat = 0.1;
   price = 200;
 
@@ -208,25 +236,26 @@ export class RightRing extends ApprenticeGear {
   }
 
   get description() {
-    return `+${roundTo(this.increment, 2)} Crit Dmg`;
+    return `+${roundTo(this.attributeValue, 2)} Crit Dmg`;
   }
 
   use(fighter: Fighter) {
-    fighter.critDamage += this.increment;
-    return { attrib: Attributes.critDamage, amount: this.increment };
+    fighter.critDamage += this.attributeValue;
+    return { attrib: Attributes.critDamage, amount: this.attributeValue };
   }
 }
 
 export class Sword extends ApprenticeGear {
+  attribute = Attributes.strength;
   baseStat = 20;
   price = 500;
 
   get description() {
-    return `+${Math.round(this.increment)} Strength`;
+    return `+${Math.round(this.attributeValue)} Strength`;
   }
 
   use(fighter: Fighter) {
-    fighter.strength += this.increment;
-    return { attrib: Attributes.strength, amount: this.increment };
+    fighter.strength += this.attributeValue;
+    return { attrib: Attributes.strength, amount: this.attributeValue };
   }
 }
