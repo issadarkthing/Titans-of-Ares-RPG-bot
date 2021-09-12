@@ -4,9 +4,9 @@ import { addGem, removeGem } from "../db/gem";
 import { ButtonHandler } from "../internals/ButtonHandler";
 import Command from "../internals/Command";
 import { List } from "../internals/List";
-import { Gem } from "../internals/Mining";
+import { Gem, Legendary } from "../internals/Mining";
 import { Player } from "../internals/Player";
-import { BLUE_BUTTON, BROWN, capitalize, inlineCode, sleep } from "../internals/utils";
+import { BLUE_BUTTON, bold, BROWN, capitalize, GREEN, inlineCode, NUMBER_BUTTONS, sleep } from "../internals/utils";
 
 export default class Combine extends Command {
   name = "combine";
@@ -35,11 +35,11 @@ export default class Combine extends Command {
     const selected = new List<Gem>();
 
     for (const index of indexes) {
-      const gem = gemList[index - 1].value;
+      const gem = gemList[index - 1]
       if (!gem) 
         return msg.channel.send(`cannot find gem on index ${index}`);
 
-      selected.push(gem);
+      selected.push(gem.value);
     }
 
     const aggregatedSelectedGem = selected.aggregate();
@@ -84,16 +84,35 @@ export default class Combine extends Command {
         await removeGem(player.id, gem.id);
       }
 
+      let upgrade = gem.product;
+
+      if (gem instanceof Legendary) {
+
+        const embed = new MessageEmbed()
+          .setTitle("Legendary Upgrade")
+          .setColor(GREEN)
+          .setDescription("Which type of gem you want to cast into?");
+
+        const menu = new ButtonHandler(msg, embed, player.id);
+
+        for (let i = 0; i < Legendary.all.length; i++) {
+          const gem = Legendary.all.get(i)!;
+          menu.addButton(NUMBER_BUTTONS[i + 1], gem.name, () => {
+            upgrade = gem;
+          })
+        }
+
+        await menu.run();
+      }
+
       const combineAnimation = gem.showCombineAnimation();
       const animation = await msg.channel.send(combineAnimation);
       await sleep(6000);
-
       await animation.delete();
 
-      const upgrade = gem.product;
 
       await addGem(player.id, upgrade.id);
-      await msg.channel.send(`You obtained ${upgrade.name}!`);
+      await msg.channel.send(`You obtained ${bold(upgrade.name)}!`);
       await msg.channel.send(upgrade.show(-1));
     })
 
