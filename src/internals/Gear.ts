@@ -1,7 +1,7 @@
 import { MessageEmbed } from "discord.js";
 import { Gear as GearDB } from "../db/gear";
 import { Fighter } from "./Fighter";
-import { Attribute } from "./Attributes";
+import { Attribute, Attributes } from "./Attributes";
 import { Item } from "./Item";
 import { List } from "./List";
 import { Gem } from "./Mining";
@@ -45,6 +45,19 @@ export abstract class Gear extends Item implements Socketable {
   }
 
   get description() {
+
+    if (this.gem) {
+      const attribs: [Attribute, number][] = [
+        [this.attribute, this.attributeValue],
+        [this.gem.attribute, this.gem.attributeValue],
+      ];
+
+      const stats = Attributes
+        .toStats(Attributes.aggregate(attribs), { highlight: false });
+
+      return stats.join(", ");
+    }
+
     return this.attribute.format(this.attributeValue, { prefix: true, suffix: true });
   }
 
