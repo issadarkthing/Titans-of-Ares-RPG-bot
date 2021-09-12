@@ -200,43 +200,8 @@ export class Player extends Fighter {
   }
 
   async sync() {
-    const data = (await getUser(this.id))!;
-    const inventory = await getInventory(this.id);
-    const pets = (await getAllPets(this.id)).map(x => Pet.fromDB(x));
-    const gears = (await getGears(this.id)).map(x => Gear.fromDB(x));
-    const equippedGears = gears.filter(x => x.equipped);
-
-    this.xp = await getTotalXp(this.id);
-    this.points = await getTotalPoints(this.id);
-    this.level = getLevel(this.xp);
-    this.coins = data.Coin;
-    this.energy = data.Energy;
-    this.challengerMaxLevel = data.ChallengerMaxLevel;
-    this.inventory = new Inventory(inventory);
-    this.goldMedal = data.GoldMedal;
-    this.silverMedal = data.SilverMedal;
-    this.bronzeMedal = data.BronzeMedal;
-    this.fragmentReward = data.FragmentReward;
-    this.buff = data.Buff && new Buff(data.Buff);
-    this.pets = List.from(pets);
-    this.equippedGears = List.from(equippedGears);
-    this.baseStats = {
-      hp: this.hp,
-      strength: this.strength,
-      speed: this.speed,
-      armor: this.armor,
-      critRate: this.critRate,
-      critDamage: this.critDamage,
-      armorPenetration: this.baseStats.armorPenetration,
-    }
-
-
-    this.buff?.use(this);
-    this.equippedGears.forEach(gear => gear.use(this));
-    const attribs = this.equippedGears.map(gear => gear.description);
-
-    this.gearStat = attribs.join("\n");
-    this.petStat = this.activePet?.use(this);
+    const player = await Player.getPlayer(this.member);
+    Object.assign(this, player);
   }
 
   async getRank() {
