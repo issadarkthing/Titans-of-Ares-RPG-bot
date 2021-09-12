@@ -37,6 +37,9 @@ export abstract class Attribute {
       case "critDamage":
         stat = `x${roundTo(attribValue, 2)}`;
       break;
+      case "armorPenetration":
+        stat = `${Math.round(attribValue * 100)}%`;
+      break;
       default:
         stat = `${Math.round(attribValue)}`;
     }

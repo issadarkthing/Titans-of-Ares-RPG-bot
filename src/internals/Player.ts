@@ -113,6 +113,16 @@ export class Player extends Fighter {
     this.gearStat = stats.join("\n");
     this.setBonusActive = this.equippedGears.length === 11;
     this.petStat = this.activePet?.use(this);
+
+    if (this.setBonusActive) {
+      const armor = this.equippedGears.random()!;
+      const bonus = Gear.getBonus(this.equippedGears);
+
+      if (armor instanceof ArenaGear && bonus) {
+        this.armorPenetration += bonus.bonus;
+        this.baseStats.armorPenetration += bonus.bonus;
+      }
+    }
   }
 
   static async getPlayer(member: GuildMember): Promise<Player> {

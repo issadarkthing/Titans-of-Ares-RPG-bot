@@ -141,10 +141,11 @@ export abstract class Gear extends Item implements Socketable {
   }
 
   protected isBonus(gears: List<Gear>, minLevel: number) {
+    const set = this.set;
     return gears.length === 11 && 
       gears.every(gear => {
         const passMinGear = gear.level >= minLevel;
-        const sameGearSet = gear.set === this.set;
+        const sameGearSet = gear.set === set;
         return passMinGear && sameGearSet;
       });
   }
