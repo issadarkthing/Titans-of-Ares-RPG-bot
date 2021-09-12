@@ -114,7 +114,7 @@ export class Battle {
         const isSpawn = pet.isSpawn(p1Round);
         if (isSpawn) {
           const dmg = p1.strength * 0.5;
-          const damageReduction = p2.getArmorReduction(dmg, p1.penetration);
+          const damageReduction = p2.getArmorReduction(dmg, p1.armorPenetration);
           p2.hp -= dmg - damageReduction;
 
           const petText = 
@@ -244,7 +244,7 @@ export class Battle {
     const attackRate = reflected ? goneThrough : 
       isCrit ? p1.critDamage * p1.strength : p1.strength;
 
-    const damageReduction = p2.getArmorReduction(attackRate, p1.penetration);
+    const damageReduction = p2.getArmorReduction(attackRate, p1.armorPenetration);
     const damageDone = attackRate - damageReduction;
     p2.hp -= damageDone;
 

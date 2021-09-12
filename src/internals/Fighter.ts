@@ -52,10 +52,6 @@ export class Fighter {
     this.imageUrl = data.imageUrl;
   }
 
-  get penetration() {
-    return 0;
-  }
-
   isCriticalHit() {
     return random().bool(this.critRate);
   }
