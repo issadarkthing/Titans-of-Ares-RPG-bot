@@ -1,34 +1,55 @@
 import { BaseStats } from "./Fighter";
 import { inlineCode, roundTo } from "./utils";
 
-
+/**
+ * Sets format options for attribute. By default, it will return only number
+ * with appropriate formatting such as decimal places and adding % for a
+ * particular attribute.
+ * */
+interface FormatOptions {
+  /** Add inline code formatting */
+  highlight?: boolean;
+  /** Add "+" in front */
+  suffix?: boolean;
+  /** Add attribute name at the back */
+  prefix?: boolean;
+}
 
 export abstract class Attribute {
   abstract name: string;
   abstract key: keyof BaseStats;
   abstract id: string;
 
-  format(attribValue: number, highlight = false) {
+  format(attribValue: number, opt: FormatOptions = {}) {
     let stat = "";
-    switch (this.key) {
-      case "armor": 
-        stat = `+${roundTo(attribValue, 1)}`;
-      break;
-      case "critRate": 
-        stat = `+${roundTo(attribValue * 100, 1)}%`;
-      break;
-      case "critDamage": 
-        stat = `+x${roundTo(attribValue, 2)}`;
-      break;
-      default: 
-        stat = `+${Math.round(attribValue)}`;
+
+    if (opt.prefix) {
+      stat += "+";
     }
 
-    if (highlight) {
+    switch (this.key) {
+      case "armor":
+        stat = `${roundTo(attribValue, 1)}`;
+      break;
+      case "critRate":
+        stat = `${roundTo(attribValue * 100, 1)}%`;
+      break;
+      case "critDamage":
+        stat = `x${roundTo(attribValue, 2)}`;
+      break;
+      default:
+        stat = `${Math.round(attribValue)}`;
+    }
+
+    if (opt.highlight) {
       stat = inlineCode(stat);
     }
 
-    return `${stat} ${this.name}`;
+    if (opt.suffix) {
+      stat += " " + this.name;
+    }
+
+    return stat;
   }
 }
 
@@ -130,7 +151,12 @@ export class Attributes {
 
     for (const [key, value] of Object.entries(stats)) {
       const attribute = Attributes.fromString(key);
-      result.push(attribute.format(value, true));
+      const formatOpt = {
+        highlight: true,
+        suffix: true,
+        prefix: true,
+      };
+      result.push(attribute.format(value, formatOpt));
     }
 
     return result;

@@ -20,7 +20,7 @@ import { Gem } from "./Mining";
 import { Manticore, Pet } from "./Pet";
 import { Profile } from "./Profile";
 import { Phase, TeamArena } from "./TeamArena";
-import { getLevel, getStats, GOLD, numberFormat, roundTo, STAR } from "./utils";
+import { getLevel, getStats, GOLD, STAR } from "./utils";
 
 export const CRIT_RATE = 0.1;
 export const CRIT_DAMAGE = 2;
@@ -274,12 +274,17 @@ export class Player extends Fighter {
     const energyTimer = await showTimeLeft(TimerType.Energy, this.id);
     const buffTimer = await this.buff?.getTimeLeft(this);
     const xp = Math.round(this.xp);
-    const hp = Math.round(this.hp);
-    const strength = Math.round(this.strength);
-    const speed = Math.round(this.speed);
-    const armor = roundTo(this.armor, 1);
-    const critRate = numberFormat(this.critRate * 100);
-    const critDamage = numberFormat(this.critDamage);
+
+    const formatOpt = { highlight: true };
+    const hp = Attributes.hp.format(this.hp, formatOpt);
+    const strength = Attributes.strength.format(this.strength, formatOpt);
+    const speed = Attributes.speed.format(this.speed, formatOpt);
+    const armor = Attributes.armor.format(this.armor, formatOpt);
+    const critRate = Attributes.critRate.format(this.critRate, formatOpt);
+    const critDamage = Attributes.critDamage.format(this.critDamage, formatOpt);
+    const armorPenetration = Attributes.armorPenetration
+      .format(this.armorPenetration, formatOpt);
+
     const petName = this.activePet ? 
       `${this.activePet.name} \`${this.activePet.star} ${STAR}\`` : "None"
     const petPassiveDesc = this.activePet instanceof Manticore ? "" :
@@ -302,9 +307,10 @@ export class Player extends Fighter {
       .setTitle(this.name)
       .addField("-----", stripIndents`
         **Stats**
-        XP: \`${xp}\` HP: \`${hp}\` Strength: \`${strength}\`
-        Speed: \`${speed}\` Armor: \`${armor}\` 
-        Crit Rate: \`${critRate}%\` Crit Damage: \`x${critDamage}\` 
+        XP: \`${xp}\` HP: ${hp} Strength: ${strength}
+        Speed: ${speed} Armor: ${armor} 
+        Crit Rate: ${critRate} Crit Damage: ${critDamage} 
+        Armor Penetration: ${armorPenetration}
         
         **Inventory**
         \`${this.inventory.chests.length}\` Treasure Chests
