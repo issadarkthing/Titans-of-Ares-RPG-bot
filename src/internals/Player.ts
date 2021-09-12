@@ -106,6 +106,10 @@ export class Player extends Fighter {
     const attribs: [Attribute, number][] = [];
     for (const gear of this.equippedGears) {
       attribs.push([gear.attribute, gear.attributeValue]);
+
+      if (gear.gem) {
+        attribs.push([gear.gem.attribute, gear.gem.attributeValue]);
+      }
     }
     const aggregatedStats = Attributes.aggregate(attribs);
     const stats = Attributes.toStats(aggregatedStats);

@@ -89,6 +89,10 @@ export abstract class Gear extends Item implements Socketable {
 
   use(fighter: Fighter) {
     fighter[this.attribute.key] += this.attributeValue;
+
+    if (this.gem) {
+      fighter[this.gem.attribute.key] += this.gem.attributeValue;
+    }
   }
 
   show(count: number): MessageEmbed {
