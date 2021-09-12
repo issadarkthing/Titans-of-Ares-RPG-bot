@@ -9,9 +9,9 @@ import { inlineCode, roundTo } from "./utils";
 interface FormatOptions {
   /** Add inline code formatting */
   highlight?: boolean;
-  /** Add "+" in front */
-  suffix?: boolean;
   /** Add attribute name at the back */
+  suffix?: boolean;
+  /** Add "+" in front */
   prefix?: boolean;
 }
 
@@ -29,19 +29,19 @@ export abstract class Attribute {
 
     switch (this.key) {
       case "armor":
-        stat = `${roundTo(attribValue, 1)}`;
+        stat += `${roundTo(attribValue, 1)}`;
       break;
       case "critRate":
-        stat = `${roundTo(attribValue * 100, 1)}%`;
+        stat += `${roundTo(attribValue * 100, 1)}%`;
       break;
       case "critDamage":
-        stat = `x${roundTo(attribValue, 2)}`;
+        stat += `x${roundTo(attribValue, 2)}`;
       break;
       case "armorPenetration":
-        stat = `${Math.round(attribValue * 100)}%`;
+        stat += `${Math.round(attribValue * 100)}%`;
       break;
       default:
-        stat = `${Math.round(attribValue)}`;
+        stat += `${Math.round(attribValue)}`;
     }
 
     if (opt.highlight) {

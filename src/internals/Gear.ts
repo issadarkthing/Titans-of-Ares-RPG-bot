@@ -45,7 +45,7 @@ export abstract class Gear extends Item implements Socketable {
   }
 
   get description() {
-    return this.attribute.format(this.attributeValue);
+    return this.attribute.format(this.attributeValue, { prefix: true, suffix: true });
   }
 
   static get all() {
