@@ -132,34 +132,36 @@ export class Attributes {
 
   static aggregate(attribs: [Attribute, number][]) {
 
-    const acc: BaseStats = {
-      hp: 0,
-      strength: 0,
-      speed: 0,
-      armor: 0,
-      critRate: 0,
-      critDamage: 0,
-      armorPenetration: 0,
-    };
+    const acc: Partial<BaseStats> = {};
 
     for (const [attrib, attribValue] of attribs) {
-      acc[attrib.key] += attribValue;
+      const key = attrib.key;
+      const value = acc[key];
+
+      if (value !== undefined) {
+        acc[key] = value + attribValue;
+      } else {
+        acc[attrib.key] = attribValue;
+      }
     }
 
     return acc;
   }
 
-  static toStats(stats: BaseStats) {
+  static toStats(stats: Partial<BaseStats>, formatOpts?: FormatOptions) {
     const result: string[] = [];
 
     for (const [key, value] of Object.entries(stats)) {
       const attribute = Attributes.fromString(key);
-      const formatOpt = {
-        highlight: true,
-        suffix: true,
-        prefix: true,
+      const opts = {
+        ...{
+          highlight: true,
+          suffix: true,
+          prefix: true,
+        },
+        ...formatOpts,
       };
-      result.push(attribute.format(value, formatOpt));
+      result.push(attribute.format(value, opts));
     }
 
     return result;
