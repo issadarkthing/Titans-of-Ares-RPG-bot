@@ -203,7 +203,7 @@ export default class extends Command {
     }
   }
 
-  private handlePick(
+  handlePick(
     button: ButtonHandler,
     item: MiningPick,
     player: Player,
