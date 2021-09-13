@@ -11,6 +11,7 @@ import { client } from "../main";
 import { Buff, BUFF_LIMIT, XP_THRESHOLD } from "../internals/Buff";
 import { Player } from "../internals/Player";
 import { getLevel, getXp } from "../internals/utils";
+import { MiningPickReward } from "./MiningPickReward";
 
 const rgx = /^Registered\sDay:\s(?<day>\d+)\s.*Progress:\s(?<value>\d+[,|.]?\d*)\s(?<valueType>\w+).*$/;
 
@@ -91,6 +92,17 @@ export async function xpLog(msg: Message) {
 
       // set new upper limit
       FragmentReward.setUpperLimit(player);
+    }
+
+    // mining pick reward
+    if (player.xp >= player.miningPickReward) {
+
+      await MiningPickReward.reward(player);
+      client.logChannel.send(
+        `${player.member} has found 1 mining pick by working out!`
+      );
+
+      MiningPickReward.setUpperLimit(player);
     }
 
     // workout buff

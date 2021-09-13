@@ -17,6 +17,7 @@ export interface Player {
   SilverMedal: number;
   BronzeMedal: number;
   FragmentReward: number;
+  MiningPickReward: number;
 }
 
 export function getUsers() {

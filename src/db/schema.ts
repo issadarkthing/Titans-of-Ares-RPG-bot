@@ -23,6 +23,7 @@ schema += `
       BronzeMedal        DEFAULT 0,
       Buff               TEXT,
       FragmentReward     DEFAULT 500,
+      MiningPickReward   DEFAULT 10,
       PRIMARY KEY("DiscordID")
     );
 `;

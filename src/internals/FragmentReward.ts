@@ -1,4 +1,4 @@
-import { setFragmentReward, XP_REWARD } from "../db/fragmentReward";
+import { setFragmentReward } from "../db/fragmentReward";
 import { addInventory } from "../db/inventory";
 import { Pet } from "./Pet";
 import { Player } from "./Player";
@@ -6,6 +6,7 @@ import { random, totalLevelPassed, upperLimit } from "../internals/utils";
 import { getUsers } from "../db/player";
 import { client } from "../main";
 
+const XP_REWARD = 500;
 
 export class FragmentReward {
 

@@ -106,3 +106,13 @@ export async function desocketGem($userID: string, $gemID: string, $gearID: stri
 
   return dbRun(sql, { $userID, $gemID, $gearID });
 }
+
+export async function setMiningPickReward($userID: string, $upperLimit: number) {
+  const sql = `
+  UPDATE Player
+  SET MiningPickReward = $upperLimit
+  WHERE DiscordID = $userID
+  `
+
+  return dbRun(sql, { $userID, $upperLimit });
+}

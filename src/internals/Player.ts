@@ -40,6 +40,7 @@ export interface IPlayer extends IFighter {
   silverMedal: number;
   bronzeMedal: number;
   fragmentReward: number;
+  miningPickReward: number;
   pets: List<Pet>;
   equippedGears: List<Gear>;
 }
@@ -65,6 +66,7 @@ export class Player extends Fighter {
    *  for the same limit again. This prevents from user to earn multiple reward.
    * */
   fragmentReward: number;
+  miningPickReward: number;
   equippedGears: List<Gear>;
   readonly id: string;
   readonly member: GuildMember;
@@ -87,6 +89,7 @@ export class Player extends Fighter {
     this.silverMedal = data.silverMedal;
     this.bronzeMedal = data.bronzeMedal;
     this.fragmentReward = data.fragmentReward;
+    this.miningPickReward = data.miningPickReward;
     this.pets = data.pets;
     this.equippedGears = data.equippedGears;
     this.buff = data.buff && new Buff(data.buff);
@@ -184,6 +187,7 @@ export class Player extends Fighter {
       pets: List.from(pets),
       equippedGears: List.from(equippedGears),
       fragmentReward: player.FragmentReward,
+      miningPickReward: player.MiningPickReward,
     })
   }
 
