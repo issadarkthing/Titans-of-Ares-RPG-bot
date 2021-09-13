@@ -11,8 +11,8 @@ export const client = new Client(path.resolve(__dirname, process.env.DB!));
 
 client.commandManager.verbose = true;
 
-client.addPollHandler(energyMainLoop);
-client.addPollHandler(Buff.mainLoop);
+client.addBlockingPollHandler(energyMainLoop);
+client.addBlockingPollHandler(Buff.mainLoop);
 client.addBlockingPollHandler(TeamArena.mainLoop);
 
 client.commandManager.registerCommands(path.resolve(__dirname, "./commands"));
