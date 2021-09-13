@@ -1,7 +1,7 @@
 import { MessageEmbed } from "discord.js";
 import { Gear as GearDB } from "../db/gear";
 import { Fighter } from "./Fighter";
-import { Attribute, Attributes } from "./Attributes";
+import { Attribute } from "./Attributes";
 import { Item } from "./Item";
 import { List } from "./List";
 import { Gem } from "./Mining";
@@ -26,6 +26,7 @@ export abstract class Gear extends Item implements Socketable {
   abstract bonus(gears: List<Gear>): GearBonus | undefined;
   abstract attribute: Attribute;
   gem?: Gem;
+  static socketEmoji = "💠";
   socketable = false;
   scroll = new Scroll();
   equipped = false;
@@ -46,19 +47,22 @@ export abstract class Gear extends Item implements Socketable {
 
   get description() {
 
-    if (this.gem) {
-      const attribs: [Attribute, number][] = [
-        [this.attribute, this.attributeValue],
-        [this.gem.attribute, this.gem.attributeValue],
-      ];
-
-      const stats = Attributes
-        .toStats(Attributes.aggregate(attribs), { highlight: false });
-
-      return stats.join(", ");
+    const formatOpt = {
+      prefix: true,
+      suffix: true,
     }
 
-    return this.attribute.format(this.attributeValue, { prefix: true, suffix: true });
+    const desc = this.attribute.format(this.attributeValue, formatOpt);
+
+    if (this.gem) {
+
+      const gemStat = 
+        this.gem.attribute.format(this.gem.attributeValue, formatOpt);
+
+      return desc + `\n${Gear.socketEmoji} ${gemStat}`;
+    }
+
+    return desc;
   }
 
   static get all() {

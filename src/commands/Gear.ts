@@ -1,4 +1,3 @@
-import { oneLine, stripIndents } from "common-tags";
 import { Message, MessageEmbed } from "discord.js";
 import { client } from "../main";
 import { unequipGear } from "../db/gear";
@@ -11,6 +10,7 @@ import { BLACK_BUTTON, BLUE_BUTTON, bold, RED_BUTTON, RETURN_BUTTON, SILVER, WHI
 import Command from "../internals/Command";
 import { ArenaGear } from "../internals/ArenaGear";
 import { desocketGem } from "../db/gem";
+import { stripIndents } from "common-tags";
 
 export default class extends Command {
   name = "gear";
@@ -115,12 +115,17 @@ export default class extends Command {
       return;
     }
     
-    const socketEmoji = "💠";
     const list = gears
-      .map((gear, i) => 
-           (oneLine`${i + 1}. 
-            \`Lvl ${gear.level} ${gear.name} ${gear.description}
-            ${gear.gem ? socketEmoji : ""}\``).trim())
+      .map((gear, i) => { 
+
+        const socket = gear.gem ? 
+          `\n${Gear.socketEmoji} ${gear.gem.name} ${gear.gem.stat}` : "";
+
+        const stat = 
+          gear.attribute.format(gear.attributeValue, { suffix: true, prefix: true });
+        
+        return `${i + 1}. \`Lvl ${gear.level} ${gear.name} ${stat} ${socket}\``;
+      })
       .join("\n");
 
     const setBonus = Gear.getBonus(player.equippedGears);
