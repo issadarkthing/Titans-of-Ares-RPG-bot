@@ -210,11 +210,19 @@ export default class extends Command {
     descText += 
       `\nExample command: \`${client.prefix}combine ${quality} 1 1 2 2 3\``;
 
-    const embed = new MessageEmbed()
+    const helperText1 = new MessageEmbed()
       .setColor(BROWN)
       .setDescription(descText)
 
-    msg.channel.send(embed);
+    const helperText2 = new MessageEmbed(helperText1)
+    .setDescription(
+      oneLine`You can socket a gem in your equipped helmet, chest piece or
+      pants. You can do this by using the command: \`${client.prefix}socket
+      ${quality} <number>\``
+    )
+
+    await msg.channel.send(helperText1);
+    await msg.channel.send(helperText2);
   }
 
   handlePick(

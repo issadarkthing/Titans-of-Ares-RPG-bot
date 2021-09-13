@@ -5,7 +5,7 @@ import Command from "../internals/Command";
 import { List } from "../internals/List";
 import { Gem } from "../internals/Mining";
 import { Player } from "../internals/Player";
-import { BLUE_BUTTON, bold, GREEN, RED_BUTTON, WHITE_BUTTON } from "../internals/utils";
+import { BLUE_BUTTON, bold, GREEN, inlineCode, RED_BUTTON, WHITE_BUTTON } from "../internals/utils";
 
 
 export default class Socket extends Command {
@@ -39,7 +39,7 @@ export default class Socket extends Command {
     const menu = new MessageEmbed()
       .setColor(GREEN)
       .setTitle("Gem Socket")
-      .setDescription(`Where do you want to socket ${gem.name} in?`)
+      .setDescription(`Where do you want to socket ${inlineCode(gem.name)} in?`)
 
     const button = new ButtonHandler(msg, menu, player.id);
 
@@ -63,7 +63,7 @@ export default class Socket extends Command {
       await socketGem(player.id, gem.id, piece.id);
       
       msg.channel.send(
-        `Successfully socket ${bold(gem.name)} into ${bold(piece.name)}!`
+        `Successfully socketed ${bold(gem.name)} into ${bold(piece.name)}!`
       );
     }
 
