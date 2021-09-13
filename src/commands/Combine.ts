@@ -81,7 +81,7 @@ export default class Combine extends Command {
       const gem = gemList[0].value;
 
       for (const gem of selected) {
-        await removeGem(player.id, gem.id);
+        removeGem(player.id, gem.id);
       }
 
       let upgrade = gem.product;
