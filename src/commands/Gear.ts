@@ -1,4 +1,4 @@
-import { stripIndents } from "common-tags";
+import { oneLine, stripIndents } from "common-tags";
 import { Message, MessageEmbed } from "discord.js";
 import { client } from "../main";
 import { unequipGear } from "../db/gear";
@@ -115,8 +115,12 @@ export default class extends Command {
       return;
     }
     
+    const socketEmoji = "💠";
     const list = gears
-      .map((gear, i) => `${i + 1}. \`Lvl ${gear.level} ${gear.name} ${gear.description}\``)
+      .map((gear, i) => 
+           (oneLine`${i + 1}. 
+            \`Lvl ${gear.level} ${gear.name} ${gear.description}
+            ${gear.gem ? socketEmoji : ""}\``).trim())
       .join("\n");
 
     const setBonus = Gear.getBonus(player.equippedGears);
