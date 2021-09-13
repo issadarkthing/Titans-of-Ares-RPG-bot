@@ -4,6 +4,8 @@ import Discord, { TextChannel } from "discord.js";
 import { schema } from "../db/schema";
 import { Phase } from "./TeamArena";
 import { SafeFn } from "./SafeFn";
+import { Player } from "./Player";
+import { getUsers } from "../db/player";
 
 type PollHandler = () => void;
 type BlockingPollHandler = () => Promise<void>;
@@ -43,8 +45,34 @@ export default class Client {
   addPollHandler(fn: PollHandler) {
     this.pollHandlers.push(fn);
   }
+
   addBlockingPollHandler(fn: BlockingPollHandler) {
     this.blockingPollHandlers.push(fn);
+  }
+
+  async runEveryPlayer(fn: (player: Player) => Promise<void> | void) {
+
+    const users = await getUsers();
+    const guild = await this.bot.guilds.fetch(this.serverID);
+    const members = await guild.members.fetch();
+    let alteredUsers = 0;
+
+    this.db.exec("BEGIN TRANSACTION");
+    for (const user of users) {
+      const member = members.get(user.DiscordID);
+      if (!member) {
+        console.log(`Skipping ${user.DiscordID}, member no longer in the server`);
+        continue;
+      }
+
+      const player = await Player.getPlayer(member);
+      await fn(player);
+
+      alteredUsers++;
+    }
+    this.db.exec("COMMIT");
+
+    console.log(`Total ${alteredUsers} players have been altered`);
   }
 
   startPollEvent() {
