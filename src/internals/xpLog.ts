@@ -95,7 +95,7 @@ export async function xpLog(msg: Message) {
     }
 
     // mining pick reward
-    if (player.xp >= player.miningPickReward) {
+    if (player.xp + (client.isDev ? xp : 0) >= player.miningPickReward) {
 
       await MiningPickReward.reward(player);
       client.logChannel.send(
