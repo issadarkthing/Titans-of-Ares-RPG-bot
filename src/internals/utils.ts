@@ -126,7 +126,7 @@ export function upperLimit(current: number, step: number) {
 
   let acc = step;
 
-  for (let i = step; i < current; i += 500)
+  for (let i = step; i <= current; i += step)
     acc += step;
 
   return acc;
