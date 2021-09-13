@@ -215,7 +215,7 @@ export class Player extends Fighter {
   async getRank() {
 
     const users = await getUsers();
-    const cards: { 
+    const cards: {
       id: string,
       xp: number,
     }[] = [];
@@ -268,13 +268,15 @@ export class Player extends Fighter {
     const armorPenetration = Attributes.armorPenetration
       .format(this.armorPenetration, formatOpt);
 
-    const petName = this.activePet ? 
+    const petName = this.activePet ?
       `${this.activePet.name} \`${this.activePet.star} ${STAR}\`` : "None"
     const petPassiveDesc = this.activePet instanceof Manticore ? "" :
       this.activePet?.passiveStatDescription;
     const equippedGears = this.equippedGears;
     const setBonus = Gear.getBonus(equippedGears);
     const armorBonusSetDesc = setBonus?.description || "";
+    const gemAndMiningCount =
+      this.inventory.gems.length + this.inventory.picks.length;
 
     const arena = await TeamArena.getCurrentArena();
     const teamArenaMember = arena.candidates
@@ -282,7 +284,7 @@ export class Player extends Fighter {
     const isBattlePhase = arena.phase === Phase.BATTLE_1;
 
     const teamArenaEnergyText = teamArenaMember && isBattlePhase ?
-      `${teamArenaMember.charge}/${TeamArena.MAX_ENERGY} Team Arena Energy` 
+      `${teamArenaMember.charge}/${TeamArena.MAX_ENERGY} Team Arena Energy`
         : "";
 
     const embed = new MessageEmbed()
@@ -291,10 +293,10 @@ export class Player extends Fighter {
       .addField("-----", stripIndents`
         **Stats**
         XP: \`${xp}\` HP: ${hp} Strength: ${strength}
-        Speed: ${speed} Armor: ${armor} 
-        Crit Rate: ${critRate} Crit Damage: ${critDamage} 
+        Speed: ${speed} Armor: ${armor}
+        Crit Rate: ${critRate} Crit Damage: ${critDamage}
         Armor Penetration: ${armorPenetration}
-        
+
         **Inventory**
         \`${this.inventory.chests.length}\` Treasure Chests
         \`${this.inventory.fragments.length}\` Pet Fragments
@@ -302,6 +304,7 @@ export class Player extends Fighter {
         \`${this.inventory.scrolls.length}\` Scrolls
         \`${this.coins}\` Coins
         \`${this.arenaCoins}\` Arena Coins
+        \`${gemAndMiningCount}\` Gems and Mining Equipment
 
         **Energy**
         ${this.energy}/${MAX_ENERGY} Battle Energy ${energyTimer}
