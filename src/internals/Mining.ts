@@ -21,7 +21,7 @@ export class MiningPick {
       .setTitle(this.name)
       .setThumbnail(this.imageUrl)
       .setDescription(this.description)
-      .addField("count", count, true)
+      .addField("Count", count, true)
 
     return embed;
   }
@@ -213,7 +213,7 @@ export abstract class Gem extends Stone {
 
     embed
       .addField("Stat", inlineCode(this.stat), true)
-      .addField("Gems required to upgrade", inlineCode(gems), true)
+      .addField("Gems required to combine", inlineCode(gems), true)
 
     return embed;
   }

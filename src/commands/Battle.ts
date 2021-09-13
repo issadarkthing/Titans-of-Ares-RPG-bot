@@ -110,7 +110,9 @@ export default class extends Command {
 
       const embed = new MessageEmbed()
         .setTitle("Daily Challenge")
-        .setDescription("Please select how many battle");
+        .setDescription(
+          "Please select how many times you want to battle this level."
+        );
 
       const menu = new ButtonHandler(msg, embed, player.id);
       const battle = (count: number) => 
