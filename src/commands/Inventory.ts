@@ -192,7 +192,8 @@ export default class extends Command {
     msg: Message,
   ) {
 
-    const gems = this.inventory.gems.filter(x => x.quality === item.quality);
+    const { quality } = item;
+    const gems = this.inventory.gems.filter(x => x.quality === quality);
     const gemList = List.from(gems).aggregate();
 
     let i = 0;
@@ -201,6 +202,19 @@ export default class extends Command {
       const info = gem.inspect(count, i);
       await msg.channel.send(info);
     }
+
+    let descText =  oneLine`You can combine 5 ${quality} gems into a random
+    higher quality gem. To combine, use command \`${client.prefix}combine
+    ${quality} <number> <number> <number> <number> <number>\``;
+
+    descText += 
+      `\nExample command: \`${client.prefix}combine ${quality} 1 1 2 2 3\``;
+
+    const embed = new MessageEmbed()
+      .setColor(BROWN)
+      .setDescription(descText)
+
+    msg.channel.send(embed);
   }
 
   handlePick(
