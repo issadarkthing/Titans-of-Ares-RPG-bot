@@ -2,7 +2,7 @@ import { setMiningPickReward } from "../db/gem";
 import { addInventory } from "../db/inventory";
 import { MiningPick } from "./Mining";
 import { Player } from "./Player";
-import { upperLimit } from "./utils";
+import { totalLevelPassed, upperLimit } from "./utils";
 
 
 export class MiningPickReward {
@@ -12,6 +12,10 @@ export class MiningPickReward {
 
   static upperLimit(xp: number) {
     return upperLimit(xp, this.XP_REWARD);
+  }
+
+  static totalLevelPassed(xp: number) {
+    return totalLevelPassed(xp, this.XP_REWARD);
   }
 
   static async reward(player: Player) {

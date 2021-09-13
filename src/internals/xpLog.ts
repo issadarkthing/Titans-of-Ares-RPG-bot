@@ -94,12 +94,18 @@ export async function xpLog(msg: Message) {
       FragmentReward.setUpperLimit(player);
     }
 
+    const xpGained = player.xp + (client.isDev ? xp : 0);
     // mining pick reward
-    if (player.xp + (client.isDev ? xp : 0) >= player.miningPickReward) {
+    if (xpGained >= player.miningPickReward) {
 
-      await MiningPickReward.reward(player);
+      const rewardCount = MiningPickReward.totalLevelPassed(xp);
+
+      for (let i = 0; i < rewardCount; i++) {
+        await MiningPickReward.reward(player);
+      }
+
       client.logChannel.send(
-        `${player.member} has found 1 mining pick by working out!`
+        `${player.member} has found **x${rewardCount} Mining Pick** by working out!`
       );
 
       MiningPickReward.setUpperLimit(player);

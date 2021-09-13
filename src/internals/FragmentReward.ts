@@ -6,16 +6,16 @@ import { random, totalLevelPassed, upperLimit } from "../internals/utils";
 import { getUsers } from "../db/player";
 import { client } from "../main";
 
-const XP_REWARD = 500;
-
 export class FragmentReward {
 
+  static XP_REWARD = 500;
+
   static upperLimit(xp: number) {
-    return upperLimit(xp, XP_REWARD);
+    return upperLimit(xp, this.XP_REWARD);
   }
 
   static totalLevelPassed(xp: number) {
-    return totalLevelPassed(xp, XP_REWARD);
+    return totalLevelPassed(xp, this.XP_REWARD);
   }
 
   static async reward(player: Player) {
