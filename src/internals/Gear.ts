@@ -132,8 +132,9 @@ export abstract class Gear extends Item implements Socketable {
       .addField("Upgrade Scrolls", scroll, true)
       .addField("Level", this.level == 10 ? "max" : this.level, true)
 
-    if (this.gem) {
-      embed.addField("Socketed Gem", inlineCode(this.gem.name), true);
+    if (this.socketable) {
+      const gemName = this.gem?.name || "No gem socketed";
+      embed.addField("Socketed Gem", inlineCode(gemName), true);
     }
 
     return embed;
