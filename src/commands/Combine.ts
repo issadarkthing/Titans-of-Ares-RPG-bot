@@ -55,7 +55,7 @@ export default class Combine extends Command {
 
     // check for gem upgrade requirement
     const gem = selected.get(0)!;
-    if (selected.length < gem.requirement) {
+    if (selected.length !== gem.requirement) {
       const errMsg = oneLine`${gem.requirement} ${capitalize(gem.quality)} Gems
       are required to upgrade to 1 ${capitalize(gem.product.quality)} Gem`;
 
