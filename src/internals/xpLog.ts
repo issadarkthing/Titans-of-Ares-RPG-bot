@@ -10,8 +10,9 @@ import { FragmentReward } from "./FragmentReward";
 import { client } from "../main";
 import { Buff, BUFF_LIMIT, XP_THRESHOLD } from "../internals/Buff";
 import { Player } from "../internals/Player";
-import { getLevel, getXp } from "../internals/utils";
+import { bold, getLevel, getXp } from "../internals/utils";
 import { MiningPickReward } from "./MiningPickReward";
+import { Rank } from "./Rank";
 
 const rgx = /^Registered\sDay:\s(?<day>\d+)\s.*Progress:\s(?<value>\d+[,|.]?\d*)\s(?<valueType>\w+).*$/;
 
@@ -140,6 +141,25 @@ export async function xpLog(msg: Message) {
 
     if (currentLevel !== prevLevel) {
       client.logChannel.send(`${name} is now on **level ${currentLevel}**`);
+
+      await client.mainGuild.roles.fetch();
+
+      const rank = new Rank();
+      const newRankRole = rank.getRankRole(player.level);
+      const currentRankRole = rank.getCurrentRole(player.member);
+
+      if (currentRankRole !== newRankRole) {
+
+        if (currentRankRole) {
+          player.member.roles.remove(currentRankRole);
+        }
+
+        player.member.roles.add(newRankRole);
+
+        client.logChannel.send(
+          `Ares has promoted ${player.member} to ${bold(newRankRole.name)}!`
+        );
+      }
     }
   }
 }

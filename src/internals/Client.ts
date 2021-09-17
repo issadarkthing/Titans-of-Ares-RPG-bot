@@ -1,6 +1,6 @@
 import { Database, verbose } from "sqlite3";
 import { CommandManager } from "./Command";
-import Discord, { TextChannel } from "discord.js";
+import Discord, { Guild, TextChannel } from "discord.js";
 import { schema } from "../db/schema";
 import { Phase } from "./TeamArena";
 import { SafeFn } from "./SafeFn";
@@ -25,6 +25,7 @@ export default class Client {
   readonly blockingPoll = new Set<BlockingPollHandler>();
   readonly bot = new Discord.Client();
   db: Database;
+  mainGuild!: Guild;
   logChannel!: TextChannel;
   teamArenaChannel!: TextChannel;
   /** functions to be run every 1 seconds interval */

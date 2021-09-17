@@ -15,6 +15,7 @@ export const BLUE_BUTTON = "🔵";
 export const WHITE_BUTTON = "⚪";
 export const RED_BUTTON = "🔴";
 export const BLACK_BUTTON = "⚫";
+export const ATTOM_BUTTON = "⚛️";
 export const RETURN_BUTTON = "↩️";
 export const LEFTMOST_ARROW_BUTTON = "⏮️";
 export const LEFT_ARROW_BUTTON = "◀️";

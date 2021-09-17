@@ -21,6 +21,7 @@ client.bot.once('ready', async () => {
   console.log('Bot is ready');
   const guild = await client.bot.guilds.fetch(client.serverID);
   const channels = guild.channels.cache;
+  client.mainGuild = guild;
   client.logChannel = channels.get(client.xpLogChannelID) as TextChannel;
   client.teamArenaChannel = channels.get(client.teamArenaChannelID) as TextChannel;
   client.startPollEvent();
