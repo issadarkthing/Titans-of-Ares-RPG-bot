@@ -13,6 +13,7 @@ import Command from "../internals/Command";
 import { Player } from "../internals/Player";
 import { Phase, TeamArena, TeamArenaMember } from "../internals/TeamArena";
 import {
+    ATTOM_BUTTON,
   BLUE_BUTTON,
   BROWN,
   random,
@@ -180,6 +181,7 @@ export default class extends Command {
     menu.addButton(BLUE_BUTTON, "battle 1 time", battle(1));
     menu.addButton(RED_BUTTON, "battle 5 times", battle(5));
     menu.addButton(WHITE_BUTTON, "battle 10 times", battle(10));
+    menu.addButton(ATTOM_BUTTON, "use all Team Arena energy", battle(candidate.charge));
 
     menu.addCloseButton();
     await menu.run();
