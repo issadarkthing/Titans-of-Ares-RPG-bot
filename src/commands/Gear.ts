@@ -118,8 +118,11 @@ export default class extends Command {
     const list = gears
       .map((gear, i) => { 
 
-        const socket = gear.gem ? 
-          `\n${Gear.socketEmoji} ${gear.gem.name} ${gear.gem.stat}` : "";
+        const socketable = gear.socketable ? `${Gear.socketEmoji} ` : "";
+        const socketed = gear.gem? 
+          `${gear.gem.name} ${gear.gem.stat}` : "No gem socketed";
+        const socket = gear.socketable ? 
+          `\n${socketable}${socketed}` : "";
 
         const stat = 
           gear.attribute.format(gear.attributeValue, { suffix: true, prefix: true });
