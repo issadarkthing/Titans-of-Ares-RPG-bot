@@ -16,6 +16,7 @@ import { Pet, PetID } from "../internals/Pet";
 import { Player } from "../internals/Player";
 import {
   aggregateBy,
+  ATTOM_BUTTON,
   BLACK_BUTTON,
   BLUE_BUTTON,
   bold,
@@ -265,9 +266,12 @@ export default class extends Command {
       }
     }
 
+    const pickCount = player.inventory.all.count(item.id);
+
     button.addButton(BLUE_BUTTON, "mine", multiMine(1));
     button.addButton(RED_BUTTON, "mine 5", multiMine(5));
     button.addButton(WHITE_BUTTON, "mine 10", multiMine(10));
+    button.addButton(ATTOM_BUTTON, "use all picks", multiMine(pickCount));
   }
 
   private handleChest(
