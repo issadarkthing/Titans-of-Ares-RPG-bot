@@ -144,7 +144,8 @@ export default class extends Command {
         `Current active set bonus: ${armorBonusSetDesc}`)
       .addField("---", stripIndents`
         Use \`${client.prefix}gear bonus\` to see more info about the set bonus
-        Use \`${client.prefix}gear <number>\` to inspect and upgrade item`)
+        Use \`${client.prefix}gear <number>\` to inspect and upgrade item
+        To socket gems into gear pieces, inspect gems in the \`${client.prefix}inventory\``)
 
     msg.channel.send(embed);
   }
