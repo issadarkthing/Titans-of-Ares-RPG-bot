@@ -120,6 +120,7 @@ export default class extends Command {
 
       menu.addButton(utils.BLUE_BUTTON, "battle 1 time", battle(1));
       menu.addButton(utils.RED_BUTTON, "battle 5 times", battle(5));
+      menu.addButton(utils.ATTOM_BUTTON, "use all energy", battle(player.energy));
 
       menu.addCloseButton();
       menu.run();
