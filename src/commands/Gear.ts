@@ -6,7 +6,7 @@ import { Gear } from "../internals/Gear";
 import { ApprenticeGear } from "../internals/ApprenticeGear";
 import { upgrade } from "../internals/multipleUpgrade";
 import { Player } from "../internals/Player";
-import { BLACK_BUTTON, BLUE_BUTTON, bold, RED_BUTTON, RETURN_BUTTON, SILVER, WHITE_BUTTON } from "../internals/utils";
+import { ATTOM_BUTTON, BLACK_BUTTON, BLUE_BUTTON, bold, RED_BUTTON, RETURN_BUTTON, SILVER, WHITE_BUTTON } from "../internals/utils";
 import Command from "../internals/Command";
 import { ArenaGear } from "../internals/ArenaGear";
 import { desocketGem } from "../db/gem";
@@ -58,6 +58,17 @@ export default class extends Command {
           "upgrade item using 50 scrolls",
           upgrade(gear, msg, player, 50),
         );
+      }
+
+      const gem = gear.gem;
+
+      if (gem) {
+
+        menu.addButton(ATTOM_BUTTON, "desocket gem", () => {
+          desocketGem(player.id, gem.id, gear.id);
+          msg.channel.send(`Successfully desocket ${bold(gem.name)}!`);
+        })
+
       }
 
       menu.addButton(RETURN_BUTTON, "return to menu", () => {
