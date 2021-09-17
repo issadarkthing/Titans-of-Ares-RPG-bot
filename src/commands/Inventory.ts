@@ -10,7 +10,7 @@ import { Fragment, FragmentID } from "../internals/Fragment";
 import { Gear } from "../internals/Gear";
 import { Inventory } from "../internals/Inventory";
 import { List } from "../internals/List";
-import { Gem, MiningPick, RoughStone, Stone } from "../internals/Mining";
+import { Gem, Legendary, MiningPick, RoughStone, Stone } from "../internals/Mining";
 import { upgrade } from "../internals/multipleUpgrade";
 import { Pet, PetID } from "../internals/Pet";
 import { Player } from "../internals/Player";
@@ -193,7 +193,7 @@ export default class extends Command {
     msg: Message,
   ) {
 
-    const { quality } = item;
+    const { quality, attribute } = item;
     const gems = this.inventory.gems.filter(x => x.quality === quality);
     const gemList = List.from(gems).aggregate();
 
@@ -204,12 +204,24 @@ export default class extends Command {
       await msg.channel.send(info);
     }
 
-    let descText =  oneLine`You can combine 5 ${quality} gems into a random
+    let descText = oneLine`You can combine 5 ${quality} gems into a random
     higher quality gem. To combine, use command \`${client.prefix}combine
     ${quality} <number> <number> <number> <number> <number>\``;
 
     descText += 
       `\nExample command: \`${client.prefix}combine ${quality} 1 1 2 2 3\``;
+
+    const legendary = new Legendary(attribute);
+
+    if (quality === legendary.quality) {
+
+      descText = oneLine`You can combine 3 legendary gems into a legendary gem
+      of choice. To combine, use command \`${client.prefix}combine legendary
+      <number> <number> <number>\``;
+
+      descText += 
+        `\nExample command: \`${client.prefix}combine legendary 1 1 2\``;
+    }
 
     const helperText1 = new MessageEmbed()
       .setColor(BROWN)
