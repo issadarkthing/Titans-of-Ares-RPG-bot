@@ -14,7 +14,7 @@ type RankName =
 
 type Ranks = `Titan ${RankName}`;
 
-export class Rank {
+export class RankRole {
 
   rankNames: Ranks[] = [
     "Titan Apprentice",
