@@ -12,7 +12,7 @@ import { Buff, BUFF_LIMIT, XP_THRESHOLD } from "../internals/Buff";
 import { Player } from "../internals/Player";
 import { bold, getLevel, getXp } from "../internals/utils";
 import { MiningPickReward } from "./MiningPickReward";
-import { Rank } from "./Rank";
+import { RankRole } from "./Rank";
 
 const rgx = /^Registered\sDay:\s(?<day>\d+)\s.*Progress:\s(?<value>\d+[,|.]?\d*)\s(?<valueType>\w+).*$/;
 
@@ -144,7 +144,7 @@ export async function xpLog(msg: Message) {
 
       await client.mainGuild.roles.fetch();
 
-      const rank = new Rank();
+      const rank = new RankRole();
       const newRankRole = rank.getRankRole(player.level);
       const currentRankRole = rank.getCurrentRole(player.member);
 

@@ -33,7 +33,7 @@ export default class extends Command {
 
     if (arg1 === "xp") {
       addXP(player.id, parseInt(arg2));
-      msg.channel.send(`Added ${arg2}xp`)
+      msg.channel.send(`Added ${arg2} xp`)
 
     } else if (arg1 === "gem") {
 
