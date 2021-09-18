@@ -266,8 +266,15 @@ export default class extends Command {
 
     client.safeFn.add(safeFnID, mineHandler);
 
+    const itemCount = player.inventory.all.count(item.id);
     const multiMine = (count: number) => {
       return async () => {
+
+        if (itemCount < count) {
+          msg.channel.send(`Insufficient mining pick`);
+          return;
+        }
+
         try { 
           for (let i = 0; i < count; i++) {
             await client.safeFn.exec(safeFnID); 
