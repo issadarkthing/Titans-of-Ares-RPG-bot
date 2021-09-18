@@ -54,6 +54,7 @@ export async function xpLog(msg: Message) {
   if (!member) return;
 
   const lines = msg.content.split("\n");
+  let accXP = 0;
 
   for (const line of lines) {
 
@@ -80,37 +81,7 @@ export async function xpLog(msg: Message) {
     const name = player.name;
 
     client.logChannel.send(`${name} has earned \`${xp} xp\`!`);
-
-    // fragment reward
-    if (player.xp >= player.fragmentReward) {
-
-      if (FragmentReward.random()) {
-        const fragment = await FragmentReward.reward(player);
-        client.logChannel.send(oneLine`${player.member} has been awarded a
-          **${fragment.name}** by Ares himself for great effort in working out.
-          Keep up the good work!`);
-      } 
-
-      // set new upper limit
-      FragmentReward.setUpperLimit(player);
-    }
-
-    const xpGained = player.xp + (client.isDev ? xp : 0);
-    // mining pick reward
-    if (xpGained >= player.miningPickReward) {
-
-      const rewardCount = MiningPickReward.totalLevelPassed(xp);
-
-      for (let i = 0; i < rewardCount; i++) {
-        await MiningPickReward.reward(player);
-      }
-
-      client.logChannel.send(
-        `${player.member} has found **x${rewardCount} Mining Pick** by working out!`
-      );
-
-      MiningPickReward.setUpperLimit(player);
-    }
+    accXP += xp;
 
     // workout buff
     const timer = await getTimer(TimerType.Buff, member.id);
@@ -161,5 +132,39 @@ export async function xpLog(msg: Message) {
         );
       }
     }
+  }
+
+
+  const player = await Player.getPlayer(member);
+  // fragment reward
+  if (player.xp >= player.fragmentReward) {
+
+    if (FragmentReward.random()) {
+      const fragment = await FragmentReward.reward(player);
+      client.logChannel.send(
+        oneLine`${player.member} has been awarded a **${fragment.name}** by Ares
+        himself for great effort in working out.  Keep up the good work!`
+      );
+    } 
+
+    // set new upper limit
+    FragmentReward.setUpperLimit(player);
+  }
+
+  const xpGained = player.xp + (client.isDev ? accXP : 0);
+  // mining pick reward
+  if (xpGained >= player.miningPickReward) {
+
+    const rewardCount = MiningPickReward.totalLevelPassed(accXP);
+
+    for (let i = 0; i < rewardCount; i++) {
+      await MiningPickReward.reward(player);
+    }
+
+    client.logChannel.send(
+      `${player.member} has found **x${rewardCount} Mining Pick** by working out!`
+    );
+
+    MiningPickReward.setUpperLimit(player);
   }
 }
