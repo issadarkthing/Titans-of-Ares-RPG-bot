@@ -164,12 +164,13 @@ export default class extends Command {
         await player.addCoin(loot);
         await setMaxChallenger(player.id, challenger.level);
         player.challengerMaxLevel = challenger.level;
-        await setEnergy(player.id, -1);
         await msg.channel.send(`${player.name} has earned **${loot}** coins!`);
       }
 
       player = await Player.getPlayer(player.member);
       challenger = await Challenger.getChallenger(challenger.level);
+        
+      await setEnergy(player.id, -1);
       energy--;
       count--;
       await sleep(1000);
