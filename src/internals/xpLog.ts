@@ -151,9 +151,8 @@ export async function xpLog(msg: Message) {
     FragmentReward.setUpperLimit(player);
   }
 
-  const xpGained = player.xp + (client.isDev ? accXP : 0);
   // mining pick reward
-  if (xpGained >= player.miningPickReward) {
+  if (player.xp >= player.miningPickReward) {
 
     const rewardCount = MiningPickReward.totalLevelPassed(accXP);
 
