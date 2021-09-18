@@ -144,6 +144,11 @@ export default class extends Command {
 
     let energy = player.energy;
 
+    if (energy < count) {
+      msg.channel.send(`Insufficient energy`);
+      return;
+    }
+
     while (energy > 0 && count > 0) {
 
       const battle = new Battle(msg, player, challenger);
@@ -159,6 +164,7 @@ export default class extends Command {
         await player.addCoin(loot);
         await setMaxChallenger(player.id, challenger.level);
         player.challengerMaxLevel = challenger.level;
+        await setEnergy(player.id, -1);
         await msg.channel.send(`${player.name} has earned **${loot}** coins!`);
       }
 

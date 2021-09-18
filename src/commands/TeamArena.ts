@@ -88,6 +88,11 @@ export default class extends Command {
     let player = candidate.player;
     let energy = candidate.charge;
 
+    if (energy < count) {
+      msg.channel.send(`Insufficient energy`);
+      return;
+    }
+
     while (energy > 0 && count > 0) {
 
       const opponents = arena.candidates.filter(
