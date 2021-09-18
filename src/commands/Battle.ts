@@ -10,6 +10,7 @@ import { ENERGY_TIMEOUT, showTimeLeft } from "../internals/energy";
 import { Player } from "../internals/Player";
 import * as utils from "../internals/utils";
 import { sleep } from "../internals/utils";
+import { client } from "../main";
 
 const emojis = [
   utils.LEFT_ARROW_BUTTON,
@@ -113,16 +114,31 @@ export default class extends Command {
           "Please select how many times you want to battle this level."
         );
 
+      const safeFnID = `multi_battle_${player.id}`;
+
       const menu = new ButtonHandler(msg, embed, player.id);
-      const battle = (count: number) => 
-        () => this.battleMultiple(msg, player, challenger, count);
+      const battle = (count: number) => {
+
+        return async () => {
+
+          client.safeFn.add(
+            safeFnID, 
+            () => this.battleMultiple(msg, player, challenger, count));
+
+          try { 
+            await client.safeFn.exec(safeFnID); 
+          } catch {
+            msg.channel.send("There is already another battle command running");
+          }
+        }
+      }
 
       menu.addButton(utils.BLUE_BUTTON, "battle 1 time", battle(1));
       menu.addButton(utils.RED_BUTTON, "battle 5 times", battle(5));
       menu.addButton(utils.ATTOM_BUTTON, "use all energy", battle(player.energy));
 
       menu.addCloseButton();
-      menu.run();
+      await menu.run();
 
     } catch (e) {
       if (e instanceof Collection) {
