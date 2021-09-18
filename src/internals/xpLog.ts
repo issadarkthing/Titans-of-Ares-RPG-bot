@@ -157,6 +157,8 @@ export async function xpLog(msg: Message) {
 
     const rewardCount = MiningPickReward.totalLevelPassed(accXP);
 
+    if (rewardCount < 1) return;
+
     for (let i = 0; i < rewardCount; i++) {
       await MiningPickReward.reward(player);
     }
