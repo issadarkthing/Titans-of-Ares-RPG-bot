@@ -154,7 +154,9 @@ export async function xpLog(msg: Message) {
   // mining pick reward
   if (player.xp >= player.miningPickReward) {
 
-    const rewardCount = MiningPickReward.totalLevelPassed(accXP);
+    const rewardBefore = MiningPickReward.totalLevelPassed(player.xp - accXP);
+    const rewardAfter = MiningPickReward.totalLevelPassed(player.xp);
+    const rewardCount = rewardAfter - rewardBefore;
 
     if (rewardCount < 1) return;
 
