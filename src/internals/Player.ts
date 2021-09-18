@@ -276,7 +276,9 @@ export class Player extends Fighter {
     const setBonus = Gear.getBonus(equippedGears);
     const armorBonusSetDesc = setBonus?.description || "";
     const gemAndMiningCount =
-      this.inventory.gems.length + this.inventory.picks.length;
+      this.inventory.stones.length +
+      this.inventory.gems.length + 
+      this.inventory.picks.length;
 
     const arena = await TeamArena.getCurrentArena();
     const teamArenaMember = arena.candidates
