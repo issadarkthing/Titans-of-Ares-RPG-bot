@@ -98,7 +98,6 @@ export default class extends Command {
       const index = emojis.findIndex((e) => e === reacted.emoji.name)! - 1;
 
       const expireDate = DateTime.now().plus(ENERGY_TIMEOUT).toISO();
-      await setEnergy(player.id, -1);
 
       const prevEnergyTimer = await hasTimer(TimerType.Energy, player.id);
       if (!prevEnergyTimer)
