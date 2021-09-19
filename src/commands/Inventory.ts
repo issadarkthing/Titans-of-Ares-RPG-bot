@@ -245,7 +245,6 @@ export default class extends Command {
     msg: Message,
   ) {
 
-    const safeFnID = `handle_pick_${player.id}`;
     const mineHandler = async () => {
       const gem = Stone.random();
       const miningMsg = await msg.channel.send(item.showMiningAnimation());
@@ -264,7 +263,6 @@ export default class extends Command {
       msg.channel.send(gem.show(-1));
     };
 
-    client.safeFn.add(safeFnID, mineHandler);
 
     const itemCount = player.inventory.all.count(item.id);
     const multiMine = (count: number) => {
@@ -274,6 +272,9 @@ export default class extends Command {
           msg.channel.send(`Insufficient mining pick`);
           return;
         }
+    
+        const safeFnID = `handle_pick_${count}_${player.id}`;
+        client.safeFn.add(safeFnID, mineHandler);
 
         try { 
           for (let i = 0; i < count; i++) {
