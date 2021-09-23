@@ -1,15 +1,13 @@
-import { Chest, ChestID } from "./Chest";
-import { Item } from "../db/inventory";
-import { Fragment, FragmentID } from "./Fragment";
+import { Chest } from "./Chest";
+import { Item } from "./Item";
+import { Fragment } from "./Fragment";
 import { List } from "./List";
 import { Gear } from "./Gear";
-import { Gear as GearDB } from "../db/gear";
 import { ArenaScroll, Scroll } from "./Scroll";
 import { MiningPick, Stone, Gem, RoughStone } from "./Mining";
 
 /** manage items to be easily filtered and accessed */
 export class Inventory {
-
   chests = new List<Chest>();
   fragments = new List<Fragment>();
   gears = new List<Gear>();
@@ -21,33 +19,33 @@ export class Inventory {
   constructor(items: Item[]) {
 
     for (const item of items) {
-      const itemID = item.ItemID;
-      const category = item.ItemID.split("_")[0];
+      const itemID = item.id;
+      const category = itemID.split("_")[0];
       switch (category) {
         case "chest":
-          this.chests.push(Chest.fromChestID(itemID as ChestID));
+          this.chests.push(item as Chest);
           break;
         case "fragment":
-          this.fragments.push(new Fragment(itemID as FragmentID));
+          this.fragments.push(item as Fragment);
           break;
         case "gear":
-          this.gears.push(Gear.fromDB(item as GearDB));
+          this.gears.push(item as Gear);
           break;
         case "scroll":
           if (itemID === "scroll_arena") {
-            this.scrolls.push(new ArenaScroll());
+            this.scrolls.push(item as ArenaScroll);
           } else {
-            this.scrolls.push(new Scroll());
+            this.scrolls.push(item as Scroll);
           }
           break;
         case "pick":
-          this.picks.push(new MiningPick());
+          this.picks.push(item as MiningPick);
           break;
         case "stone":
-          this.stones.push(new RoughStone());
+          this.stones.push(item as RoughStone);
           break
         case "gem":
-          this.gems.push(Gem.fromID(itemID));
+          this.gems.push(item as Gem);
           break;
       }
     }

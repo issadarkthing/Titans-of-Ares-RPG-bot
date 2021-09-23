@@ -60,7 +60,7 @@ export default class Socket extends Command {
       else if (piece.gem)
         return msg.channel.send("Selected gear has already gem socketed");
 
-      await socketGem(player.id, gem.id, piece.id);
+      await socketGem(gem.inventoryID!, piece.id);
       
       msg.channel.send(
         `Successfully socketed ${bold(gem.name)} into ${bold(piece.name)}!`

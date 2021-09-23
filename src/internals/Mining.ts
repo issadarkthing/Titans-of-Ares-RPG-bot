@@ -5,8 +5,9 @@ import { List } from "./List";
 import { GemDB } from "../db/gem";
 import { MessageEmbed } from "discord.js";
 import { oneLine } from "common-tags";
+import { Item } from "./Item";
 
-export class MiningPick {
+export class MiningPick extends Item {
   name = "Mining Pick";
   id = "pick_mining";
   description = "This is a mining pick. You can use it to mine gems.";
@@ -37,7 +38,7 @@ export class MiningPick {
   }
 }
 
-export abstract class Stone {
+export abstract class Stone extends Item {
   abstract id: string;
   abstract name: string;
   abstract rarity: number;
@@ -75,6 +76,9 @@ type ImagesUrl = Record<keyof BaseStats, string>;
 export abstract class Gem extends Stone {
   readonly attribute: Attribute;
   readonly attributeValue: number;
+  inventoryID?: number;
+  gemID?: number;
+  gearID?: string;
   static baseStats: BaseStats;
   static imagesUrl: ImagesUrl;
 
@@ -92,7 +96,10 @@ export abstract class Gem extends Stone {
   }
 
   static fromDB(stoneDB: GemDB) {
-   return Gem.fromID(stoneDB.ItemID);
+    const gem = Gem.fromID(stoneDB.ItemID);
+    gem.inventoryID = stoneDB.ID;
+    gem.gearID = stoneDB.GearID;
+   return gem;
   }
 
   static fromRarity(

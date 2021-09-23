@@ -1,9 +1,9 @@
 import { stripIndents } from "common-tags";
 import { GuildMember, MessageEmbed } from "discord.js";
 import { setArenaCoin, setCoin } from "../db/coin";
-import { getGears } from "../db/gear";
-import { getAllSocketedGem } from "../db/gem";
-import { getInventory, Item } from "../db/inventory";
+import { getGears, Gear as GearDB } from "../db/gear";
+import { GemDB, getAllGems } from "../db/gem";
+import { getInventory, Item as ItemDB } from "../db/inventory";
 import { getAllPets } from "../db/pet";
 import { createUser, getTotalPoints, getTotalXp, getUser, getUsers } from "../db/player";
 import { TimerType } from "../db/timer";
@@ -16,11 +16,15 @@ import { BaseStats, Fighter, IFighter } from "./Fighter";
 import { Gear } from "./Gear";
 import { Inventory } from "./Inventory";
 import { List } from "./List";
-import { Gem } from "./Mining";
+import { Gem, MiningPick, RoughStone } from "./Mining";
 import { Manticore, Pet } from "./Pet";
 import { Profile } from "./Profile";
 import { Phase, TeamArena } from "./TeamArena";
 import { getLevel, getStats, GOLD, STAR } from "./utils";
+import { Item } from "./Item";
+import { Chest, ChestID } from "./Chest";
+import { Fragment, FragmentID } from "./Fragment";
+import { ArenaScroll, Scroll } from "./Scroll";
 
 export const CRIT_RATE = 0.1;
 export const CRIT_DAMAGE = 2;
@@ -35,7 +39,7 @@ export interface IPlayer extends IFighter {
   challengerMaxLevel: number;
   member: GuildMember;
   buff: BuffID | null;
-  inventory: Item[];
+  inventory: Inventory;
   goldMedal: number;
   silverMedal: number;
   bronzeMedal: number;
@@ -84,7 +88,7 @@ export class Player extends Fighter {
     this.member = data.member;
     this.energy = data.energy;
     this.challengerMaxLevel = data.challengerMaxLevel;
-    this.inventory = new Inventory(data.inventory);
+    this.inventory = data.inventory;
     this.goldMedal = data.goldMedal;
     this.silverMedal = data.silverMedal;
     this.bronzeMedal = data.bronzeMedal;
@@ -132,29 +136,58 @@ export class Player extends Fighter {
     }
   }
 
+  private static toItem(items: (ItemDB | GemDB)[]) {
+    return items.map(item => {
+
+      const itemID = item.ItemID;
+      const category = itemID.split("_")[0];
+      switch (category) {
+        case "chest": return Chest.fromChestID(itemID as ChestID);
+        case "fragment": return new Fragment(itemID as FragmentID);
+        case "gear": return Gear.fromDB(item as GearDB);
+        case "scroll":
+          if (itemID === "scroll_arena") {
+            return new ArenaScroll();
+          } else {
+            return new Scroll();
+          }
+        case "pick": return new MiningPick();
+        case "stone": return new RoughStone();
+        case "gem": return Gem.fromDB(item as GemDB);
+      }
+    }) as Item[];
+  }
+
   static async getPlayer(member: GuildMember): Promise<Player> {
     const userId = member.user.id;
     const totalXp = await getTotalXp(userId);
     const totalPoints = await getTotalPoints(userId);
     const level = getLevel(totalXp);
     const stats = getStats(level);
-    let inventory = await getInventory(userId);
-    const socketGems = await getAllSocketedGem(userId);
+    const inventory = new Inventory(this.toItem(await getInventory(userId)));
+
     const pets = (await getAllPets(userId)).map(x => Pet.fromDB(x));
-    const gears = (await getGears(userId))
-      .map(gearDB => {
-        const gear = Gear.fromDB(gearDB);
-        const socketedGem = socketGems.find(x => x.GearID === gear.id);
-
-        if (socketedGem) {
-          // remove socketed gems from inventory
-          inventory = inventory.filter(x => x.ID !== socketedGem.InventoryID);
-          gear.gem = Gem.fromDB(socketedGem);
-        }
-
-        return gear;
-      })
+    const gears = (await getGears(userId)).map(gearDB => Gear.fromDB(gearDB));
     const equippedGears = gears.filter(x => x.equipped);
+    const gems = await getAllGems(userId);
+
+    for (const gemDB of gems) {
+      const gem = inventory.gems.find(x => x.inventoryID === gemDB.InventoryID);
+
+      if (gem) {
+        gem.gearID = gemDB.GearID;
+        gem.gemID = gemDB.ID;
+
+        const gear = equippedGears.find(x => x.id === gem.gearID);
+
+        if (gear) {
+          gear.gem = gem;
+        }
+      }
+    }
+          
+    inventory.gems = new List(inventory.gems.filter(x => x.gearID === null));
+    
 
     let player = await getUser(userId);
     if (!player) {

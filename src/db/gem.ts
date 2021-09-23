@@ -81,30 +81,41 @@ export async function getAllSocketedGem($userID: string) {
   return dbAll<GemDB>(sql, { $userID });
 }
 
-export async function socketGem($userID: string, $gemID: string, $gearID: string) {
+export async function getAllGems($userID: string) {
+  const sql = `
+  SELECT 
+    Gem.ID,
+    Gem.Created,
+    InventoryID,
+    Inventory.ItemID AS ItemID,
+    GearID
+  FROM Gem
+  INNER JOIN Inventory
+  ON Inventory.ID = Gem.InventoryID
+  WHERE Inventory.OwnerID = $userID
+  `
+
+  return dbAll<GemDB>(sql, { $userID });
+}
+
+export async function socketGem($gemInventoryID: number, $gearID: string) {
   const sql = `
     UPDATE Gem 
     SET GearID = $gearID
-    WHERE InventoryID = (
-      SELECT ID FROM Inventory
-      WHERE OwnerID = $userID AND ItemID = $gemID
-    )
+    WHERE InventoryID = $gemInventoryID
   `
 
-  return dbRun(sql, { $userID, $gemID, $gearID });
+  return dbRun(sql, { $gemInventoryID, $gearID });
 }
 
-export async function desocketGem($userID: string, $gemID: string, $gearID: string) {
+export async function desocketGem($gemInventoryID: number) {
   const sql = `
     UPDATE Gem 
     SET GearID = NULL
-    WHERE InventoryID = (
-      SELECT ID FROM Inventory
-      WHERE OwnerID = $userID AND ItemID = $gemID
-    ) AND GearID = $gearID
+    WHERE InventoryID = $gemInventoryID
   `
 
-  return dbRun(sql, { $userID, $gemID, $gearID });
+  return dbRun(sql, { $gemInventoryID });
 }
 
 export async function setMiningPickReward($userID: string, $upperLimit: number) {

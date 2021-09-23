@@ -35,7 +35,7 @@ export default class extends Command {
         )
 
         if (gear.gem) {
-          desocketGem(player.id, gear.gem.id, gear.id);
+          desocketGem(gear.gem.inventoryID!);
           msg.channel.send(`Successfully desocket ${bold(gear.gem.name)}!`);
         }
       })
@@ -65,7 +65,7 @@ export default class extends Command {
       if (gem) {
 
         menu.addButton(ATTOM_BUTTON, "desocket gem", () => {
-          desocketGem(player.id, gem.id, gear.id);
+          desocketGem(gem.inventoryID!);
           msg.channel.send(`Successfully desocket ${bold(gem.name)}!`);
         })
 

@@ -103,6 +103,20 @@ export class List<T extends Identifiable> {
     return this.values.sort(fn);
   }
 
+  remove(id: string, count = 1) {
+    const index = this.values.findIndex(x => x.id === id);
+    if (index) {
+      this.values.splice(index, count);
+    }
+  }
+
+  removeBy(fn: (x: T) => boolean, count = 1) {
+    const index = this.values.findIndex(fn);
+    if (index) {
+      this.values.splice(index, count);
+    }
+  }
+
   /** aggregates values inside List */
   aggregate() {
 
