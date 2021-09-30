@@ -1,11 +1,11 @@
 import Command from "../internals/Command";
-import { Message, MessageEmbed } from "discord.js";
+import { Message } from "discord.js";
 import { Prompt } from "../internals/Prompt";
-import { BLUE_BUTTON, BROWN, getXp } from "../internals/utils";
+import { BLUE_BUTTON, getXp, RED_BUTTON } from "../internals/utils";
 import { ButtonHandler } from "../internals/ButtonHandler";
 import { oneLine } from "common-tags";
 import { client } from "../main";
-import { ChallengeName, getChallengeByChannelID, getConvertTable } from "../db/monthlyChallenge";
+import { registerDayEntry, ChallengeName, getChallengeByChannelID, getConvertTable, replaceDayEntry, addDayEntry } from "../db/monthlyChallenge";
 import { DateTime } from "luxon";
 
 export default class Upload extends Command {
@@ -23,19 +23,13 @@ export default class Upload extends Command {
       return msg.channel.send("wrong channel");
     }
 
-    const embed = new MessageEmbed()
-      .setColor(BROWN)
-      .setDescription("Please select a category to upload for points");
-
-    const menu = new ButtonHandler(msg, embed, msg.author.id);
+    const question = "Please select a category to upload for points";
+    const menu = new ButtonHandler(msg, question);
 
     menu.addButton(BLUE_BUTTON, "steps", async () => {
 
-      const embed = new MessageEmbed()
-        .setColor(BROWN)
-        .setDescription("Do you want to upload a single day or multiple days?");
-
-      const menu = new ButtonHandler(msg, embed, msg.author.id);
+      const question = "Do you want to upload a single day or multiple days?";
+      const menu = new ButtonHandler(msg, question);
 
       menu.addButton(BLUE_BUTTON, "single", async () => {
 
@@ -90,14 +84,45 @@ export default class Upload extends Command {
         if (!conversionRate)
           throw new Error(`conversion rate does not exists for "${lookupID}"`);
 
-        const points = Math.round(conversionRate * steps);
-        const xp = getXp(points);
-        
-        msg.channel.send(
-          oneLine`You have registered ${steps} steps on ${month} ${day} and
-          earned ${points} monthly points + ${xp} permanent XP! For a total
-          overview of your uploads this month, use \`${client.prefix}progress\``
-        );
+        const showSuccessMessage = () => {
+          const points = Math.round(conversionRate * steps);
+          const xp = getXp(points);
+
+          msg.channel.send(
+            oneLine`You have registered ${steps} steps on ${month} ${day} and
+            earned ${points} monthly points + ${xp} permanent XP! For a total
+            overview of your uploads this month, use \`${client.prefix}progress\``
+          );
+        }
+
+        try {
+
+          await registerDayEntry(msg.author.id, day, challengeID, challengeName, steps);
+          showSuccessMessage();
+
+        } catch (e: unknown) {
+
+          const question = oneLine`You already registered steps on ${month}
+          ${day}. Do you want to replace or add point on this day?`;
+
+          const menu = new ButtonHandler(msg, question);
+
+          menu.addButton(BLUE_BUTTON, "replace", () => {
+            replaceDayEntry(msg.author.id, day, challengeID, challengeName, steps);
+            msg.channel.send(`Successfully replaced`);
+            showSuccessMessage();
+          });
+
+          menu.addButton(RED_BUTTON, "add points", () => {
+            addDayEntry(msg.author.id, day, challengeID, challengeName, steps);
+            msg.channel.send(`Successfully added`);
+            showSuccessMessage();
+          });
+
+          menu.addCloseButton();
+          await menu.run();
+        }
+
 
       })
 
