@@ -1,7 +1,7 @@
 import Command from "../internals/Command";
 import { Message } from "discord.js";
 import { Prompt } from "../internals/Prompt";
-import { BLUE_BUTTON, getXp, RED_BUTTON } from "../internals/utils";
+import { BLUE_BUTTON, bold, getXp, RED_BUTTON } from "../internals/utils";
 import { ButtonHandler } from "../internals/ButtonHandler";
 import { oneLine } from "common-tags";
 import { client } from "../main";
@@ -53,7 +53,7 @@ export default class Upload extends Command {
 
         const stepsRespond = await prompt.ask(
           oneLine`Please write how many steps you want to upload for
-          ${month} ${day}.`
+          ${bold(month)} ${bold(day)}.`
         );
         const steps = parseInt(stepsRespond);
 
@@ -67,7 +67,7 @@ export default class Upload extends Command {
 
         const respond = await prompt.collect(
           oneLine`Please upload a single screenshot of your wearable showing
-          ${steps} steps on ${month} ${day}.`
+          ${bold(steps)} steps on ${bold(month)} ${bold(day)}.`
         );
 
         const proof = respond.attachments.first();
@@ -89,9 +89,10 @@ export default class Upload extends Command {
           const xp = getXp(points);
 
           msg.channel.send(
-            oneLine`You have registered ${steps} steps on ${month} ${day} and
-            earned ${points} monthly points + ${xp} permanent XP! For a total
-            overview of your uploads this month, use \`${client.prefix}progress\``
+            oneLine`You have registered ${bold(steps)} steps on ${bold(month)}
+            ${bold(day)} and earned ${bold(points)} monthly points + ${bold(xp)}
+            permanent XP! For a total overview of your uploads this month, use
+            \`${client.prefix}progress\``
           );
         }
 
@@ -122,7 +123,6 @@ export default class Upload extends Command {
           menu.addCloseButton();
           await menu.run();
         }
-
 
       })
 

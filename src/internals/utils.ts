@@ -185,10 +185,10 @@ export function toNList(items: string[], start = 1) {
   return items.map((x, i) => `${i + start}. ${x}`).join("\n");
 }
 
-export function inlineCode(str: string) {
+export function inlineCode(str: string | number) {
   return `\`${str}\``;
 }
 
-export function bold(str: string) {
+export function bold(str: string | number) {
   return `**${str}**`;
 }
