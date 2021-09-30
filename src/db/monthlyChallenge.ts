@@ -38,7 +38,7 @@ export async function getChallengeByChannelID($channelId: string) {
   return dbGet<Challenge>(sql, { $channelId });
 }
 
-interface Challenge {
+export interface Challenge {
   ID: number;
   Name: string;
   Days: number;
