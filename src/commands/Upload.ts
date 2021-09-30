@@ -88,12 +88,18 @@ export default class Upload extends Command {
           const points = Math.round(conversionRate * steps);
           const xp = getXp(points);
 
-          msg.channel.send(
+          let text = 
             oneLine`You have registered ${bold(steps)} steps on ${bold(month)}
             ${bold(day)} and earned ${bold(points)} monthly points + ${bold(xp)}
-            permanent XP! For a total overview of your uploads this month, use
-            \`${client.prefix}progress\``
-          );
+            permanent XP!`;
+
+          text += "\n";
+
+          text += 
+            oneLine`For a total overview of your uploads this month, use
+            \`${client.prefix}progress\``;
+
+          msg.channel.send(text);
         }
 
         try {
