@@ -1,4 +1,4 @@
-import { dbAll, dbGet } from "./promiseWrapper";
+import { dbAll, dbGet, dbRun } from "./promiseWrapper";
 
 export type ChallengeName = 
     "steps"
@@ -53,6 +53,14 @@ interface Challenge {
   Year: number;
 }
 
+export interface DayEntry {
+  ID: number;
+  EntryID: number;
+  Day: number;
+  ValueType: ChallengeName;
+  Value: number;
+}
+
 export async function getCurrentChallenge() {
   const sql = `
   SELECT
@@ -103,4 +111,108 @@ export async function getConvertTable() {
   })
 
   return convertTable;
+}
+
+export async function getEntryID($userID: string, $challengeID: number) {
+  const sql = `
+    SELECT ID
+    FROM ChallengeEntry
+    WHERE DiscordID = $userID AND ChallengeID = $challengeID
+  `;
+
+  const result = await dbGet<{ ID?: number }>(sql, { $userID, $challengeID });
+  return result?.ID;
+}
+
+export async function registerChallenge($userID: string, $challengeID: number) {
+  const sql = `
+    INSERT INTO ChallengeEntry (DiscordID, ChallengeID)
+    VALUES ($userID, $challengeID)
+  `
+
+  return dbRun(sql, { $userID, $challengeID });
+}
+
+export async function replaceDayEntry(
+  $userID: string,
+  $day: number,
+  $challengeID: number,
+  $challengeName: ChallengeName,
+  $value: number,
+) {
+  const sql = `
+    UPDATE DayEntry
+    SET Value = $value
+    WHERE EntryID = $entryID AND Day = $day AND ValueType = $challengeName
+  `
+
+  const $entryID = await getEntryID($userID, $challengeID);
+
+  return dbRun(sql, { $entryID, $day, $challengeName, $value });
+}
+
+export async function addDayEntry(
+  $userID: string,
+  $day: number,
+  $challengeID: number,
+  $challengeName: ChallengeName,
+  $value: number,
+) {
+  const sql = `
+    UPDATE DayEntry
+    SET Value = Value + $value
+    WHERE EntryID = $entryID AND Day = $day AND ValueType = $challengeName
+  `
+
+  const $entryID = await getEntryID($userID, $challengeID);
+
+  return dbRun(sql, { $entryID, $day, $challengeName, $value });
+}
+
+export async function getDayEntries($userID: string, $challengeID: number) {
+  const sql = `
+    SELECT *
+    FROM DayEntry
+    WHERE EntryID = $entryID
+  `
+  const $entryID = await getEntryID($userID, $challengeID);
+
+  return dbAll<DayEntry>(sql, { $entryID });
+}
+
+/** 
+ * Adds point for a particular challenge, day and challenge type.
+ * Throws DayEntry there is conflict. Conflict should be handled.
+ * */
+export async function registerDayEntry(
+  $userID: string, 
+  $day: number,
+  $challengeID: number,
+  $valueType: ChallengeName,
+  $value: number,
+) {
+
+  let $entryID = await getEntryID($userID, $challengeID);
+
+  if ($entryID === undefined) {
+    $entryID = await registerChallenge($userID, $challengeID);
+  }
+
+  let sql = `
+    SELECT 1 FROM DayEntry 
+    WHERE EntryID = $entryID AND Day = $day AND ValueType = '${$valueType}'
+  `
+
+  const conflict = await dbGet<DayEntry>(sql, { $entryID, $day });
+
+  if (conflict !== undefined) {
+    throw new Error("conflict");
+  }
+
+  sql = `
+    INSERT INTO DayEntry (EntryID, Day, ValueType, Value)
+    VALUES ($entryID, $day, '${$valueType}', $value)
+  `
+
+  return dbRun(sql, { $entryID, $day, $value });
 }
