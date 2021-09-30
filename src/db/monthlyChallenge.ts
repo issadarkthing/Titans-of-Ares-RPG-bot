@@ -1,5 +1,20 @@
 import { dbAll, dbGet } from "./promiseWrapper";
 
+export type ChallengeName = 
+    "steps"
+  | "cyclingkm"
+  | "cyclingmi"
+  | "meditation"
+  | "yoga"
+  | "weightlift"
+  | "ringbonus"
+  | "weekstreak"
+  | "levelup"
+  | "rankup"
+  | "workout"
+  | "othercardio"
+;
+
 export async function getChallengeId($channelId: string) {
 
   const sql = `
@@ -10,6 +25,17 @@ export async function getChallengeId($channelId: string) {
 
   const result = await dbAll<{ID: number}>(sql, { $channelId });
   return result[0]?.ID;
+}
+
+export async function getChallengeByChannelID($channelId: string) {
+
+  const sql = `
+    SELECT *
+    FROM Challenge
+    WHERE ProofChannel = $channelId
+  `
+
+  return dbGet<Challenge>(sql, { $channelId });
 }
 
 interface Challenge {
@@ -23,6 +49,8 @@ interface Challenge {
   GoldCutoff: number;
   SilverCutoff: number;
   BronzeCutoff: number;
+  Month: number;
+  Year: number;
 }
 
 export async function getCurrentChallenge() {
@@ -37,7 +65,9 @@ export async function getCurrentChallenge() {
     Active,
     GoldCutoff,
     SilverCutoff,
-    BronzeCutoff
+    BronzeCutoff,
+    Month,
+    Year
   FROM Challenge 
   ORDER BY ID DESC LIMIT 1
   `
