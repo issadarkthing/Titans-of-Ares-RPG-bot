@@ -1,4 +1,5 @@
 import { Message, MessageEmbed, MessageReaction, User } from "discord.js";
+import { BROWN } from "./utils";
 
 interface Button {
   emoji: string;
@@ -13,10 +14,21 @@ export class ButtonHandler {
   private embed: MessageEmbed;
   private userID: string;
 
-  constructor(msg: Message, embed: MessageEmbed, userID: string) {
+  constructor(msg: Message, embed: MessageEmbed | string, userID?: string) {
     this.msg = msg;
-    this.userID = userID;
-    this.embed = new MessageEmbed(embed);
+    this.userID = userID || msg.author.id;
+    this.embed = new MessageEmbed();
+
+    if (embed instanceof MessageEmbed) {
+      this.embed = new MessageEmbed(embed);
+    } else if (typeof embed === "string") {
+
+      const newEmbed = new MessageEmbed()
+        .setColor(BROWN)
+        .setDescription(embed);
+
+      this.embed = newEmbed;
+    }
   }
 
   private get emojis() {
