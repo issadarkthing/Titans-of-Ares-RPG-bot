@@ -36,12 +36,18 @@ export default class Upload extends Command {
 
   private async handleSteps() {
 
+    const challengeName: ChallengeName = "steps";
     const question = "Do you want to upload a single day or multiple days?";
     const menu = new ButtonHandler(this.msg, question);
+    const prompt = new Prompt(this.msg);
+    const lookupID = `${challengeName}-${this.challenge.ID}`;
+    const conversionRate = this.convertTable.get(lookupID);
+
+    if (!conversionRate)
+      throw new Error(`conversion rate does not exists for "${lookupID}"`);
 
     menu.addButton(BLUE_BUTTON, "single", async () => {
 
-      const prompt = new Prompt(this.msg);
       const answer = await prompt.ask(
         "Please write the day of the month you want to upload steps for."
       );
@@ -84,13 +90,6 @@ export default class Upload extends Command {
         this.msg.channel.send("No screenshot provided. Upload process failed.");
         return;
       }
-
-      const challengeName: ChallengeName = "steps";
-      const lookupID = `${challengeName}-${this.challenge.ID}`;
-      const conversionRate = this.convertTable.get(lookupID);
-
-      if (!conversionRate)
-        throw new Error(`conversion rate does not exists for "${lookupID}"`);
 
       const showSuccessMessage = () => {
         const points = Math.round(conversionRate * steps);
@@ -139,6 +138,120 @@ export default class Upload extends Command {
       }
 
     })
+
+    menu.addButton(RED_BUTTON, "multiple", async () => {
+
+      const answer = await prompt.ask(
+        oneLine`Please write the days of the month you want to upload steps for
+        and seperate them with a space \`(example: 1 2 3 4 ….)\``
+      );
+
+      const days = answer.split(/\s+/).map(x => parseInt(x));
+      const date = DateTime.local(this.challenge.Year, this.challenge.Month-1);
+      const maxDay = date.daysInMonth;
+      const month = date.monthLong;
+
+      for (const day of days) {
+
+        if (Number.isNaN(day) || day > maxDay) {
+          this.msg.channel.send(
+            oneLine`Please only write the day of the the month (use "5" for the
+            5th day in the month).`
+          );
+          return;
+        }
+      }
+
+      const stepsResponds = await prompt.ask(
+        oneLine`Please write how many steps you want to upload for days
+        ${days.join(" ")} in the right order, please seperate them with a space 
+        \`(example: 1456 2583 2847 8582 …)\``
+      );
+
+      const allSteps = stepsResponds.split(/\s+/).map(x => parseInt(x));
+
+      if (allSteps.length !== days.length) {
+        this.msg.channel.send(
+          oneLine`You are uploading for ${days.length} days but only
+          ${allSteps.length} steps are given.`
+        );
+        return;
+      }
+
+      for (const stepsRespond of allSteps) {
+
+        const steps = stepsRespond;
+
+        if (Number.isNaN(steps)) {
+          this.msg.channel.send(`invalid format "${steps}"`);
+          return;
+        } else if (steps > 250_000) {
+          this.msg.channel.send("This challenge capped at 250k steps");
+          return;
+        }
+      }
+
+
+      await prompt.collect(
+        oneLine`Please upload one or more screenshots proving your steps for
+        these days of the month.`,
+        { max: days.length },
+      );
+
+
+      const showSuccessMessage = (steps: number, day: number) => {
+        const points = Math.round(conversionRate * steps);
+        const xp = getXp(points);
+
+        const text = 
+          oneLine`You have registered ${bold(steps)} steps on ${bold(month)}
+          ${bold(day)} and earned ${bold(points)} monthly points + ${bold(xp)}
+          permanent XP!`;
+
+        this.msg.channel.send(text);
+      }
+
+      for (let i = 0; i < days.length; i++) {
+        const day = days[i];
+        const steps = allSteps[i];
+
+        try {
+
+          await registerDayEntry(this.msg.author.id, day, this.challenge.ID, challengeName, steps);
+          showSuccessMessage(steps, day);
+
+        } catch (e: unknown) {
+
+          const question = oneLine`You already registered steps on ${month}
+          ${day}. Do you want to replace or add point on this day?`;
+
+          const menu = new ButtonHandler(this.msg, question);
+
+          menu.addButton(BLUE_BUTTON, "replace", () => {
+            replaceDayEntry(this.msg.author.id, day, this.challenge.ID, challengeName, steps);
+            this.msg.channel.send(`Successfully replaced`);
+            showSuccessMessage(steps, day);
+          });
+
+          menu.addButton(RED_BUTTON, "add points", () => {
+            addDayEntry(this.msg.author.id, day, this.challenge.ID, challengeName, steps);
+            this.msg.channel.send(`Successfully added`);
+            showSuccessMessage(steps, day);
+          });
+
+          menu.addCloseButton();
+          await menu.run();
+        }
+      }
+
+      this.msg.channel.send(
+        oneLine`For a total overview of your uploads this month, use
+        \`${client.prefix}progress\``
+      );
+
+    })
+
+    
 
     menu.addCloseButton();
     await menu.run();

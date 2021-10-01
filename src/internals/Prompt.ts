@@ -1,16 +1,22 @@
-import { Message, MessageCollector, MessageEmbed, TextChannel } from "discord.js";
+import { Message, MessageCollector, MessageCollectorOptions, MessageEmbed, TextChannel } from "discord.js";
 
 export class Prompt {
   constructor(private msg: Message) {}
 
-  async collect(question: string | MessageEmbed) {
+  async collect(
+    question: string | MessageEmbed, 
+    option?: MessageCollectorOptions,
+  ) {
 
     await this.msg.channel.send(question);
-    const filter = (response: Message) => response.author.id === this.msg.author.id;
+
+    const filter = (response: Message) => 
+      response.author.id === this.msg.author.id;
+
     const collector = new MessageCollector(
       this.msg.channel as TextChannel, 
       filter,
-      { max: 1, time: 60 * 1000 },
+      { max: 1, time: 60 * 1000, ...option },
     );
 
     return new Promise<Message>((resolve, reject) => {
