@@ -31,7 +31,12 @@ export default class Upload extends Command {
 
     menu.addButton(BLUE_BUTTON, "steps", () => this.handleSteps());
     menu.addCloseButton();
-    await menu.run();
+
+    try {
+      await menu.run();
+    } catch (err) {
+      msg.channel.send(err.message);
+    }
   }
 
   private async handleSteps() {
