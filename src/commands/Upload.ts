@@ -59,8 +59,8 @@ export default class Upload extends Command {
 
       if (Number.isNaN(day) || day > maxDay) {
         this.msg.channel.send(
-          oneLine`Please only write the day of the the month (use "5" for the
-          5th day in the month).`
+          oneLine`Please only write the day of the the month (Example: use "5"
+          for the 5th day in the month).`
         );
         return;
       }
@@ -95,14 +95,14 @@ export default class Upload extends Command {
         const points = Math.round(conversionRate * steps);
         const xp = getXp(points);
 
-        let text = 
+        let text =
           oneLine`You have registered ${bold(steps)} steps on ${bold(month)}
         ${bold(day)} and earned ${bold(points)} monthly points + ${bold(xp)}
         permanent XP!`;
 
         text += "\n";
 
-        text += 
+        text +=
           oneLine`For a total overview of your uploads this month, use
         \`${client.prefix}progress\``;
 
@@ -155,8 +155,8 @@ export default class Upload extends Command {
 
         if (Number.isNaN(day) || day > maxDay) {
           this.msg.channel.send(
-            oneLine`Please only write the day of the the month (use "5" for the
-            5th day in the month).`
+            oneLine`Please only write the day of the the month (Example: use "5"
+            for the 5th day in the month).`
           );
           return;
         }
@@ -164,7 +164,7 @@ export default class Upload extends Command {
 
       const stepsResponds = await prompt.ask(
         oneLine`Please write how many steps you want to upload for days
-        ${days.join(" ")} in the right order, please seperate them with a space 
+        ${days.join(" ")} in the right order, please seperate them with a space
         \`(example: 1456 2583 2847 8582 …)\``
       );
 
@@ -203,7 +203,7 @@ export default class Upload extends Command {
         const points = Math.round(conversionRate * steps);
         const xp = getXp(points);
 
-        const text = 
+        const text =
           oneLine`You have registered ${bold(steps)} steps on ${bold(month)}
           ${bold(day)} and earned ${bold(points)} monthly points + ${bold(xp)}
           permanent XP!`;
@@ -251,7 +251,7 @@ export default class Upload extends Command {
 
     })
 
-    
+
 
     menu.addCloseButton();
     await menu.run();
