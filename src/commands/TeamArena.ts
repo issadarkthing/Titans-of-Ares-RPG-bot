@@ -134,8 +134,6 @@ export default class extends Command {
             defeating ${mentionOpponent}`
           );
 
-          // update score board
-          await arena.updateScoreboard();
         } else {
           await msg.channel.send(
             `You have lost the battle against ${opponent.player.name}!`
@@ -153,6 +151,9 @@ export default class extends Command {
         energy--;
         await sleep(1000);
     }
+
+    // update score board
+    await arena.updateScoreboard();
   }
 
   private async battle(msg: Message, player: Player, arena: TeamArena) {
