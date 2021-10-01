@@ -23,7 +23,7 @@ export class Prompt {
       collector.on("end", results => {
         const result = results.first();
         if (!result) {
-          reject("no input was given");
+          reject(new Error("no input was given"));
           return;
         }
 
