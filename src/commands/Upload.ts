@@ -36,12 +36,13 @@ export default class Upload extends Command {
 
   private async handleSteps() {
 
+    const challengeName: ChallengeName = "steps";
     const question = "Do you want to upload a single day or multiple days?";
     const menu = new ButtonHandler(this.msg, question);
+    const prompt = new Prompt(this.msg);
 
     menu.addButton(BLUE_BUTTON, "single", async () => {
 
-      const prompt = new Prompt(this.msg);
       const answer = await prompt.ask(
         "Please write the day of the month you want to upload steps for."
       );
@@ -85,7 +86,6 @@ export default class Upload extends Command {
         return;
       }
 
-      const challengeName: ChallengeName = "steps";
       const lookupID = `${challengeName}-${this.challenge.ID}`;
       const conversionRate = this.convertTable.get(lookupID);
 
@@ -139,6 +139,70 @@ export default class Upload extends Command {
       }
 
     })
+
+    menu.addButton(RED_BUTTON, "multiple", async () => {
+
+      const answer = await prompt.ask(
+        oneLine`Please write the days of the month you want to upload steps for
+        and seperate them with a space \`(example: 1 2 3 4 ….)\``
+      );
+
+      const days = answer.split(/\s+/);
+      const date = DateTime.local(this.challenge.Year, this.challenge.Month-1);
+      const maxDay = date.daysInMonth;
+      const month = date.monthLong;
+
+      for (const day of days) {
+
+        const d = parseInt(day);
+
+        if (Number.isNaN(d) || d > maxDay) {
+          this.msg.channel.send(
+            oneLine`Please only write the day of the the month (use "5" for the
+            5th day in the month).`
+          );
+          return;
+        }
+      }
+
+      const stepsResponds = await prompt.ask(
+        oneLine`Please write how many steps you want to upload for days
+        ${days.join(" ")} in the right order, please seperate them with a space 
+        (example: 1456 2583 2847 8582 …)`
+      );
+
+      for (const stepsRespond of stepsResponds) {
+
+        const steps = parseInt(stepsRespond);
+
+        if (Number.isNaN(steps)) {
+          this.msg.channel.send(`invalid format "${steps}"`);
+          return;
+        } else if (steps > 250_000) {
+          this.msg.channel.send("This challenge capped at 250k steps");
+          return;
+        }
+      }
+
+      let proofs = 0;
+
+      // eslint-disable-next-line
+      while (true) {
+
+        const respond = await prompt.collect(
+          oneLine`Please upload one or more screenshots proving your steps for
+          these days of the month. When done, please write 'done' in the channel.`
+        );
+
+        const proof = respond.attachments.first();
+
+        if (proof) {
+
+        }
+      }
+
+    })
+    
 
     menu.addCloseButton();
     await menu.run();
