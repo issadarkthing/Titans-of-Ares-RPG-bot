@@ -1,10 +1,10 @@
-import { Message, MessageEmbed, MessageReaction, User } from "discord.js";
+import { Collection, Message, MessageEmbed, MessageReaction, User } from "discord.js";
 import { BROWN } from "./utils";
 
 interface Button {
   emoji: string;
   label: string;
-  callback: (emoji?: string) => void;
+  callback: (emoji?: string) => void | Promise<void>;
 }
 
 export class ButtonHandler {
@@ -55,7 +55,7 @@ export class ButtonHandler {
   }
 
   addButton(emoji: string, label: string, cb: (emoji?: string) => void) {
-    this.buttons.push({ 
+    this.buttons.push({
       emoji,
       label,
       callback: cb,
@@ -73,27 +73,30 @@ export class ButtonHandler {
   }
 
   async run() {
+    const filter = (reaction: MessageReaction, user: User) => {
+      return this.emojis.includes(reaction.emoji.name)
+      && user.id === this.userID;
+    };
 
-    try {
-      const filter = (reaction: MessageReaction, user: User) => {
-        return this.emojis.includes(reaction.emoji.name) 
-          && user.id === this.userID;
-      };
+    const options = { max: 1, time: 30_000, errors: ['time'] };
+    this.embed.addField("---------", this.createLabel());
 
-      const options = { max: 1, time: 30_000, errors: ['time'] };
-      this.embed.addField("---------", this.createLabel());
+    this.msgCollector = await this.msg.channel.send(this.embed);
 
-      this.msgCollector = await this.msg.channel.send(this.embed);
+    this.react();
 
-      this.react();
-      const collected = await this.msgCollector.awaitReactions(filter, options);
-      const reaction = collected.first()!;
-      const cb = this.getCB(reaction.emoji.name)!;
-      await this.msgCollector.delete();
-      cb(reaction.emoji.name);
+    const collected = await this.msgCollector.awaitReactions(filter, options)
+      .catch(() => this.msgCollector?.delete());
 
-    } catch {
-      this.msgCollector?.delete();
+    if (collected instanceof Collection) {
+
+      const reaction = collected.first();
+
+      if (reaction) {
+        const cb = this.getCB(reaction.emoji.name)!;
+        await this.msgCollector.delete();
+        await cb(reaction.emoji.name);
+      }
     }
   }
 }
