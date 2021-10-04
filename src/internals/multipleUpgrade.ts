@@ -14,7 +14,7 @@ export function upgrade(
   count: number,
 ) {
 
-  const safeFnID = `multi_upgrade_${player.id}`;
+  const safeFnID = `multi_upgrade_${player.id}_${count}`;
   const handler = async () => {
 
     const scroll = item.scroll;
