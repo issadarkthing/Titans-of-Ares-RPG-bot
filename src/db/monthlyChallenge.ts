@@ -1,6 +1,6 @@
 import { dbAll, dbGet, dbRun } from "./promiseWrapper";
 
-export type ChallengeName = 
+export type ChallengeName =
     "steps"
   | "cyclingkm"
   | "cyclingmi"
@@ -76,7 +76,7 @@ export async function getCurrentChallenge() {
     BronzeCutoff,
     Month,
     Year
-  FROM Challenge 
+  FROM Challenge
   ORDER BY ID DESC LIMIT 1
   `
 
@@ -180,12 +180,21 @@ export async function getDayEntries($userID: string, $challengeID: number) {
   return dbAll<DayEntry>(sql, { $entryID });
 }
 
-/** 
+export class OverlapError extends Error {
+  dayEntry: DayEntry;
+
+  constructor(dayEntry: DayEntry) {
+    super("overlap error");
+    this.dayEntry = dayEntry;
+  }
+}
+
+/**
  * Adds point for a particular challenge, day and challenge type.
  * Throws DayEntry there is conflict. Conflict should be handled.
  * */
 export async function registerDayEntry(
-  $userID: string, 
+  $userID: string,
   $day: number,
   $challengeID: number,
   $valueType: ChallengeName,
@@ -199,14 +208,14 @@ export async function registerDayEntry(
   }
 
   let sql = `
-    SELECT 1 FROM DayEntry 
+    SELECT * FROM DayEntry
     WHERE EntryID = $entryID AND Day = $day AND ValueType = '${$valueType}'
   `
 
   const conflict = await dbGet<DayEntry>(sql, { $entryID, $day });
 
   if (conflict !== undefined) {
-    throw new Error("conflict");
+    throw new OverlapError(conflict);
   }
 
   sql = `

@@ -5,7 +5,7 @@ import { BLUE_BUTTON, bold, getXp, RED_BUTTON } from "../internals/utils";
 import { ButtonHandler } from "../internals/ButtonHandler";
 import { oneLine } from "common-tags";
 import { client } from "../main";
-import { registerDayEntry, ChallengeName, getChallengeByChannelID, getConvertTable, replaceDayEntry, addDayEntry, Challenge } from "../db/monthlyChallenge";
+import { registerDayEntry, ChallengeName, getChallengeByChannelID, getConvertTable, replaceDayEntry, addDayEntry, Challenge, OverlapError } from "../db/monthlyChallenge";
 import { DateTime } from "luxon";
 
 export default class Upload extends Command {
@@ -57,7 +57,7 @@ export default class Upload extends Command {
         "Please write the day of the month you want to upload steps for."
       );
 
-      const date = DateTime.local(this.challenge.Year, this.challenge.Month-1);
+      const date = DateTime.local(this.challenge.Year, this.challenge.Month - 1);
       const maxDay = date.daysInMonth;
       const month = date.monthLong;
       const day = parseInt(answer);
@@ -121,8 +121,11 @@ export default class Upload extends Command {
 
       } catch (e: unknown) {
 
-        const question = oneLine`You already registered steps on ${month}
-        ${day}. Do you want to replace or add point on this day?`;
+        const err = e as OverlapError;
+        const question = 
+          oneLine`You already registered ${bold(err.dayEntry.Value)} steps on
+          ${bold(month)} ${bold(day)}. Do you want to replace or add point on
+          this day?`;
 
         const menu = new ButtonHandler(this.msg, question);
 
@@ -152,7 +155,7 @@ export default class Upload extends Command {
       );
 
       const days = answer.split(/\s+/).map(x => parseInt(x));
-      const date = DateTime.local(this.challenge.Year, this.challenge.Month-1);
+      const date = DateTime.local(this.challenge.Year, this.challenge.Month - 1);
       const maxDay = date.daysInMonth;
       const month = date.monthLong;
 
@@ -227,8 +230,11 @@ export default class Upload extends Command {
 
         } catch (e: unknown) {
 
-          const question = oneLine`You already registered steps on ${month}
-          ${day}. Do you want to replace or add point on this day?`;
+          const err = e as OverlapError;
+          const question = 
+            oneLine`You already registered ${bold(err.dayEntry.Value)} steps on
+            ${bold(month)} ${bold(day)}. Do you want to replace or add point on
+            this day?`; 
 
           const menu = new ButtonHandler(this.msg, question);
 
@@ -255,7 +261,6 @@ export default class Upload extends Command {
       );
 
     })
-
 
 
     menu.addCloseButton();
