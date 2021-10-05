@@ -42,7 +42,14 @@ export default class Upload extends Command {
     menu.addCloseButton();
 
     try {
+
       await menu.run();
+
+      msg.channel.send(
+        oneLine`For a total overview of your uploads this month, use
+        \`${client.prefix}progress\``
+      );
+
     } catch (err) {
       msg.channel.send(err.message);
       msg.channel.send(
@@ -56,16 +63,10 @@ export default class Upload extends Command {
     const points = Math.round(data.conversionRate * data.value);
     const xp = getXp(points);
 
-    let text =
+    const text =
       oneLine`You have registered ${bold(data.value)} ${data.valueType} on
       ${bold(data.month)} ${bold(data.day)} and earned ${bold(points)} monthly points +
       ${bold(xp)} permanent XP!`;
-
-    text += "\n";
-
-    text +=
-      oneLine`For a total overview of your uploads this month, use
-    \`${client.prefix}progress\``;
 
     this.msg.channel.send(text);
   }
@@ -75,16 +76,10 @@ export default class Upload extends Command {
     const points = Math.round(data.conversionRate * data.value);
     const xp = getXp(points);
 
-    let text =
+    const text =
       oneLine`You have registered ${bold(data.value)} additional
       ${data.valueType} on ${bold(data.month)} ${bold(data.day)} and earned
       ${bold(points)} monthly points + ${bold(xp)} permanent XP!`;
-
-    text += "\n";
-
-    text +=
-      oneLine`For a total overview of your uploads this month, use
-    \`${client.prefix}progress\``;
 
     this.msg.channel.send(text);
   }
@@ -95,17 +90,11 @@ export default class Upload extends Command {
     const points = Math.round(data.conversionRate * data.value);
     const xp = getXp(points);
 
-    let text =
+    const text =
       oneLine`You have registered ${bold(data.value)} ${data.valueType} on
-    ${bold(data.month)} ${bold(data.day)} and earned ${bold(points)} monthly
-    points + ${bold(xp)} permanent XP! Your previous gained points for this day
-    have been removed.`;
-
-    text += "\n";
-
-    text +=
-      oneLine`For a total overview of your uploads this month, use
-    \`${client.prefix}progress\``;
+      ${bold(data.month)} ${bold(data.day)} and earned ${bold(points)} monthly
+      points + ${bold(xp)} permanent XP! Your previous gained points for this
+      day have been removed.`;
 
     this.msg.channel.send(text);
   }
