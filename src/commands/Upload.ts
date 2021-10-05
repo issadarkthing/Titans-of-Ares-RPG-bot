@@ -124,7 +124,7 @@ export default class Upload extends Command {
     const challengeName: ChallengeName = "steps";
     const question = "Do you want to upload a single day or multiple days?";
     const menu = new ButtonHandler(this.msg, question);
-    const prompt = new Prompt(this.msg);
+    const prompt = new Prompt(this.msg, { cancelKeyword: ["cancel"] });
     const lookupID = `${challengeName}-${this.challenge.ID}`;
     const conversionRate = this.convertTable.get(lookupID);
 
@@ -321,7 +321,7 @@ export default class Upload extends Command {
       oneLine`You can earn 1 point for every 2km or 1,24mi cycled. Do you want
       to upload a single day or multiple days?`;
     const menu = new ButtonHandler(this.msg, question);
-    const prompt = new Prompt(this.msg);
+    const prompt = new Prompt(this.msg, { cancelKeyword: ["cancel"] });
     const lookupID = `${challengeName}-${this.challenge.ID}`;
     const conversionRate = this.convertTable.get(lookupID)!;
 
@@ -440,7 +440,7 @@ export default class Upload extends Command {
 
       const answer = await prompt.ask(
         oneLine`Please write the days of the month you want to upload cycling
-        (${unit}) for and seperate them with a space \`(example: 1 2 3 4 ….)\``
+        (${unit}) for and seperate them with a space \`(example: 1 2 3 4 ….)\``,
       );
 
       const days = answer.split(/\s+/).map(x => parseInt(x));
@@ -480,7 +480,7 @@ export default class Upload extends Command {
       await prompt.collect(
         oneLine`Please upload one or more screenshots proving your cycling
         (${unit}) for these days of the month.`,
-        { max: days.length },
+        { max: days.length, cancelKeyword: ["done"] },
       );
 
 
