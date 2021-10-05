@@ -110,6 +110,15 @@ export default class Upload extends Command {
     this.msg.channel.send(text);
   }
 
+  private validateDay(day: number, maxDay: number) {
+      if (Number.isNaN(day) || day > maxDay || day <= 0) {
+        throw new Error(
+          oneLine`Please only write the day of the the month (Example: use "5"
+          for the 5th day in the month).`
+        );
+      }
+  }
+
   private async handleSteps() {
 
     const challengeName: ChallengeName = "steps";
@@ -133,12 +142,7 @@ export default class Upload extends Command {
       const month = date.monthLong;
       const day = parseInt(answer);
 
-      if (Number.isNaN(day) || day > maxDay || day <= 0) {
-        throw new Error(
-          oneLine`Please only write the day of the the month (Example: use "5"
-          for the 5th day in the month).`
-        );
-      }
+      this.validateDay(day, maxDay);
 
       const stepsRespond = await prompt.ask(
         oneLine`Please write how many steps you want to upload for
@@ -218,12 +222,7 @@ export default class Upload extends Command {
 
       for (const day of days) {
 
-        if (Number.isNaN(day) || day > maxDay) {
-          throw new Error(
-            oneLine`Please only write the day of the the month (Example: use "5"
-            for the 5th day in the month).`
-          );
-        }
+        this.validateDay(day, maxDay);
       }
 
       const stepsResponds = await prompt.ask(
@@ -356,12 +355,7 @@ export default class Upload extends Command {
       const maxDay = date.daysInMonth;
       const month = date.monthLong;
 
-      if (Number.isNaN(day) || day > maxDay) {
-        throw new Error(
-          oneLine`Please only write the day of the the month (Example: use "5"
-          for the 5th day in the month).`
-        );
-      }
+      this.validateDay(day, maxDay);
 
       const distance = parseInt(await prompt.ask(
         oneLine`Please write the distance (${unit}) you have cycled on
@@ -424,6 +418,114 @@ export default class Upload extends Command {
       }
 
 
+    });
+
+    menu.addButton(RED_BUTTON, "multiple", async () => {
+
+      const question = "Do you want to upload cycling distance in km or mi?";
+      const menu = new ButtonHandler(this.msg, question);
+
+      menu.addButton(BLUE_BUTTON, "km", () => { 
+        challengeName = "cyclingkm";
+        unit = "km";
+      });
+
+      menu.addButton(RED_BUTTON, "mi", () => { 
+        challengeName = "cyclingmi";
+        unit = "mi";
+      });
+
+      menu.addCloseButton();
+      await menu.run();
+
+      const answer = await prompt.ask(
+        oneLine`Please write the days of the month you want to upload cycling
+        (${unit}) for and seperate them with a space \`(example: 1 2 3 4 ….)\``
+      );
+
+      const days = answer.split(/\s+/).map(x => parseInt(x));
+      const date = DateTime.local(this.challenge.Year, this.challenge.Month - 1);
+      const maxDay = date.daysInMonth;
+      const month = date.monthLong;
+
+      for (const day of days) {
+
+        this.validateDay(day, maxDay);
+      }
+
+      const cyclingResponds = await prompt.ask(
+        oneLine`Please write how many cycling (${bold(unit)}) you want to upload
+        for days ${days.join(" ")} in the right order, please seperate them with
+        a space \`(example: 1456 2583 2847 8582 …)\``
+      );
+
+      const allCycling = cyclingResponds.split(/\s+/).map(x => parseInt(x));
+
+      if (allCycling.length !== days.length) {
+        throw new Error(
+          oneLine`You are uploading for ${days.length} days but only
+          ${allCycling.length} steps are given.`
+        );
+      }
+
+      for (const cyclingRespond of allCycling) {
+
+        const cycling = cyclingRespond;
+
+        if (Number.isNaN(cycling)) {
+          throw new Error(`invalid format "${cycling}"`);
+        }
+      }
+
+      await prompt.collect(
+        oneLine`Please upload one or more screenshots proving your cycling
+        (${unit}) for these days of the month.`,
+        { max: days.length },
+      );
+
+
+      for (let i = 0; i < days.length; i++) {
+        const day = days[i];
+        const cycling = allCycling[i];
+        const successOptions: SuccessMessageOptions = {
+          value: cycling,
+          valueType: `${unit} cycled`,
+          conversionRate,
+          month,
+          day,
+        }
+
+        try {
+
+          await registerDayEntry(this.msg.author.id, day, this.challenge.ID, challengeName, cycling);
+          this.showSuccessMessage(successOptions);
+
+        } catch (e: unknown) {
+
+          const err = e as OverlapError;
+          const question = 
+            oneLine`You already registered
+          ${bold(err.dayEntry.Value)}${bold(unit)} steps on ${bold(month)}
+          ${bold(day)}. Do you want to replace or add point on this day?`; 
+
+          const menu = new ButtonHandler(this.msg, question);
+
+          menu.addButton(BLUE_BUTTON, "replace", () => {
+            replaceDayEntry(this.msg.author.id, day, this.challenge.ID, challengeName, cycling);
+            this.msg.channel.send(`Successfully replaced`);
+            this.showReplaceMessage(successOptions);
+          });
+
+          menu.addButton(RED_BUTTON, "add points", () => {
+            addDayEntry(this.msg.author.id, day, this.challenge.ID, challengeName, cycling);
+            this.msg.channel.send(`Successfully added`);
+            this.showAddMessage(successOptions);
+          });
+
+          menu.addCloseButton();
+          await menu.run();
+        }
+      }
     });
 
     menu.addCloseButton();
