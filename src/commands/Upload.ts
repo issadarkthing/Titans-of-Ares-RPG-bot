@@ -8,6 +8,14 @@ import { client } from "../main";
 import { registerDayEntry, ChallengeName, getChallengeByChannelID, getConvertTable, replaceDayEntry, addDayEntry, Challenge, OverlapError } from "../db/monthlyChallenge";
 import { DateTime } from "luxon";
 
+type SuccessMessageOptions = {
+  value: number;
+  valueType: string;
+  month: string;
+  day: number;
+  conversionRate: number;
+};
+
 export default class Upload extends Command {
   name = "upload";
   aliases = ["up"];
@@ -30,6 +38,7 @@ export default class Upload extends Command {
     const menu = new ButtonHandler(msg, question);
 
     menu.addButton(BLUE_BUTTON, "steps", () => this.handleSteps());
+    menu.addButton(RED_BUTTON, "cycling", () => this.handleCycling());
     menu.addCloseButton();
 
     try {
@@ -37,6 +46,65 @@ export default class Upload extends Command {
     } catch (err) {
       msg.channel.send(err.message);
     }
+  }
+
+  private showSuccessMessage(data: SuccessMessageOptions) {
+
+    const points = Math.round(data.conversionRate * data.value);
+    const xp = getXp(points);
+
+    let text =
+      oneLine`You have registered ${bold(data.value)} ${data.valueType} on
+      ${bold(data.month)} ${bold(data.day)} and earned ${bold(points)} monthly points +
+      ${bold(xp)} permanent XP!`;
+
+    text += "\n";
+
+    text +=
+      oneLine`For a total overview of your uploads this month, use
+    \`${client.prefix}progress\``;
+
+    this.msg.channel.send(text);
+  }
+
+  private showAddMessage(data: SuccessMessageOptions) {
+
+    const points = Math.round(data.conversionRate * data.value);
+    const xp = getXp(points);
+
+    let text =
+      oneLine`You have registered ${bold(data.value)} additional
+      ${data.valueType} on ${bold(data.month)} ${bold(data.day)} and earned
+      ${bold(points)} monthly points + ${bold(xp)} permanent XP!`;
+
+    text += "\n";
+
+    text +=
+      oneLine`For a total overview of your uploads this month, use
+    \`${client.prefix}progress\``;
+
+    this.msg.channel.send(text);
+  }
+
+
+  private showReplaceMessage(data: SuccessMessageOptions) {
+
+    const points = Math.round(data.conversionRate * data.value);
+    const xp = getXp(points);
+
+    let text =
+      oneLine`You have registered ${bold(data.value)} ${data.valueType} on
+    ${bold(data.month)} ${bold(data.day)} and earned ${bold(points)} monthly
+    points + ${bold(xp)} permanent XP! Your previous gained points for this day
+    have been removed.`;
+
+    text += "\n";
+
+    text +=
+      oneLine`For a total overview of your uploads this month, use
+    \`${client.prefix}progress\``;
+
+    this.msg.channel.send(text);
   }
 
   private async handleSteps() {
@@ -96,28 +164,19 @@ export default class Upload extends Command {
         return;
       }
 
-      const showSuccessMessage = () => {
-        const points = Math.round(conversionRate * steps);
-        const xp = getXp(points);
-
-        let text =
-          oneLine`You have registered ${bold(steps)} steps on ${bold(month)}
-        ${bold(day)} and earned ${bold(points)} monthly points + ${bold(xp)}
-        permanent XP!`;
-
-        text += "\n";
-
-        text +=
-          oneLine`For a total overview of your uploads this month, use
-        \`${client.prefix}progress\``;
-
-        this.msg.channel.send(text);
+      const successOptions: SuccessMessageOptions = {
+        value: steps,
+        valueType: "steps",
+        conversionRate,
+        month,
+        day,
       }
 
       try {
 
         await registerDayEntry(this.msg.author.id, day, this.challenge.ID, challengeName, steps);
-        showSuccessMessage();
+
+        this.showSuccessMessage(successOptions);
 
       } catch (e: unknown) {
 
@@ -132,13 +191,13 @@ export default class Upload extends Command {
         menu.addButton(BLUE_BUTTON, "replace", () => {
           replaceDayEntry(this.msg.author.id, day, this.challenge.ID, challengeName, steps);
           this.msg.channel.send(`Successfully replaced`);
-          showSuccessMessage();
+          this.showReplaceMessage(successOptions);
         });
 
         menu.addButton(RED_BUTTON, "add points", () => {
           addDayEntry(this.msg.author.id, day, this.challenge.ID, challengeName, steps);
           this.msg.channel.send(`Successfully added`);
-          showSuccessMessage();
+          this.showAddMessage(successOptions);
         });
 
         menu.addCloseButton();
@@ -206,27 +265,21 @@ export default class Upload extends Command {
         { max: days.length },
       );
 
-
-      const showSuccessMessage = (steps: number, day: number) => {
-        const points = Math.round(conversionRate * steps);
-        const xp = getXp(points);
-
-        const text =
-          oneLine`You have registered ${bold(steps)} steps on ${bold(month)}
-          ${bold(day)} and earned ${bold(points)} monthly points + ${bold(xp)}
-          permanent XP!`;
-
-        this.msg.channel.send(text);
-      }
-
       for (let i = 0; i < days.length; i++) {
         const day = days[i];
         const steps = allSteps[i];
+        const successOptions: SuccessMessageOptions = {
+          value: steps,
+          valueType: "steps",
+          conversionRate,
+          month,
+          day,
+        }
 
         try {
 
           await registerDayEntry(this.msg.author.id, day, this.challenge.ID, challengeName, steps);
-          showSuccessMessage(steps, day);
+          this.showSuccessMessage(successOptions);
 
         } catch (e: unknown) {
 
@@ -241,13 +294,13 @@ export default class Upload extends Command {
           menu.addButton(BLUE_BUTTON, "replace", () => {
             replaceDayEntry(this.msg.author.id, day, this.challenge.ID, challengeName, steps);
             this.msg.channel.send(`Successfully replaced`);
-            showSuccessMessage(steps, day);
+            this.showReplaceMessage(successOptions);
           });
 
           menu.addButton(RED_BUTTON, "add points", () => {
             addDayEntry(this.msg.author.id, day, this.challenge.ID, challengeName, steps);
             this.msg.channel.send(`Successfully added`);
-            showSuccessMessage(steps, day);
+            this.showAddMessage(successOptions);
           });
 
           menu.addCloseButton();
@@ -264,6 +317,132 @@ export default class Upload extends Command {
 
 
     menu.addCloseButton();
+    await menu.run();
+  }
+
+  private async handleCycling() {
+
+    let challengeName: ChallengeName = "cyclingkm";
+    let unit = "km";
+    const question = 
+      oneLine`You can earn 1 point for every 2km or 1,24mi cycled. Do you want
+      to upload a single day or multiple days?`;
+    const menu = new ButtonHandler(this.msg, question);
+    const prompt = new Prompt(this.msg);
+    const lookupID = `${challengeName}-${this.challenge.ID}`;
+    const conversionRate = this.convertTable.get(lookupID)!;
+
+    if (!conversionRate)
+      throw new Error(`conversion rate does not exists for "${lookupID}"`);
+
+    menu.addButton(BLUE_BUTTON, "single", async () => {
+
+      const question = "Do you want to upload cycling distance in km or mi?";
+      const menu = new ButtonHandler(this.msg, question);
+
+      menu.addButton(BLUE_BUTTON, "km", () => { 
+        challengeName = "cyclingkm";
+        unit = "km";
+      });
+
+      menu.addButton(RED_BUTTON, "mi", () => { 
+        challengeName = "cyclingmi";
+        unit = "mi";
+      });
+
+      await menu.run();
+
+      const day = parseInt(await prompt.ask(
+        oneLine`Please write the day of the month you want to upload cycling
+        (${unit}) for.`
+      ));
+
+      const date = DateTime.local(this.challenge.Year, this.challenge.Month - 1);
+      const maxDay = date.daysInMonth;
+      const month = date.monthLong;
+
+      if (Number.isNaN(day) || day > maxDay) {
+        throw new Error(
+          oneLine`Please only write the day of the the month (Example: use "5"
+          for the 5th day in the month).`
+        );
+      }
+
+      const distance = parseInt(await prompt.ask(
+        oneLine`Please write the distance (${unit}) you have cycled on
+        ${bold(day)} ${bold(month)}`
+      ));
+
+      if (Number.isNaN(distance) || distance <= 0) {
+        throw new Error("invalid distance")
+      }
+
+      const respond = await prompt.collect(
+        oneLine`Please upload a single screenshot of your wearable showing
+        **${distance}${unit}** cycled on ${bold(month)} ${bold(day)}.`
+      );
+
+      const proof = respond.attachments.first();
+
+      if (!proof) {
+        throw new Error("No screenshot provided");
+      }
+
+      const showSuccessMessage = () => {
+        const points = Math.round(conversionRate * distance);
+        const xp = getXp(points);
+
+        let text =
+          oneLine`You have registered **${distance}${unit}** cycled
+          on ${bold(month)} ${bold(day)} and earned ${bold(points)} monthly
+          points + ${bold(xp)} permanent XP!`;
+
+        text += "\n";
+
+        text +=
+          oneLine`For a total overview of your uploads this month, use
+        \`${client.prefix}progress\``;
+
+        this.msg.channel.send(text);
+      }
+
+      try {
+
+        await registerDayEntry(this.msg.author.id, day, this.challenge.ID, challengeName, distance);
+        showSuccessMessage();
+
+      } catch (e: unknown) {
+
+        const err = e as OverlapError;
+        const unit = err.dayEntry.ValueType === "cyclingkm" ? "km" : "mi";
+        const question = 
+          oneLine`You already registered ${bold(err.dayEntry.Value)}
+          ${bold(unit)} cycling on ${bold(month)} ${bold(day)}. Do you
+          want to replace or add point on this day?`;
+
+        const menu = new ButtonHandler(this.msg, question);
+
+        menu.addButton(BLUE_BUTTON, "replace", () => {
+          replaceDayEntry(this.msg.author.id, day, this.challenge.ID, challengeName, distance);
+          this.msg.channel.send(`Successfully replaced`);
+          showSuccessMessage();
+        });
+
+        menu.addButton(RED_BUTTON, "add points", () => {
+          addDayEntry(this.msg.author.id, day, this.challenge.ID, challengeName, distance);
+          this.msg.channel.send(`Successfully added`);
+          showSuccessMessage();
+        });
+
+        menu.addCloseButton();
+        await menu.run();
+      }
+
+
+    });
+
+    menu.addCloseButton();
+
     await menu.run();
   }
 }
