@@ -11,8 +11,10 @@ export class EmptyInputError extends Error {
 }
 
 export class CancelledInputError extends Error {
-  constructor() {
+  keyword: string;
+  constructor(keyword: string) {
     super("cancelled input");
+    this.keyword = keyword;
   }
 }
 
@@ -43,7 +45,7 @@ export class Prompt {
 
       collector.on("collect", (result: Message) => {
         if (options && options.cancelKeyword?.includes(result.content)) {
-          reject(new CancelledInputError());
+          reject(new CancelledInputError(result.content));
         }
       })
 

@@ -1,6 +1,6 @@
 import Command from "../internals/Command";
 import { Message } from "discord.js";
-import { Prompt } from "../internals/Prompt";
+import { CancelledInputError, Prompt } from "../internals/Prompt";
 import { BLUE_BUTTON, bold, getXp, RED_BUTTON } from "../internals/utils";
 import { ButtonHandler } from "../internals/ButtonHandler";
 import { oneLine } from "common-tags";
@@ -119,6 +119,60 @@ export default class Upload extends Command {
       }
   }
 
+  private async getProof(
+    prompt: Prompt, 
+    value: number,
+    activity: string,
+    month: string,
+    day: number,
+  ) {
+
+    try {
+
+      const collected = await prompt.collect(
+        oneLine`Please upload a single screenshot of your wearable showing
+        ${bold(value)} ${activity} on ${bold(month)} ${bold(day)}. When done,
+        please write 'done' in the channel.`,
+          { max: 1, cancelKeyword: ["done"] },
+      );
+
+      if (collected.attachments.size <= 0) {
+        throw new Error("At least one screenshot is needed");
+      }
+
+    } catch (e: unknown) {
+      const err = e as CancelledInputError;
+
+      if (err.keyword === "cancel") {
+        throw new Error("Cancelled");
+      } 
+    }
+  }
+
+  private async getMultiProof(prompt: Prompt, activity: string) {
+
+    try {
+
+      const collected = await prompt.collect(
+        oneLine`Please upload one or more screenshots proving your ${activity}
+        for these days of the month. When done, please write 'done' in the
+        channel.`, 
+        { max: Number.MAX_SAFE_INTEGER, cancelKeyword: ["done"] },
+      );
+
+      if (collected.attachments.size <= 0) {
+        throw new Error("At least one screenshot is needed");
+      }
+
+    } catch (e: unknown) {
+      const err = e as CancelledInputError;
+
+      if (err.keyword === "cancel") {
+        throw new Error("Cancelled");
+      } 
+    }
+  }
+
   private async handleSteps() {
 
     const challengeName: ChallengeName = "steps";
@@ -156,16 +210,7 @@ export default class Upload extends Command {
         throw new Error("This challenge capped at 250k steps");
       }
 
-      const respond = await prompt.collect(
-        oneLine`Please upload a single screenshot of your wearable showing
-        ${bold(steps)} steps on ${bold(month)} ${bold(day)}.`
-      );
-
-      const proof = respond.attachments.first();
-
-      if (!proof) {
-        throw new Error("No screenshot provided. Upload process failed.");
-      }
+      await this.getProof(prompt, steps, "steps", month, day);
 
       const successOptions: SuccessMessageOptions = {
         value: steps,
@@ -251,12 +296,7 @@ export default class Upload extends Command {
         }
       }
 
-
-      await prompt.collect(
-        oneLine`Please upload one or more screenshots proving your steps for
-        these days of the month.`,
-        { max: days.length },
-      );
+      await this.getMultiProof(prompt, "steps");
 
       for (let i = 0; i < days.length; i++) {
         const day = days[i];
@@ -357,7 +397,7 @@ export default class Upload extends Command {
 
       this.validateDay(day, maxDay);
 
-      const distance = parseInt(await prompt.ask(
+      const distance = parseFloat(await prompt.ask(
         oneLine`Please write the distance (${unit}) you have cycled on
         ${bold(day)} ${bold(month)}`
       ));
@@ -366,16 +406,7 @@ export default class Upload extends Command {
         throw new Error("invalid distance")
       }
 
-      const respond = await prompt.collect(
-        oneLine`Please upload a single screenshot of your wearable showing
-        **${distance}${unit}** cycled on ${bold(month)} ${bold(day)}.`
-      );
-
-      const proof = respond.attachments.first();
-
-      if (!proof) {
-        throw new Error("No screenshot provided");
-      }
+      await this.getProof(prompt, distance, "cycled", month, day);
 
       const successOptions: SuccessMessageOptions = {
         value: distance,
@@ -456,15 +487,15 @@ export default class Upload extends Command {
       const cyclingResponds = await prompt.ask(
         oneLine`Please write how many cycling (${bold(unit)}) you want to upload
         for days ${days.join(" ")} in the right order, please seperate them with
-        a space \`(example: 1456 2583 2847 8582 …)\``
+        a space \`(example: 5,27 20,54 7,25 8,55 …)\``
       );
 
-      const allCycling = cyclingResponds.split(/\s+/).map(x => parseInt(x));
+      const allCycling = cyclingResponds.split(/\s+/).map(x => parseFloat(x));
 
       if (allCycling.length !== days.length) {
         throw new Error(
           oneLine`You are uploading for ${days.length} days but only
-          ${allCycling.length} steps are given.`
+          ${allCycling.length} cycle distances are given.`
         );
       }
 
@@ -477,12 +508,7 @@ export default class Upload extends Command {
         }
       }
 
-      await prompt.collect(
-        oneLine`Please upload one or more screenshots proving your cycling
-        (${unit}) for these days of the month.`,
-        { max: days.length, cancelKeyword: ["done"] },
-      );
-
+      await this.getMultiProof(prompt, "cycling");
 
       for (let i = 0; i < days.length; i++) {
         const day = days[i];
