@@ -521,8 +521,8 @@ export default class Upload extends Command {
           const err = e as OverlapError;
           const question = 
             oneLine`You already registered
-          ${bold(err.dayEntry.Value)}${bold(unit)} steps on ${bold(month)}
-          ${bold(day)}. Do you want to replace or add point on this day?`; 
+            ${bold(err.dayEntry.Value)}${bold(unit)} steps on ${bold(month)}
+            ${bold(day)}. Do you want to replace or add point on this day?`; 
 
           const menu = new ButtonHandler(this.msg, question);
 
