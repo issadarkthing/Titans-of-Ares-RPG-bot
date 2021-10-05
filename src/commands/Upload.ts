@@ -388,28 +388,18 @@ export default class Upload extends Command {
         throw new Error("No screenshot provided");
       }
 
-      const showSuccessMessage = () => {
-        const points = Math.round(conversionRate * distance);
-        const xp = getXp(points);
-
-        let text =
-          oneLine`You have registered **${distance}${unit}** cycled
-          on ${bold(month)} ${bold(day)} and earned ${bold(points)} monthly
-          points + ${bold(xp)} permanent XP!`;
-
-        text += "\n";
-
-        text +=
-          oneLine`For a total overview of your uploads this month, use
-        \`${client.prefix}progress\``;
-
-        this.msg.channel.send(text);
+      const successOptions: SuccessMessageOptions = {
+        value: distance,
+        valueType: "cycled",
+        conversionRate,
+        month,
+        day,
       }
 
       try {
 
         await registerDayEntry(this.msg.author.id, day, this.challenge.ID, challengeName, distance);
-        showSuccessMessage();
+        this.showSuccessMessage(successOptions);
 
       } catch (e: unknown) {
 
@@ -425,13 +415,13 @@ export default class Upload extends Command {
         menu.addButton(BLUE_BUTTON, "replace", () => {
           replaceDayEntry(this.msg.author.id, day, this.challenge.ID, challengeName, distance);
           this.msg.channel.send(`Successfully replaced`);
-          showSuccessMessage();
+          this.showReplaceMessage(successOptions);
         });
 
         menu.addButton(RED_BUTTON, "add points", () => {
           addDayEntry(this.msg.author.id, day, this.challenge.ID, challengeName, distance);
           this.msg.channel.send(`Successfully added`);
-          showSuccessMessage();
+          this.showAddMessage(successOptions);
         });
 
         menu.addCloseButton();
