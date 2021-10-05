@@ -45,6 +45,9 @@ export default class Upload extends Command {
       await menu.run();
     } catch (err) {
       msg.channel.send(err.message);
+      msg.channel.send(
+        `Upload process failed. Please rerun \`${client.prefix}${this.name}\``
+      );
     }
   }
 
