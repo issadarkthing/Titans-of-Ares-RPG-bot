@@ -192,3 +192,7 @@ export function inlineCode(str: string | number) {
 export function bold(str: string | number) {
   return `**${str}**`;
 }
+
+export function split(str: string) {
+  return str.split(/\s+/);
+}
