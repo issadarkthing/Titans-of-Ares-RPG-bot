@@ -131,9 +131,8 @@ export default class Upload extends Command {
 
       const collected = await prompt.collect(
         oneLine`Please upload a single screenshot of your wearable showing
-        ${bold(value)} ${activity} on ${bold(month)} ${bold(day)}. When done,
-        please write 'done' in the channel.`,
-          { max: 1, cancelKeyword: ["done"] },
+        ${bold(value)} ${activity} on ${bold(month)} ${bold(day)}.`,
+        { max: 1 },
       );
 
       if (collected.attachments.size <= 0) {
@@ -145,7 +144,9 @@ export default class Upload extends Command {
 
       if (err.keyword === "cancel") {
         throw new Error("Cancelled");
-      } 
+      } else {
+        throw err;
+      }
     }
   }
 
@@ -157,7 +158,7 @@ export default class Upload extends Command {
         oneLine`Please upload one or more screenshots proving your ${activity}
         for these days of the month. When done, please write 'done' in the
         channel.`, 
-        { max: Number.MAX_SAFE_INTEGER, cancelKeyword: ["done"] },
+        { max: Number.MAX_SAFE_INTEGER, cancelKeyword: ["done", "cancel"] },
       );
 
       if (collected.attachments.size <= 0) {
@@ -167,9 +168,9 @@ export default class Upload extends Command {
     } catch (e: unknown) {
       const err = e as CancelledInputError;
 
-      if (err.keyword === "cancel") {
-        throw new Error("Cancelled");
-      } 
+      if (err.keyword !== "done") {
+        throw err;
+      }
     }
   }
 
