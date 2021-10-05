@@ -133,12 +133,11 @@ export default class Upload extends Command {
       const month = date.monthLong;
       const day = parseInt(answer);
 
-      if (Number.isNaN(day) || day > maxDay) {
-        this.msg.channel.send(
+      if (Number.isNaN(day) || day > maxDay || day <= 0) {
+        throw new Error(
           oneLine`Please only write the day of the the month (Example: use "5"
           for the 5th day in the month).`
         );
-        return;
       }
 
       const stepsRespond = await prompt.ask(
@@ -148,11 +147,9 @@ export default class Upload extends Command {
       const steps = parseInt(stepsRespond);
 
       if (Number.isNaN(steps)) {
-        this.msg.channel.send(`Please only write the number of steps without any text.`);
-        return;
+        throw new Error(`Please only write the number of steps without any text.`);
       } else if (steps > 250_000) {
-        this.msg.channel.send("This challenge capped at 250k steps");
-        return;
+        throw new Error("This challenge capped at 250k steps");
       }
 
       const respond = await prompt.collect(
@@ -163,8 +160,7 @@ export default class Upload extends Command {
       const proof = respond.attachments.first();
 
       if (!proof) {
-        this.msg.channel.send("No screenshot provided. Upload process failed.");
-        return;
+        throw new Error("No screenshot provided. Upload process failed.");
       }
 
       const successOptions: SuccessMessageOptions = {
@@ -178,7 +174,6 @@ export default class Upload extends Command {
       try {
 
         await registerDayEntry(this.msg.author.id, day, this.challenge.ID, challengeName, steps);
-
         this.showSuccessMessage(successOptions);
 
       } catch (e: unknown) {
@@ -224,11 +219,10 @@ export default class Upload extends Command {
       for (const day of days) {
 
         if (Number.isNaN(day) || day > maxDay) {
-          this.msg.channel.send(
+          throw new Error(
             oneLine`Please only write the day of the the month (Example: use "5"
             for the 5th day in the month).`
           );
-          return;
         }
       }
 
@@ -241,11 +235,10 @@ export default class Upload extends Command {
       const allSteps = stepsResponds.split(/\s+/).map(x => parseInt(x));
 
       if (allSteps.length !== days.length) {
-        this.msg.channel.send(
+        throw new Error(
           oneLine`You are uploading for ${days.length} days but only
           ${allSteps.length} steps are given.`
         );
-        return;
       }
 
       for (const stepsRespond of allSteps) {
@@ -253,11 +246,9 @@ export default class Upload extends Command {
         const steps = stepsRespond;
 
         if (Number.isNaN(steps)) {
-          this.msg.channel.send(`invalid format "${steps}"`);
-          return;
+          throw new Error(`invalid format "${steps}"`);
         } else if (steps > 250_000) {
-          this.msg.channel.send("This challenge capped at 250k steps");
-          return;
+          throw new Error("This challenge capped at 250k steps");
         }
       }
 
@@ -353,6 +344,7 @@ export default class Upload extends Command {
         unit = "mi";
       });
 
+      menu.addCloseButton();
       await menu.run();
 
       const day = parseInt(await prompt.ask(
@@ -435,7 +427,6 @@ export default class Upload extends Command {
     });
 
     menu.addCloseButton();
-
     await menu.run();
   }
 }
