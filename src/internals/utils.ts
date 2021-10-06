@@ -64,9 +64,6 @@ export function getStats(level: number) {
   return { hp, strength, speed, armor }
 }
 
-export const random = () => new Random(MersenneTwister19937.autoSeed());
-
-
 export function numberFormat(value: number) {
   if (Number.isInteger(value)) {
     return value;

@@ -16,7 +16,6 @@ import {
     ATTOM_BUTTON,
   BLUE_BUTTON,
   BROWN,
-  random,
   RED_BUTTON,
   sleep,
   WHITE_BUTTON,
@@ -98,7 +97,7 @@ export default class extends Command {
       const opponents = arena.candidates.filter(
         (x) => x.team !== candidate.team
       );
-      const opponent = random().pick(opponents);
+      const opponent = client.random.pick(opponents);
 
       await msg.channel.send(
         `You are battling ${opponent.player.name} of the opponents team!`

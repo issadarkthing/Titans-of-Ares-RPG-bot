@@ -1,11 +1,12 @@
 import { oneLine, stripIndents } from "common-tags";
 import { MessageEmbed } from "discord.js";
 import { Fragment } from "./Fragment";
-import { BROWN, CDN_LINK, GOLD, numberFormat, random, roundTo, STAR } from "./utils";
+import { BROWN, CDN_LINK, GOLD, numberFormat, roundTo, STAR } from "./utils";
 import { Pet as PetDB } from "../db/pet"
 import { Player } from "./Player";
 import { DateTime } from "luxon";
 import { List } from "./List";
+import { client } from "../main";
 
 export enum PetID {
   Wisp      = "pet_wisp",
@@ -162,7 +163,7 @@ export class Wisp extends Pet {
   fragmentImageUrl = CDN_LINK + "574852830125359126/862656523531321344/wisp.png";
   petInterceptionUrl = CDN_LINK + "852530378916888626/863778345182429214/Blue-Flame-Illustration.gif";
   private hasSpawn = false;
-  spawnAt = random().integer(2, 5);
+  spawnAt = client.random.integer(2, 5);
 
   get passiveStatDescription() {
     return `\`+${Math.round(this.multiplier * 100)}%\` HP from base stats`;
@@ -227,7 +228,7 @@ export class Gryphon extends Pet {
   fragmentImageUrl = CDN_LINK + "574852830125359126/862655845447630888/gryphon.png"
   petInterceptionUrl = CDN_LINK + "852530378916888626/864399592762114078/GryphonCompressed.gif";
   private hasSpawn = false;
-  spawnAt = random().integer(1, 5);
+  spawnAt = client.random.integer(1, 5);
 
   get passiveStatDescription() {
     return `\`+${Math.round(this.multiplier * 100)}%\` speed from base stats`;
@@ -275,7 +276,7 @@ export class Minotaur extends Pet {
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   isSpawn(_round: number) {
-    return random().bool(0.2);
+    return client.random.bool(0.2);
   }
 
   use(player: Player) {
@@ -367,7 +368,7 @@ export class Dragon extends Pet {
   isSpawn(_round: number) {
     if (this.hasSpawn) return false;
 
-    const spawn = random().bool(0.2);
+    const spawn = client.random.bool(0.2);
     if (spawn) {
       this.hasSpawn = spawn;
       return spawn;

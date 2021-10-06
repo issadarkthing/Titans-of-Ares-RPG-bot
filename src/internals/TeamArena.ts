@@ -13,7 +13,7 @@ import {
 import { client } from "../main";
 import { List } from "./List";
 import { Player } from "./Player";
-import { BLUE_BUTTON, CDN_LINK, CROWN, GOLD, nukeChannel, random, RED_BUTTON } from "./utils";
+import { BLUE_BUTTON, CDN_LINK, CROWN, GOLD, nukeChannel, RED_BUTTON } from "./utils";
 
 enum Days {
   MONDAY = 1,
@@ -177,7 +177,7 @@ export class TeamArena {
   }
 
   static sortMembers(candidates: TeamArenaMember[]): [TeamArenaMember[], TeamArenaMember[]] {
-    candidates = random().shuffle(candidates);
+    candidates = client.random.shuffle(candidates);
 
     // uneven players
     if (candidates.length % 2 !== 0) {
@@ -197,21 +197,21 @@ export class TeamArena {
       let teamBlue = candidates.slice(-half);
 
       // pick random blue member to be changed to red team
-      const randomPlayer = random().pick(teamBlue);
+      const randomPlayer = client.random.pick(teamBlue);
       teamBlue = teamBlue.filter((player) => player.id !== randomPlayer.id);
       teamRed.push(randomPlayer);
 
       // add strongest player to team blue
       teamBlue.push(strongestPlayer);
 
-      return random().shuffle([teamRed, teamBlue]) as [TeamArenaMember[], TeamArenaMember[]];
+      return client.random.shuffle([teamRed, teamBlue]) as [TeamArenaMember[], TeamArenaMember[]];
     }
 
     const half = Math.ceil(candidates.length / 2);
     // split into two teams
     const teamRed = candidates.slice(0, half);
     const teamBlue = candidates.slice(-half);
-    return random().shuffle([teamRed, teamBlue]) as [TeamArenaMember[], TeamArenaMember[]];
+    return client.random.shuffle([teamRed, teamBlue]) as [TeamArenaMember[], TeamArenaMember[]];
   }
 
   static currentPhase() {
