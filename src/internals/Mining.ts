@@ -51,7 +51,22 @@ export abstract class Stone extends Item {
     CDN_LINK + "574852830125359126/884774042899447838/ezgif.com-gif-maker.gif";
 
   static random() {
-    return Stone.all.weightedRandom(x => x.rarity * 1000);
+    const stones = [
+      Legendary.random(),
+      Epic.random(),
+      Rare.random(),
+      Common.random(),
+      Uncommon.random(),
+      new RoughStone(),
+    ];
+
+    for (const stone of stones) {
+      if (client.random.bool(stone.rarity)) {
+        return stone;
+      }
+    }
+
+    return new RoughStone();
   }
 
   static get all(): List<Stone> {
