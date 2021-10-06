@@ -1,7 +1,7 @@
 import Command from "../internals/Command";
 import { Message } from "discord.js";
 import { CancelledInputError, Prompt } from "../internals/Prompt";
-import { BLUE_BUTTON, bold, getXp, RED_BUTTON } from "../internals/utils";
+import { BLUE_BUTTON, bold, getXp, RED_BUTTON, WHITE_BUTTON } from "../internals/utils";
 import { ButtonHandler } from "../internals/ButtonHandler";
 import { oneLine } from "common-tags";
 import { client } from "../main";
@@ -39,6 +39,7 @@ export default class Upload extends Command {
 
     menu.addButton(BLUE_BUTTON, "steps", () => this.handleSteps());
     menu.addButton(RED_BUTTON, "cycling", () => this.handleCycling());
+    menu.addButton(WHITE_BUTTON, "strength", () => this.handleStrength());
     menu.addCloseButton();
 
     try {
@@ -114,11 +115,13 @@ export default class Upload extends Command {
     activity: string,
     month: string,
     day: number,
+    question?: string,
   ) {
 
     try {
 
       const collected = await prompt.collect(
+        question ||
         oneLine`Please upload a single screenshot of your wearable showing
         ${bold(value)} ${activity} on ${bold(month)} ${bold(day)}.`,
         { max: 1 },
@@ -161,6 +164,99 @@ export default class Upload extends Command {
         throw err;
       }
     }
+  }
+
+  private async handleStrength() {
+
+    const challengeName: ChallengeName = "strength";
+    const question = 
+      oneLine`You can earn 12 point for 1 strength training over 30 minutes. You
+      can upload 1 strength training every day. Do you want to upload a single
+      day or multiple days?`;
+
+    const menu = new ButtonHandler(this.msg, question);
+    const prompt = new Prompt(this.msg, { cancelKeyword: ["cancel"] });
+    const lookupID = `${challengeName}-${this.challenge.ID}`;
+    const conversionRate = this.convertTable.get(lookupID);
+
+    if (!conversionRate)
+      throw new Error(`conversion rate does not exists for "${lookupID}"`);
+
+    menu.addButton(BLUE_BUTTON, "single", async () => {
+
+      const answer = await prompt.ask(
+        "Please write the day of the month you want to upload steps for."
+      );
+
+      const date = DateTime.local(this.challenge.Year, this.challenge.Month - 1);
+      const maxDay = date.daysInMonth;
+      const month = date.monthLong;
+      const day = parseInt(answer);
+      const count = 1;
+
+      this.validateDay(day, maxDay);
+
+      await this.getProof(
+        prompt, 
+        count, 
+        "strength", 
+        month, 
+        day,
+        oneLine`Please upload a single screenshot of your wearable showing the
+        date, duration of workout and heartrate.`,
+      );
+
+      const successOptions: SuccessMessageOptions = {
+        value: count,
+        valueType: "strength",
+        conversionRate,
+        month,
+        day,
+      }
+
+      try {
+
+        await registerDayEntry(this.msg.author.id, day, this.challenge.ID, challengeName, count);
+
+        const points = Math.round(conversionRate * count);
+        const xp = getXp(points);
+
+        this.msg.channel.send(
+          oneLine`You have registered a strength workout on ${bold(month)}
+          ${bold(day)} and earned ${bold(points)} monthly points + ${bold(xp)}
+          permanent XP!`
+        )
+
+      } catch (e: unknown) {
+
+        const err = e as OverlapError;
+        const question = 
+          oneLine`You already registered ${bold(err.dayEntry.Value)} steps on
+          ${bold(month)} ${bold(day)}. Do you want to replace or add point on
+          this day?`;
+
+        const menu = new ButtonHandler(this.msg, question);
+
+        menu.addButton(BLUE_BUTTON, "replace", () => {
+          replaceDayEntry(this.msg.author.id, day, this.challenge.ID, challengeName, count);
+          this.msg.channel.send(`Successfully replaced`);
+          this.showReplaceMessage(successOptions);
+        });
+
+        menu.addButton(RED_BUTTON, "add points", () => {
+          addDayEntry(this.msg.author.id, day, this.challenge.ID, challengeName, count);
+          this.msg.channel.send(`Successfully added`);
+          this.showAddMessage(successOptions);
+        });
+
+        menu.addCloseButton();
+        await menu.run();
+      }
+
+    })
+
+    menu.addCloseButton();
+    await menu.run();
   }
 
   private async handleSteps() {
