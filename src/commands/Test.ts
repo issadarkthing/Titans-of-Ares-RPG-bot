@@ -1,8 +1,9 @@
 import { Message } from "discord.js";
-import { addGem, setMiningPickReward } from "../db/gem";
+import { setMiningPickReward } from "../db/gem";
 import { addXP } from "../db/xp";
 import Command from "../internals/Command";
-import { Common } from "../internals/Mining";
+import { List } from "../internals/List";
+import { Gem, Stone } from "../internals/Mining";
 import { MiningPickReward } from "../internals/MiningPickReward";
 import { Player } from "../internals/Player";
 import { client } from "../main";
@@ -37,12 +38,48 @@ export default class extends Command {
 
     } else if (arg1 === "gem") {
 
-      for (let i = 0; i < 10; i++) {
-        const gem = Common.random();
-        await addGem(player.id, gem.id);
-        await msg.channel.send(`You got ${gem.name}!`);
-        await msg.channel.send(gem.show(-1));
+      const size = parseInt(args[1]) || 1000;
+      const stones = new List<Stone>();
+
+      for (let i = 0; i < size; i++) {
+        stones.push(Stone.random());
       }
+
+      stones.sort((a, b) => b.rarity - a.rarity);
+
+      const aggregate = stones.aggregateBy(x => x.rarity.toString())
+        .map(x => {
+          const stone = x.value instanceof Gem ? x.value.quality : x.value.name;
+          const countPercent = (x.count / stones.length) * 100;
+          
+          return `${stone} x${x.count} \`${countPercent.toFixed(2)}%\``;
+        })
+        .join("\n");
+
+      msg.channel.send(aggregate);
+      msg.channel.send(`Sample size: ${size}`)
+
+    } else if (arg1 === "gemall") {
+
+      const stones = new List<Stone>();
+
+      for (const stone of Stone.all) {
+        const count = stone.rarity * 1000;
+        for (let i = 0; i < count; i++) {
+          stones.push(stone);
+        }
+      }
+
+      const aggregate = stones.aggregateBy(x => x.rarity.toString())
+        .map(x => {
+          const stone = x.value instanceof Gem ? x.value.quality : x.value.name;
+          const countPercent = (x.count / stones.length) * 100;
+          
+          return `${stone} x${x.count} \`${countPercent.toFixed(2)}%\``;
+        })
+        .join("\n");
+
+      msg.channel.send(aggregate);
     }
 
 
