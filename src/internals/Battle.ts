@@ -1,5 +1,6 @@
 import { oneLine } from "common-tags";
 import { Message, MessageEmbed } from "discord.js";
+import { client } from "../main";
 import { ApprenticeGear } from "./ApprenticeGear";
 import { Challenger } from "./Challenger";
 import { Fighter } from "./Fighter";
@@ -8,7 +9,7 @@ import { Dragon, Golem, Gryphon, Manticore, Minotaur, Wisp } from "./Pet";
 import { Player } from "./Player";
 import {
   CHALLENGER_CRIT_GIF, GOLD,
-  PLAYER_CRIT_GIF, random, RED, roundTo, sleep
+  PLAYER_CRIT_GIF, RED, roundTo, sleep
 } from "./utils";
 
 
@@ -284,7 +285,7 @@ export class Battle {
     // has the same speed, it will be chosen randomly.
     const moveFirst =
       this.player.speed === this.challenger.speed
-      ? random().pick([0, 1])
+      ? client.random.pick([0, 1])
       : this.player.speed > this.challenger.speed
       ? 0
       : 1;

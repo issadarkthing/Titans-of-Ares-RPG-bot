@@ -2,7 +2,7 @@ import { setFragmentReward } from "../db/fragmentReward";
 import { addInventory } from "../db/inventory";
 import { Pet } from "./Pet";
 import { Player } from "./Player";
-import { random, totalLevelPassed, upperLimit } from "../internals/utils";
+import { totalLevelPassed, upperLimit } from "../internals/utils";
 import { getUsers } from "../db/player";
 import { client } from "../main";
 
@@ -31,7 +31,7 @@ export class FragmentReward {
 
   /** 20% chance to earn fragment reward */
   static random() {
-    return random().bool(0.2);
+    return client.random.bool(0.2);
   }
 }
 

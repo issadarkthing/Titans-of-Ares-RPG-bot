@@ -1,12 +1,13 @@
 import { MedalType } from "./Medal";
 import { Item } from "./Item";
-import { BROWN, capitalize, CDN_LINK, GREEN, random } from "./utils";
+import { BROWN, capitalize, CDN_LINK, GREEN } from "./utils";
 import { Player } from "./Player";
 import { Pet } from "./Pet";
 import { Fragment } from "./Fragment";
 import { removeInventory } from "../db/inventory";
 import { MessageEmbed } from "discord.js";
 import { oneLine } from "common-tags";
+import { client } from "../main";
 
 export type Level = "bronze" | "silver" | "gold";
 export type ChestID = `chest_${Level}`;
@@ -110,7 +111,7 @@ class SilverChest extends Chest {
   imageUrl = CDN_LINK + "768053872400007218/863093874058592286/magic-chest-3d-model-low-poly-max-obj-mtl-3ds-fbx-tga_1.png";
 
   protected getFragmentCount() {
-    return random().pick([2, 3]);
+    return client.random.pick([2, 3]);
   }
 }
 
@@ -119,6 +120,6 @@ class BronzeChest extends Chest {
   imageUrl = CDN_LINK + "768053872400007218/863093260418416670/magic-chest-3d-model-low-poly-max-obj-mtl-3ds-fbx-tga.png";
 
   protected getFragmentCount() {
-    return random().pick([1, 2]);
+    return client.random.pick([1, 2]);
   }
 }

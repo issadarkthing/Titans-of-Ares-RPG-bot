@@ -1,4 +1,4 @@
-import { random } from "./utils";
+import { client } from "../main";
 
 interface Identifiable {
   id: string;
@@ -45,7 +45,7 @@ export class List<T extends Identifiable> {
 
   random() {
     if (this.values.length === 0) return;
-    return random().pick(this.values);
+    return client.random.pick(this.values);
   }
 
   /** @param {fn} fn callback that returns the weight of item 
@@ -66,7 +66,7 @@ export class List<T extends Identifiable> {
     }
 
     const samples = items.flatMap<T>(x => Array(x.weight).fill(x.value));
-    return random().pick(samples);
+    return client.random.pick(samples);
   }
 
   map<V>(fn: (x: T, i: number) => V) {

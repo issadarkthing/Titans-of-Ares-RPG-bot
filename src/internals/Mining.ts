@@ -1,11 +1,12 @@
 import { BaseStats } from "./Fighter";
 import { Attributes, Attribute } from "./Attributes"
-import { BROWN, capitalize, CDN_LINK, inlineCode, random } from "./utils";
+import { BROWN, capitalize, CDN_LINK, inlineCode } from "./utils";
 import { List } from "./List";
 import { GemDB } from "../db/gem";
 import { MessageEmbed } from "discord.js";
 import { oneLine } from "common-tags";
 import { Item } from "./Item";
+import { client } from "../main";
 
 export class MiningPick extends Item {
   name = "Mining Pick";
@@ -123,7 +124,7 @@ export abstract class Gem extends Stone {
     // subclass
     if (name !== "Gem") {
       const attributes: [string, number][] = Object.entries(this.baseStats);
-      const [attributeName, attributeValue] = random().pick(attributes);
+      const [attributeName, attributeValue] = client.random.pick(attributes);
       const attribute = Attributes.fromString(attributeName);
       // eslint-disable-next-line
       // @ts-ignore

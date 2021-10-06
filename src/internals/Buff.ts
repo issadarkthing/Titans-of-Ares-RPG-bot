@@ -8,7 +8,7 @@ import {
 } from "../db/timer";
 import { isExpired } from "./energy";
 import { Player } from "./Player";
-import { random } from "./utils";
+import { client } from "../main";
 
 const commonPercentage = [0.1, 0.15, 0.2, 0.25, 0.5];
 
@@ -135,14 +135,14 @@ export class Buff {
     const samples = chances
       .map((count, index) =>  Array(count).fill(index + 1))
       .flat();
-    const randomizedSample = random().shuffle<BuffLevel>(samples);
-    return random().pick(randomizedSample);
+    const randomizedSample = client.random.shuffle<BuffLevel>(samples);
+    return client.random.pick(randomizedSample);
   }
 
   // randomly choses buff according to its rarity
   static random() {
     const buffTypes = Object.keys(buffs);
-    const buffType = random().pick(buffTypes) as BuffType;
+    const buffType = client.random.pick(buffTypes) as BuffType;
     const buffLevel = this.pickBuffLevel();
     return new Buff(`${buffType}_${buffLevel}` as BuffID);
   }

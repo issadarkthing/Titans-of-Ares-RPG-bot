@@ -6,7 +6,8 @@ import { Item } from "./Item";
 import { List } from "./List";
 import { Gem } from "./Mining";
 import { Scroll } from "./Scroll";
-import { BROWN, CDN_LINK, GOLD, inlineCode, random } from "./utils";
+import { BROWN, CDN_LINK, GOLD, inlineCode } from "./utils";
+import { client } from "../main";
 
 export interface GearBonus {
   description: string;
@@ -151,7 +152,7 @@ export abstract class Gear extends Item implements Socketable {
 
   /** returns true if upgrade successfull */
   upgrade() {
-    return random().bool(this.upgradeChance);
+    return client.random.bool(this.upgradeChance);
   }
 
   /** 

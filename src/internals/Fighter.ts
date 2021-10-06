@@ -1,4 +1,4 @@
-import { random } from "./utils";
+import { client } from "../main";
 
 export const CRIT_RATE = 2;
 
@@ -53,7 +53,7 @@ export class Fighter {
   }
 
   isCriticalHit() {
-    return random().bool(this.critRate);
+    return client.random.bool(this.critRate);
   }
 
   getArmorReduction(attack: number, penetrate: number) {

@@ -6,6 +6,7 @@ import { Phase } from "./TeamArena";
 import { SafeFn } from "./SafeFn";
 import { Player } from "./Player";
 import { getUsers } from "../db/player";
+import { MersenneTwister19937, Random } from "random-js";
 
 type PollHandler = () => void;
 type BlockingPollHandler = () => Promise<void>;
@@ -24,6 +25,7 @@ export default class Client {
   readonly safeFn = new SafeFn();
   readonly blockingPoll = new Set<BlockingPollHandler>();
   readonly bot = new Discord.Client();
+  readonly random = new Random(MersenneTwister19937.autoSeed());
   db: Database;
   mainGuild!: Guild;
   logChannel!: TextChannel;
