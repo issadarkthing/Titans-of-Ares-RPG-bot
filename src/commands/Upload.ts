@@ -427,11 +427,6 @@ export default class Upload extends Command {
         }
       }
 
-      this.msg.channel.send(
-        oneLine`For a total overview of your uploads this month, use
-        \`${client.prefix}progress\``
-      );
-
     })
 
 
