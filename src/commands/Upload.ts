@@ -17,7 +17,7 @@ import {
 } from "../db/monthlyChallenge";
 import { DateTime } from "luxon";
 
-type SuccessMessageOptions = {
+type MessageOptions = {
   value: number;
   valueType: ChallengeName;
   activityName: string;
@@ -70,7 +70,7 @@ export default class Upload extends Command {
     }
   }
 
-  private showSuccessMessage(data: SuccessMessageOptions) {
+  private showSuccessMessage(data: MessageOptions) {
 
     const points = Math.round(data.conversionRate * data.value);
     const xp = getXp(points);
@@ -83,7 +83,7 @@ export default class Upload extends Command {
     this.msg.channel.send(text);
   }
 
-  private showAddMessage(data: SuccessMessageOptions) {
+  private showAddMessage(data: MessageOptions) {
 
     const points = Math.round(data.conversionRate * data.value);
     const xp = getXp(points);
@@ -97,7 +97,7 @@ export default class Upload extends Command {
   }
 
 
-  private showReplaceMessage(data: SuccessMessageOptions) {
+  private showReplaceMessage(data: MessageOptions) {
 
     const points = Math.round(data.conversionRate * data.value);
     const xp = getXp(points);
@@ -177,23 +177,23 @@ export default class Upload extends Command {
     }
   }
 
-  private async registerDay(successOptions: SuccessMessageOptions) {
+  private async registerDay(options: MessageOptions) {
 
     try {
 
       await registerDayEntry(
         this.msg.author.id, 
-        successOptions.day, 
+        options.day, 
         this.challenge.ID, 
-        successOptions.valueType, 
-        successOptions.value,
+        options.valueType, 
+        options.value,
       );
 
-      this.showSuccessMessage(successOptions);
+      this.showSuccessMessage(options);
 
     } catch (e: unknown) {
 
-      const { month, day } = successOptions;
+      const { month, day } = options;
       const err = e as OverlapError;
       const question = 
         oneLine`You already registered ${bold(err.dayEntry.Value)} steps on
@@ -205,27 +205,27 @@ export default class Upload extends Command {
       menu.addButton(BLUE_BUTTON, "replace", () => {
         replaceDayEntry(
           this.msg.author.id, 
-          successOptions.day, 
+          options.day, 
           this.challenge.ID, 
-          successOptions.valueType, 
-          successOptions.value,
+          options.valueType, 
+          options.value,
         );
 
         this.msg.channel.send(`Successfully replaced`);
-        this.showReplaceMessage(successOptions);
+        this.showReplaceMessage(options);
       });
 
       menu.addButton(RED_BUTTON, "add points", () => {
         addDayEntry(
           this.msg.author.id, 
-          successOptions.day, 
+          options.day, 
           this.challenge.ID, 
-          successOptions.valueType, 
-          successOptions.value,
+          options.valueType, 
+          options.value,
         );
 
         this.msg.channel.send(`Successfully added`);
-        this.showAddMessage(successOptions);
+        this.showAddMessage(options);
       });
 
       menu.addCloseButton();
@@ -284,7 +284,7 @@ export default class Upload extends Command {
         be accepted.`,
       );
 
-      const successOptions: SuccessMessageOptions = {
+      const successOptions: MessageOptions = {
         value: session,
         valueType: challengeName,
         activityName: "yoga session",
@@ -341,7 +341,7 @@ export default class Upload extends Command {
         date, duration of workout and heartrate.`,
       );
 
-      const successOptions: SuccessMessageOptions = {
+      const successOptions: MessageOptions = {
         value: count,
         valueType: challengeName,
         activityName: "strength",
@@ -376,7 +376,7 @@ export default class Upload extends Command {
 
       for (let i = 0; i < days.length; i++) {
         const day = days[i];
-        const successOptions: SuccessMessageOptions = {
+        const successOptions: MessageOptions = {
           value: count,
           valueType: challengeName,
           activityName: "strength training",
@@ -432,7 +432,7 @@ export default class Upload extends Command {
 
       await this.getProof(prompt, steps, "steps", month, day);
 
-      const successOptions: SuccessMessageOptions = {
+      const successOptions: MessageOptions = {
         value: steps,
         activityName: "steps",
         valueType: challengeName,
@@ -493,7 +493,7 @@ export default class Upload extends Command {
       for (let i = 0; i < days.length; i++) {
         const day = days[i];
         const steps = allSteps[i];
-        const successOptions: SuccessMessageOptions = {
+        const successOptions: MessageOptions = {
           value: steps,
           valueType: challengeName,
           activityName: "steps",
@@ -567,7 +567,7 @@ export default class Upload extends Command {
 
       await this.getProof(prompt, distance, "cycled", month, day);
 
-      const successOptions: SuccessMessageOptions = {
+      const successOptions: MessageOptions = {
         value: distance,
         valueType: challengeName,
         activityName: "cycled",
@@ -642,7 +642,7 @@ export default class Upload extends Command {
       for (let i = 0; i < days.length; i++) {
         const day = days[i];
         const cycling = allCycling[i];
-        const successOptions: SuccessMessageOptions = {
+        const successOptions: MessageOptions = {
           value: cycling,
           valueType: challengeName,
           activityName: `${unit} cycled`,
