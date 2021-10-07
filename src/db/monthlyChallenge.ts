@@ -14,6 +14,8 @@ export type ChallengeName =
   | "workout"
   | "othercardio"
   | "strength"
+  | "yoga"
+  | "meditation"
 ;
 
 export async function getChallengeId($channelId: string) {

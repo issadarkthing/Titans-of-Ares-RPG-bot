@@ -1,7 +1,7 @@
 import Command from "../internals/Command";
 import { Message } from "discord.js";
 import { CancelledInputError, Prompt } from "../internals/Prompt";
-import { BLUE_BUTTON, bold, getXp, RED_BUTTON, WHITE_BUTTON } from "../internals/utils";
+import { BLACK_BUTTON, BLUE_BUTTON, bold, getXp, RED_BUTTON, WHITE_BUTTON } from "../internals/utils";
 import { ButtonHandler } from "../internals/ButtonHandler";
 import { oneLine } from "common-tags";
 import { client } from "../main";
@@ -19,7 +19,8 @@ import { DateTime } from "luxon";
 
 type SuccessMessageOptions = {
   value: number;
-  valueType: string;
+  valueType: ChallengeName;
+  activityName: string;
   month: string;
   day: number;
   conversionRate: number;
@@ -49,6 +50,7 @@ export default class Upload extends Command {
     menu.addButton(BLUE_BUTTON, "steps", () => this.handleSteps());
     menu.addButton(RED_BUTTON, "cycling", () => this.handleCycling());
     menu.addButton(WHITE_BUTTON, "strength", () => this.handleStrength());
+    menu.addButton(BLACK_BUTTON, "yoga", () => this.handleYoga());
     menu.addCloseButton();
 
     try {
@@ -74,7 +76,7 @@ export default class Upload extends Command {
     const xp = getXp(points);
 
     const text =
-      oneLine`You have registered ${bold(data.value)} ${data.valueType} on
+      oneLine`You have registered ${bold(data.value)} ${data.activityName} on
       ${bold(data.month)} ${bold(data.day)} and earned ${bold(points)} monthly points +
       ${bold(xp)} permanent XP!`;
 
@@ -88,7 +90,7 @@ export default class Upload extends Command {
 
     const text =
       oneLine`You have registered ${bold(data.value)} additional
-      ${data.valueType} on ${bold(data.month)} ${bold(data.day)} and earned
+      ${data.activityName} on ${bold(data.month)} ${bold(data.day)} and earned
       ${bold(points)} monthly points + ${bold(xp)} permanent XP!`;
 
     this.msg.channel.send(text);
@@ -101,7 +103,7 @@ export default class Upload extends Command {
     const xp = getXp(points);
 
     const text =
-      oneLine`You have registered ${bold(data.value)} ${data.valueType} on
+      oneLine`You have registered ${bold(data.value)} ${data.activityName} on
       ${bold(data.month)} ${bold(data.day)} and earned ${bold(points)} monthly
       points + ${bold(xp)} permanent XP! Your previous gained points for this
       day have been removed.`;
@@ -175,6 +177,129 @@ export default class Upload extends Command {
     }
   }
 
+  private async registerDay(successOptions: SuccessMessageOptions) {
+
+    try {
+
+      await registerDayEntry(
+        this.msg.author.id, 
+        successOptions.day, 
+        this.challenge.ID, 
+        successOptions.valueType, 
+        successOptions.value,
+      );
+
+      this.showSuccessMessage(successOptions);
+
+    } catch (e: unknown) {
+
+      const { month, day } = successOptions;
+      const err = e as OverlapError;
+      const question = 
+        oneLine`You already registered ${bold(err.dayEntry.Value)} steps on
+          ${bold(month)} ${bold(day)}. Do you want to replace or add point on
+          this day?`;
+
+      const menu = new ButtonHandler(this.msg, question);
+
+      menu.addButton(BLUE_BUTTON, "replace", () => {
+        replaceDayEntry(
+          this.msg.author.id, 
+          successOptions.day, 
+          this.challenge.ID, 
+          successOptions.valueType, 
+          successOptions.value,
+        );
+
+        this.msg.channel.send(`Successfully replaced`);
+        this.showReplaceMessage(successOptions);
+      });
+
+      menu.addButton(RED_BUTTON, "add points", () => {
+        addDayEntry(
+          this.msg.author.id, 
+          successOptions.day, 
+          this.challenge.ID, 
+          successOptions.valueType, 
+          successOptions.value,
+        );
+
+        this.msg.channel.send(`Successfully added`);
+        this.showAddMessage(successOptions);
+      });
+
+      menu.addCloseButton();
+      await menu.run();
+    }
+  }
+
+  private async handleYoga() {
+    
+    const challengeName: ChallengeName = "yoga";
+    const question = oneLine`You can earn 5 points for yoga over 10
+    minutes. You can earn 10 points for yoga over 30 minutes. Do
+    you want to upload a single day or multiple days?`;
+
+    const menu = new ButtonHandler(this.msg, question);
+    const prompt = new Prompt(this.msg, { cancelKeyword: ["cancel"] });
+    const lookupID = `${challengeName}-${this.challenge.ID}`;
+    const conversionRate = this.convertTable.get(lookupID);
+
+    if (!conversionRate)
+      throw new Error(`conversion rate does not exists for "${lookupID}"`);
+
+    menu.addButton(BLUE_BUTTON, "single", async () => {
+
+      const answer = await prompt.ask(
+        oneLine`Please write the day of the month you want to upload a yoga
+        session for.`
+      );
+
+      const date = DateTime.local(this.challenge.Year, this.challenge.Month - 1);
+      const maxDay = date.daysInMonth;
+      const month = date.monthLong;
+      const day = parseInt(answer);
+      let session = 10;
+
+      this.validateDay(day, maxDay);
+
+      const sessionQuestion = "Was your session over 10 minutes or 30 minutes?";
+      const menu = new ButtonHandler(this.msg, sessionQuestion);
+
+      menu.addButton(BLUE_BUTTON, "10 minutes", () => { session = 10; });
+      menu.addButton(RED_BUTTON, "30 minutes", () => { session = 10; });
+
+      menu.addCloseButton();
+      await menu.run();
+
+      this.getProof(
+        prompt,
+        session,
+        "yoga session",
+        month,
+        day,
+        oneLine`Please upload a single screenshot of your wearable showing the
+        date, duration of workout and heartrate. Alternatively, a photo of the
+        yoga spot with mentioned elapsed time and/or additional information can
+        be accepted.`,
+      );
+
+      const successOptions: SuccessMessageOptions = {
+        value: session,
+        valueType: challengeName,
+        activityName: "yoga session",
+        conversionRate,
+        month,
+        day,
+      }
+
+      await this.registerDay(successOptions);
+    })
+
+    menu.addCloseButton();
+    await menu.run();
+  }
+
   private async handleStrength() {
 
     const challengeName: ChallengeName = "strength";
@@ -218,50 +343,14 @@ export default class Upload extends Command {
 
       const successOptions: SuccessMessageOptions = {
         value: count,
-        valueType: "strength",
+        valueType: challengeName,
+        activityName: "strength",
         conversionRate,
         month,
         day,
       }
 
-      try {
-
-        await registerDayEntry(this.msg.author.id, day, this.challenge.ID, challengeName, count);
-
-        const points = Math.round(conversionRate * count);
-        const xp = getXp(points);
-
-        this.msg.channel.send(
-          oneLine`You have registered a strength workout on ${bold(month)}
-          ${bold(day)} and earned ${bold(points)} monthly points + ${bold(xp)}
-          permanent XP!`
-        )
-
-      } catch (e: unknown) {
-
-        const err = e as OverlapError;
-        const question = 
-          oneLine`You already registered ${bold(err.dayEntry.Value)} steps on
-          ${bold(month)} ${bold(day)}. Do you want to replace or add point on
-          this day?`;
-
-        const menu = new ButtonHandler(this.msg, question);
-
-        menu.addButton(BLUE_BUTTON, "replace", () => {
-          replaceDayEntry(this.msg.author.id, day, this.challenge.ID, challengeName, count);
-          this.msg.channel.send(`Successfully replaced`);
-          this.showReplaceMessage(successOptions);
-        });
-
-        menu.addButton(RED_BUTTON, "add points", () => {
-          addDayEntry(this.msg.author.id, day, this.challenge.ID, challengeName, count);
-          this.msg.channel.send(`Successfully added`);
-          this.showAddMessage(successOptions);
-        });
-
-        menu.addCloseButton();
-        await menu.run();
-      }
+      await this.registerDay(successOptions);
 
     })
 
@@ -289,42 +378,14 @@ export default class Upload extends Command {
         const day = days[i];
         const successOptions: SuccessMessageOptions = {
           value: count,
-          valueType: "strength training",
+          valueType: challengeName,
+          activityName: "strength training",
           conversionRate,
           month,
           day,
         }
 
-        try {
-
-          await registerDayEntry(this.msg.author.id, day, this.challenge.ID, challengeName, count);
-          this.showSuccessMessage(successOptions);
-
-        } catch (e: unknown) {
-
-          const err = e as OverlapError;
-          const question = 
-            oneLine`You already registered ${bold(err.dayEntry.Value)} strength
-            training on ${bold(month)} ${bold(day)}. Do you want to replace or
-            add point on this day?`; 
-
-          const menu = new ButtonHandler(this.msg, question);
-
-          menu.addButton(BLUE_BUTTON, "replace", () => {
-            replaceDayEntry(this.msg.author.id, day, this.challenge.ID, challengeName, count);
-            this.msg.channel.send(`Successfully replaced`);
-            this.showReplaceMessage(successOptions);
-          });
-
-          menu.addButton(RED_BUTTON, "add points", () => {
-            addDayEntry(this.msg.author.id, day, this.challenge.ID, challengeName, count);
-            this.msg.channel.send(`Successfully added`);
-            this.showAddMessage(successOptions);
-          });
-
-          menu.addCloseButton();
-          await menu.run();
-        }
+        await this.registerDay(successOptions);
       }
     })
 
@@ -373,42 +434,14 @@ export default class Upload extends Command {
 
       const successOptions: SuccessMessageOptions = {
         value: steps,
-        valueType: "steps",
+        activityName: "steps",
+        valueType: challengeName,
         conversionRate,
         month,
         day,
       }
 
-      try {
-
-        await registerDayEntry(this.msg.author.id, day, this.challenge.ID, challengeName, steps);
-        this.showSuccessMessage(successOptions);
-
-      } catch (e: unknown) {
-
-        const err = e as OverlapError;
-        const question = 
-          oneLine`You already registered ${bold(err.dayEntry.Value)} steps on
-          ${bold(month)} ${bold(day)}. Do you want to replace or add point on
-          this day?`;
-
-        const menu = new ButtonHandler(this.msg, question);
-
-        menu.addButton(BLUE_BUTTON, "replace", () => {
-          replaceDayEntry(this.msg.author.id, day, this.challenge.ID, challengeName, steps);
-          this.msg.channel.send(`Successfully replaced`);
-          this.showReplaceMessage(successOptions);
-        });
-
-        menu.addButton(RED_BUTTON, "add points", () => {
-          addDayEntry(this.msg.author.id, day, this.challenge.ID, challengeName, steps);
-          this.msg.channel.send(`Successfully added`);
-          this.showAddMessage(successOptions);
-        });
-
-        menu.addCloseButton();
-        await menu.run();
-      }
+      await this.registerDay(successOptions);
 
     })
 
@@ -462,42 +495,14 @@ export default class Upload extends Command {
         const steps = allSteps[i];
         const successOptions: SuccessMessageOptions = {
           value: steps,
-          valueType: "steps",
+          valueType: challengeName,
+          activityName: "steps",
           conversionRate,
           month,
           day,
         }
 
-        try {
-
-          await registerDayEntry(this.msg.author.id, day, this.challenge.ID, challengeName, steps);
-          this.showSuccessMessage(successOptions);
-
-        } catch (e: unknown) {
-
-          const err = e as OverlapError;
-          const question = 
-            oneLine`You already registered ${bold(err.dayEntry.Value)} steps on
-            ${bold(month)} ${bold(day)}. Do you want to replace or add point on
-            this day?`; 
-
-          const menu = new ButtonHandler(this.msg, question);
-
-          menu.addButton(BLUE_BUTTON, "replace", () => {
-            replaceDayEntry(this.msg.author.id, day, this.challenge.ID, challengeName, steps);
-            this.msg.channel.send(`Successfully replaced`);
-            this.showReplaceMessage(successOptions);
-          });
-
-          menu.addButton(RED_BUTTON, "add points", () => {
-            addDayEntry(this.msg.author.id, day, this.challenge.ID, challengeName, steps);
-            this.msg.channel.send(`Successfully added`);
-            this.showAddMessage(successOptions);
-          });
-
-          menu.addCloseButton();
-          await menu.run();
-        }
+        await this.registerDay(successOptions);
       }
 
     })
@@ -564,44 +569,14 @@ export default class Upload extends Command {
 
       const successOptions: SuccessMessageOptions = {
         value: distance,
-        valueType: "cycled",
+        valueType: challengeName,
+        activityName: "cycled",
         conversionRate,
         month,
         day,
       }
 
-      try {
-
-        await registerDayEntry(this.msg.author.id, day, this.challenge.ID, challengeName, distance);
-        this.showSuccessMessage(successOptions);
-
-      } catch (e: unknown) {
-
-        const err = e as OverlapError;
-        const unit = err.dayEntry.ValueType === "cyclingkm" ? "km" : "mi";
-        const question = 
-          oneLine`You already registered ${bold(err.dayEntry.Value)}
-          ${bold(unit)} cycling on ${bold(month)} ${bold(day)}. Do you
-          want to replace or add point on this day?`;
-
-        const menu = new ButtonHandler(this.msg, question);
-
-        menu.addButton(BLUE_BUTTON, "replace", () => {
-          replaceDayEntry(this.msg.author.id, day, this.challenge.ID, challengeName, distance);
-          this.msg.channel.send(`Successfully replaced`);
-          this.showReplaceMessage(successOptions);
-        });
-
-        menu.addButton(RED_BUTTON, "add points", () => {
-          addDayEntry(this.msg.author.id, day, this.challenge.ID, challengeName, distance);
-          this.msg.channel.send(`Successfully added`);
-          this.showAddMessage(successOptions);
-        });
-
-        menu.addCloseButton();
-        await menu.run();
-      }
-
+      await this.registerDay(successOptions);
 
     });
 
@@ -669,42 +644,14 @@ export default class Upload extends Command {
         const cycling = allCycling[i];
         const successOptions: SuccessMessageOptions = {
           value: cycling,
-          valueType: `${unit} cycled`,
+          valueType: challengeName,
+          activityName: `${unit} cycled`,
           conversionRate,
           month,
           day,
         }
 
-        try {
-
-          await registerDayEntry(this.msg.author.id, day, this.challenge.ID, challengeName, cycling);
-          this.showSuccessMessage(successOptions);
-
-        } catch (e: unknown) {
-
-          const err = e as OverlapError;
-          const question = 
-            oneLine`You already registered
-            ${bold(err.dayEntry.Value)}${bold(unit)} steps on ${bold(month)}
-            ${bold(day)}. Do you want to replace or add point on this day?`; 
-
-          const menu = new ButtonHandler(this.msg, question);
-
-          menu.addButton(BLUE_BUTTON, "replace", () => {
-            replaceDayEntry(this.msg.author.id, day, this.challenge.ID, challengeName, cycling);
-            this.msg.channel.send(`Successfully replaced`);
-            this.showReplaceMessage(successOptions);
-          });
-
-          menu.addButton(RED_BUTTON, "add points", () => {
-            addDayEntry(this.msg.author.id, day, this.challenge.ID, challengeName, cycling);
-            this.msg.channel.send(`Successfully added`);
-            this.showAddMessage(successOptions);
-          });
-
-          menu.addCloseButton();
-          await menu.run();
-        }
+        await this.registerDay(successOptions);
       }
     });
 
