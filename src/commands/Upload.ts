@@ -194,7 +194,8 @@ export default class Upload extends Command {
     menu.addButton(BLUE_BUTTON, "single", async () => {
 
       const answer = await prompt.ask(
-        "Please write the day of the month you want to upload steps for."
+        oneLine`Please write the day of the month you want to upload a strength
+        training for.`
       );
 
       const date = DateTime.local(this.challenge.Year, this.challenge.Month - 1);
@@ -262,6 +263,69 @@ export default class Upload extends Command {
         await menu.run();
       }
 
+    })
+
+    menu.addButton(RED_BUTTON, "multiple", async () => {
+
+      const answer = await prompt.ask(
+        oneLine`Please write the days of the month you want to upload strength
+        training for and seperate them with a space \`(example: 1 2 3 4 ….)\``
+      );
+
+      const days = answer.split(/\s+/).map(x => parseInt(x));
+      const date = DateTime.local(this.challenge.Year, this.challenge.Month - 1);
+      const maxDay = date.daysInMonth;
+      const month = date.monthLong;
+      const count = 1;
+
+      for (const day of days) {
+        this.validateDay(day, maxDay);
+      }
+      
+      await this.getMultiProof(prompt, "strength training");
+
+
+      for (let i = 0; i < days.length; i++) {
+        const day = days[i];
+        const successOptions: SuccessMessageOptions = {
+          value: count,
+          valueType: "strength training",
+          conversionRate,
+          month,
+          day,
+        }
+
+        try {
+
+          await registerDayEntry(this.msg.author.id, day, this.challenge.ID, challengeName, count);
+          this.showSuccessMessage(successOptions);
+
+        } catch (e: unknown) {
+
+          const err = e as OverlapError;
+          const question = 
+            oneLine`You already registered ${bold(err.dayEntry.Value)} strength
+            training on ${bold(month)} ${bold(day)}. Do you want to replace or
+            add point on this day?`; 
+
+          const menu = new ButtonHandler(this.msg, question);
+
+          menu.addButton(BLUE_BUTTON, "replace", () => {
+            replaceDayEntry(this.msg.author.id, day, this.challenge.ID, challengeName, count);
+            this.msg.channel.send(`Successfully replaced`);
+            this.showReplaceMessage(successOptions);
+          });
+
+          menu.addButton(RED_BUTTON, "add points", () => {
+            addDayEntry(this.msg.author.id, day, this.challenge.ID, challengeName, count);
+            this.msg.channel.send(`Successfully added`);
+            this.showAddMessage(successOptions);
+          });
+
+          menu.addCloseButton();
+          await menu.run();
+        }
+      }
     })
 
     menu.addCloseButton();
