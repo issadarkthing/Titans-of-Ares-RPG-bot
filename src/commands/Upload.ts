@@ -252,6 +252,19 @@ export default class Upload extends Command {
     }
   }
 
+  private validateMultiRegister<T>(
+    days: number[], 
+    values: T[], 
+    activityName: string,
+  ) {
+    if (days.length !== values.length) {
+      throw new Error(
+        oneLine`You are uploading for ${days.length} days but only
+        ${values.length} ${activityName} are given.`
+      );
+    }
+  }
+
   private async handleYoga() {
     
     const activity = "yoga";
@@ -363,6 +376,110 @@ export default class Upload extends Command {
 
       }
 
+    });
+
+    menu.addButton(RED_BUTTON, "multiple", async () => {
+
+      const answer = await prompt.ask(
+        oneLine`Please write the days of the month you want to upload
+        yoga/meditation sessions for and seperate them with a space (example: 1
+        2 3 4 ….)`
+      );
+
+      const date = DateTime.local(this.challenge.Year, this.challenge.Month - 1);
+      const maxDay = date.daysInMonth;
+      const month = date.monthLong;
+      const days = split(answer).map(x => parseInt(x));
+
+      this.validateDays(days, maxDay);
+
+      const sessionAnswer = await prompt.ask(
+        oneLine`Please write from left to right if the session was over 10
+        minutes or 30 minutes for every day and seperate them with a space
+        (example: 10 30 10 30 …)`
+      );
+
+      const sessions = split(sessionAnswer).map(x => parseInt(x));
+
+      this.validateMultiRegister(days, sessions, "yoga session");
+
+      for (const session of sessions) {
+        if (session !== 30 && session !== 10) {
+          throw new Error("only `30` or `10` session is allowed");
+        }
+      }
+
+      await this.getMultiProof(prompt, "yoga session");
+
+      for (let i = 0; i < days.length; i++) {
+        const day = days[i];
+        const session = sessions[i] as (10 | 30);
+        const challengeName: ChallengeName = `yoga${session}`;
+        const lookupID = `${challengeName}-${this.challenge.ID}`;
+        const conversionRate = this.convertTable.get(lookupID);
+
+        if (!conversionRate) {
+          throw new Error(`conversion rate does not exists for "${lookupID}"`);
+        }
+
+        const options: MessageOptions = {
+          value: 1,
+          valueType: challengeName,
+          activityName: `${session}min+ yoga session`,
+          conversionRate,
+          month,
+          day,
+        }
+
+        const dayEntries = await getDayEntries(this.msg.author.id, this.challenge.ID);
+        const dayEntry = dayEntries.filter(x => x.Day === day);
+        const yogaEntry = dayEntry.find(x => x.ValueType.includes("yoga"));
+
+        if (yogaEntry) {
+          const valueType = yogaEntry.ValueType;
+          const amount = valueType === "yoga10" ? "10min+" : "30min+";
+
+          const question = 
+            oneLine`You already registered ${amount} yoga session on
+          ${bold(month)} ${bold(day)}. Do you want to replace or add point on
+          this day?`;
+
+          const menu = new ButtonHandler(this.msg, question);
+
+          menu.addButton(BLUE_BUTTON, "replace", () => {
+            replaceDayEntry(
+              this.msg.author.id, 
+              options.day, 
+              this.challenge.ID, 
+              options.valueType, 
+              options.value,
+            );
+
+            this.msg.channel.send(`Successfully replaced`);
+            this.showReplaceMessage(options);
+          });
+
+          menu.addButton(RED_BUTTON, "add points", () => {
+            addDayEntry(
+              this.msg.author.id, 
+              options.day, 
+              this.challenge.ID, 
+              options.valueType, 
+              options.value,
+            );
+
+            this.msg.channel.send(`Successfully added`);
+            this.showAddMessage(options);
+          });
+
+          menu.addCloseButton();
+          await menu.run();
+
+        } else {
+          await this.registerDay(options);
+
+        }
+      }
     })
 
     menu.addCloseButton();
@@ -538,12 +655,7 @@ export default class Upload extends Command {
 
       const allSteps = split(stepsResponds).map(x => parseInt(x));
 
-      if (allSteps.length !== days.length) {
-        throw new Error(
-          oneLine`You are uploading for ${days.length} days but only
-          ${allSteps.length} steps are given.`
-        );
-      }
+      this.validateMultiRegister(days, allSteps, "steps");
 
       for (const stepsRespond of allSteps) {
 
