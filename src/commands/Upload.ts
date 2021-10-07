@@ -5,7 +5,16 @@ import { BLUE_BUTTON, bold, getXp, RED_BUTTON, WHITE_BUTTON } from "../internals
 import { ButtonHandler } from "../internals/ButtonHandler";
 import { oneLine } from "common-tags";
 import { client } from "../main";
-import { registerDayEntry, ChallengeName, getChallengeByChannelID, getConvertTable, replaceDayEntry, addDayEntry, Challenge, OverlapError } from "../db/monthlyChallenge";
+import {
+  registerDayEntry,
+  ChallengeName,
+  getChallengeByChannelID,
+  getConvertTable,
+  replaceDayEntry,
+  addDayEntry,
+  Challenge,
+  OverlapError,
+} from "../db/monthlyChallenge";
 import { DateTime } from "luxon";
 
 type SuccessMessageOptions = {
