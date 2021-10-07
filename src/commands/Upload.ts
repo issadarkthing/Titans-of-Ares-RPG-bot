@@ -139,7 +139,7 @@ export default class Upload extends Command {
   }
 
   private async getProof(
-    prompt: Prompt, 
+    prompt: Prompt,
     value: number,
     activity: string,
     month: string,
@@ -178,7 +178,7 @@ export default class Upload extends Command {
       const collected = await prompt.collect(
         oneLine`Please upload one or more screenshots proving your ${activity}
         for these days of the month. When done, please write 'done' in the
-        channel.`, 
+        channel.`,
         { max: Number.MAX_SAFE_INTEGER, cancelKeyword: ["done", "cancel"] },
       );
 
@@ -200,10 +200,10 @@ export default class Upload extends Command {
     try {
 
       await registerDayEntry(
-        this.msg.author.id, 
-        options.day, 
-        this.challenge.ID, 
-        options.valueType, 
+        this.msg.author.id,
+        options.day,
+        this.challenge.ID,
+        options.valueType,
         options.value,
       );
 
@@ -214,7 +214,7 @@ export default class Upload extends Command {
       const { month, day, activityName, value } = options;
       const err = e as OverlapError;
       const amount = value === 1 ? "a" : bold(err.dayEntry.Value);
-      const question = 
+      const question =
         oneLine`You already registered ${amount} ${activityName} on
         ${bold(month)} ${bold(day)}. Do you want to replace or add
         point on this day?`;
@@ -223,10 +223,10 @@ export default class Upload extends Command {
 
       menu.addButton(BLUE_BUTTON, "replace", () => {
         replaceDayEntry(
-          this.msg.author.id, 
-          options.day, 
-          this.challenge.ID, 
-          options.valueType, 
+          this.msg.author.id,
+          options.day,
+          this.challenge.ID,
+          options.valueType,
           options.value,
         );
 
@@ -236,10 +236,10 @@ export default class Upload extends Command {
 
       menu.addButton(RED_BUTTON, "add points", () => {
         addDayEntry(
-          this.msg.author.id, 
-          options.day, 
-          this.challenge.ID, 
-          options.valueType, 
+          this.msg.author.id,
+          options.day,
+          this.challenge.ID,
+          options.valueType,
           options.value,
         );
 
@@ -253,8 +253,8 @@ export default class Upload extends Command {
   }
 
   private validateMultiRegister<T>(
-    days: number[], 
-    values: T[], 
+    days: number[],
+    values: T[],
     activityName: string,
   ) {
     if (days.length !== values.length) {
@@ -266,7 +266,7 @@ export default class Upload extends Command {
   }
 
   private async handleYoga() {
-    
+
     const activity = "yoga";
     const question = oneLine`You can earn 5 points for yoga over 10
     minutes. You can earn 10 points for yoga over 30 minutes. Do
@@ -335,7 +335,7 @@ export default class Upload extends Command {
         const valueType = yogaEntry.ValueType;
         const amount = valueType === "yoga10" ? "10min+" : "30min+";
 
-        const question = 
+        const question =
           oneLine`You already registered ${amount} yoga session on
           ${bold(month)} ${bold(day)}. Do you want to replace or add point on
           this day?`;
@@ -344,10 +344,10 @@ export default class Upload extends Command {
 
         menu.addButton(BLUE_BUTTON, "replace", () => {
           replaceDayEntry(
-            this.msg.author.id, 
-            options.day, 
-            this.challenge.ID, 
-            options.valueType, 
+            this.msg.author.id,
+            options.day,
+            this.challenge.ID,
+            options.valueType,
             options.value,
           );
 
@@ -357,10 +357,10 @@ export default class Upload extends Command {
 
         menu.addButton(RED_BUTTON, "add points", () => {
           addDayEntry(
-            this.msg.author.id, 
-            options.day, 
-            this.challenge.ID, 
-            options.valueType, 
+            this.msg.author.id,
+            options.day,
+            this.challenge.ID,
+            options.valueType,
             options.value,
           );
 
@@ -439,19 +439,19 @@ export default class Upload extends Command {
           const valueType = yogaEntry.ValueType;
           const amount = valueType === "yoga10" ? "10min+" : "30min+";
 
-          const question = 
+          const question =
             oneLine`You already registered ${amount} yoga session on
-          ${bold(month)} ${bold(day)}. Do you want to replace or add point on
-          this day?`;
+            ${bold(month)} ${bold(day)}. Do you want to replace or add point on
+            this day?`;
 
           const menu = new ButtonHandler(this.msg, question);
 
           menu.addButton(BLUE_BUTTON, "replace", () => {
             replaceDayEntry(
-              this.msg.author.id, 
-              options.day, 
-              this.challenge.ID, 
-              options.valueType, 
+              this.msg.author.id,
+              options.day,
+              this.challenge.ID,
+              options.valueType,
               options.value,
             );
 
@@ -461,10 +461,10 @@ export default class Upload extends Command {
 
           menu.addButton(RED_BUTTON, "add points", () => {
             addDayEntry(
-              this.msg.author.id, 
-              options.day, 
-              this.challenge.ID, 
-              options.valueType, 
+              this.msg.author.id,
+              options.day,
+              this.challenge.ID,
+              options.valueType,
               options.value,
             );
 
@@ -489,7 +489,7 @@ export default class Upload extends Command {
   private async handleStrength() {
 
     const challengeName: ChallengeName = "strength";
-    const question = 
+    const question =
       oneLine`You can earn 12 point for 1 strength training over 30 minutes. You
       can upload 1 strength training every day. Do you want to upload a single
       day or multiple days?`;
@@ -519,10 +519,10 @@ export default class Upload extends Command {
       this.validateDay(day, maxDay);
 
       await this.getProof(
-        prompt, 
-        count, 
-        activityName, 
-        month, 
+        prompt,
+        count,
+        activityName,
+        month,
         day,
         oneLine`Please upload a single screenshot of your wearable showing the
         date, duration of workout and heartrate.`,
@@ -555,7 +555,7 @@ export default class Upload extends Command {
       const count = 1;
 
       this.validateDays(days, maxDay);
-      
+
       await this.getMultiProof(prompt, activityName);
 
 
@@ -581,7 +581,7 @@ export default class Upload extends Command {
   private async handleSteps() {
 
     const challengeName: ChallengeName = "steps";
-    const question = 
+    const question =
       oneLine`You can earn 1 point for every 1000 steps taken. Do you want to
       upload a single day or multiple days?`;
     const menu = new ButtonHandler(this.msg, question);
@@ -696,7 +696,7 @@ export default class Upload extends Command {
 
     let challengeName: ChallengeName = "cyclingkm";
     let unit = "km";
-    const question = 
+    const question =
       oneLine`You can earn 1 point for every 2km or 1,24mi cycled. Do you want
       to upload a single day or multiple days?`;
     const menu = new ButtonHandler(this.msg, question);
@@ -713,12 +713,12 @@ export default class Upload extends Command {
       const question = "Do you want to upload cycling distance in km or mi?";
       const menu = new ButtonHandler(this.msg, question);
 
-      menu.addButton(BLUE_BUTTON, "km", () => { 
+      menu.addButton(BLUE_BUTTON, "km", () => {
         challengeName = "cyclingkm";
         unit = "km";
       });
 
-      menu.addButton(RED_BUTTON, "mi", () => { 
+      menu.addButton(RED_BUTTON, "mi", () => {
         challengeName = "cyclingmi";
         unit = "mi";
       });
@@ -766,12 +766,12 @@ export default class Upload extends Command {
       const question = "Do you want to upload cycling distance in km or mi?";
       const menu = new ButtonHandler(this.msg, question);
 
-      menu.addButton(BLUE_BUTTON, "km", () => { 
+      menu.addButton(BLUE_BUTTON, "km", () => {
         challengeName = "cyclingkm";
         unit = "km";
       });
 
-      menu.addButton(RED_BUTTON, "mi", () => { 
+      menu.addButton(RED_BUTTON, "mi", () => {
         challengeName = "cyclingmi";
         unit = "mi";
       });
