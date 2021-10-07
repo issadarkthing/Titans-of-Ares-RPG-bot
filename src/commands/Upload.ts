@@ -22,6 +22,7 @@ import {
   addDayEntry,
   Challenge,
   OverlapError,
+  getDayEntries,
 } from "../db/monthlyChallenge";
 import { DateTime } from "luxon";
 
@@ -88,11 +89,12 @@ export default class Upload extends Command {
 
     const points = Math.round(data.conversionRate * data.value);
     const xp = getXp(points);
+    const amount = data.value === 1 ? "a" : bold(data.value);
 
     const text =
-      oneLine`You have registered ${bold(data.value)} ${data.activityName} on
-      ${bold(data.month)} ${bold(data.day)} and earned ${bold(points)} monthly points +
-      ${bold(xp)} permanent XP!`;
+      oneLine`You have registered ${amount} ${data.activityName} on
+      ${bold(data.month)} ${bold(data.day)} and earned ${bold(points)} monthly
+      points + ${bold(xp)} permanent XP!`;
 
     this.msg.channel.send(text);
   }
@@ -101,9 +103,10 @@ export default class Upload extends Command {
 
     const points = Math.round(data.conversionRate * data.value);
     const xp = getXp(points);
+    const amount = data.value === 1 ? "a" : bold(data.value);
 
     const text =
-      oneLine`You have registered ${bold(data.value)} additional
+      oneLine`You have registered ${amount} additional
       ${data.activityName} on ${bold(data.month)} ${bold(data.day)} and earned
       ${bold(points)} monthly points + ${bold(xp)} permanent XP!`;
 
@@ -115,9 +118,10 @@ export default class Upload extends Command {
 
     const points = Math.round(data.conversionRate * data.value);
     const xp = getXp(points);
+    const amount = data.value === 1 ? "a" : bold(data.value);
 
     const text =
-      oneLine`You have registered ${bold(data.value)} ${data.activityName} on
+      oneLine`You have registered ${amount} ${data.activityName} on
       ${bold(data.month)} ${bold(data.day)} and earned ${bold(points)} monthly
       points + ${bold(xp)} permanent XP! Your previous gained points for this
       day have been removed.`;
@@ -301,7 +305,7 @@ export default class Upload extends Command {
         be accepted.`,
       );
 
-      const successOptions: MessageOptions = {
+      const options: MessageOptions = {
         value: 1,
         valueType: challengeName,
         activityName: `${session} minutes yoga session`,
@@ -310,7 +314,55 @@ export default class Upload extends Command {
         day,
       }
 
-      await this.registerDay(successOptions);
+      const dayEntries = await getDayEntries(this.msg.author.id, this.challenge.ID);
+      const dayEntry = dayEntries.filter(x => x.Day === day);
+      const yogaEntry = dayEntry.find(x => x.ValueType.includes("yoga"));
+
+      if (yogaEntry) {
+        const valueType = yogaEntry.ValueType;
+        const amount = valueType === "yoga10" ? "10min+" : "30min+";
+
+        const question = 
+          oneLine`You already registered ${amount} yoga session on
+          ${bold(month)} ${bold(day)}. Do you want to replace or add point on
+          this day?`;
+
+        const menu = new ButtonHandler(this.msg, question);
+
+        menu.addButton(BLUE_BUTTON, "replace", () => {
+          replaceDayEntry(
+            this.msg.author.id, 
+            options.day, 
+            this.challenge.ID, 
+            options.valueType, 
+            options.value,
+          );
+
+          this.msg.channel.send(`Successfully replaced`);
+          this.showReplaceMessage(options);
+        });
+
+        menu.addButton(RED_BUTTON, "add points", () => {
+          addDayEntry(
+            this.msg.author.id, 
+            options.day, 
+            this.challenge.ID, 
+            options.valueType, 
+            options.value,
+          );
+
+          this.msg.channel.send(`Successfully added`);
+          this.showAddMessage(options);
+        });
+
+        menu.addCloseButton();
+        await menu.run();
+
+      } else {
+        await this.registerDay(options);
+
+      }
+
     })
 
     menu.addCloseButton();
