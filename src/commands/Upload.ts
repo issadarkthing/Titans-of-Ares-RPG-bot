@@ -464,7 +464,9 @@ export default class Upload extends Command {
   private async handleSteps() {
 
     const challengeName: ChallengeName = "steps";
-    const question = "Do you want to upload a single day or multiple days?";
+    const question = 
+      oneLine`You can earn 1 point for every 1000 steps taken. Do you want to
+      upload a single day or multiple days?`;
     const menu = new ButtonHandler(this.msg, question);
     const prompt = new Prompt(this.msg, { cancelKeyword: ["cancel"] });
     const lookupID = `${challengeName}-${this.challenge.ID}`;
