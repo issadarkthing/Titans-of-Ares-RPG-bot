@@ -5,7 +5,6 @@ export type ChallengeName =
   | "cyclingkm"
   | "cyclingmi"
   | "meditation"
-  | "yoga"
   | "weightlift"
   | "ringbonus"
   | "weekstreak"
@@ -14,8 +13,10 @@ export type ChallengeName =
   | "workout"
   | "othercardio"
   | "strength"
-  | "yoga"
-  | "meditation"
+  | "yoga10"
+  | "yoga30"
+  | "meditation10"
+  | "meditation30"
 ;
 
 export async function getChallengeId($channelId: string) {

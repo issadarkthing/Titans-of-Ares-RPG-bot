@@ -1,7 +1,15 @@
 import Command from "../internals/Command";
 import { Message } from "discord.js";
 import { CancelledInputError, Prompt } from "../internals/Prompt";
-import { BLACK_BUTTON, BLUE_BUTTON, bold, getXp, RED_BUTTON, WHITE_BUTTON } from "../internals/utils";
+import {
+  BLACK_BUTTON,
+  BLUE_BUTTON,
+  bold,
+  getXp,
+  RED_BUTTON,
+  WHITE_BUTTON,
+  split,
+} from "../internals/utils";
 import { ButtonHandler } from "../internals/ButtonHandler";
 import { oneLine } from "common-tags";
 import { client } from "../main";
@@ -67,6 +75,12 @@ export default class Upload extends Command {
       msg.channel.send(
         `Upload process failed. Please rerun \`${client.prefix}${this.name}\``
       );
+    }
+  }
+
+  private validateDays(days: number[], maxDay: number) {
+    for (const day of days) {
+      this.validateDay(day, maxDay);
     }
   }
 
@@ -193,12 +207,13 @@ export default class Upload extends Command {
 
     } catch (e: unknown) {
 
-      const { month, day } = options;
+      const { month, day, activityName, value } = options;
       const err = e as OverlapError;
+      const amount = value === 1 ? "a" : bold(err.dayEntry.Value);
       const question = 
-        oneLine`You already registered ${bold(err.dayEntry.Value)} steps on
-          ${bold(month)} ${bold(day)}. Do you want to replace or add point on
-          this day?`;
+        oneLine`You already registered ${amount} ${activityName} on
+        ${bold(month)} ${bold(day)}. Do you want to replace or add
+        point on this day?`;
 
       const menu = new ButtonHandler(this.msg, question);
 
@@ -235,18 +250,13 @@ export default class Upload extends Command {
 
   private async handleYoga() {
     
-    const challengeName: ChallengeName = "yoga";
+    const activity = "yoga";
     const question = oneLine`You can earn 5 points for yoga over 10
     minutes. You can earn 10 points for yoga over 30 minutes. Do
     you want to upload a single day or multiple days?`;
 
     const menu = new ButtonHandler(this.msg, question);
     const prompt = new Prompt(this.msg, { cancelKeyword: ["cancel"] });
-    const lookupID = `${challengeName}-${this.challenge.ID}`;
-    const conversionRate = this.convertTable.get(lookupID);
-
-    if (!conversionRate)
-      throw new Error(`conversion rate does not exists for "${lookupID}"`);
 
     menu.addButton(BLUE_BUTTON, "single", async () => {
 
@@ -259,7 +269,7 @@ export default class Upload extends Command {
       const maxDay = date.daysInMonth;
       const month = date.monthLong;
       const day = parseInt(answer);
-      let session = 10;
+      let session: 10 | 30 = 10;
 
       this.validateDay(day, maxDay);
 
@@ -267,14 +277,21 @@ export default class Upload extends Command {
       const menu = new ButtonHandler(this.msg, sessionQuestion);
 
       menu.addButton(BLUE_BUTTON, "10 minutes", () => { session = 10; });
-      menu.addButton(RED_BUTTON, "30 minutes", () => { session = 10; });
+      menu.addButton(RED_BUTTON, "30 minutes", () => { session = 30; });
+
+      const challengeName: ChallengeName = `${activity}${session}`;
+      const lookupID = `${challengeName}-${this.challenge.ID}`;
+      const conversionRate = this.convertTable.get(lookupID);
+
+      if (!conversionRate)
+        throw new Error(`conversion rate does not exists for "${lookupID}"`);
 
       menu.addCloseButton();
       await menu.run();
 
-      this.getProof(
+      await this.getProof(
         prompt,
-        session,
+        1,
         "yoga session",
         month,
         day,
@@ -285,9 +302,9 @@ export default class Upload extends Command {
       );
 
       const successOptions: MessageOptions = {
-        value: session,
+        value: 1,
         valueType: challengeName,
-        activityName: "yoga session",
+        activityName: `${session} minutes yoga session`,
         conversionRate,
         month,
         day,
@@ -312,6 +329,7 @@ export default class Upload extends Command {
     const prompt = new Prompt(this.msg, { cancelKeyword: ["cancel"] });
     const lookupID = `${challengeName}-${this.challenge.ID}`;
     const conversionRate = this.convertTable.get(lookupID);
+    const activityName = "strength training";
 
     if (!conversionRate)
       throw new Error(`conversion rate does not exists for "${lookupID}"`);
@@ -334,7 +352,7 @@ export default class Upload extends Command {
       await this.getProof(
         prompt, 
         count, 
-        "strength", 
+        activityName, 
         month, 
         day,
         oneLine`Please upload a single screenshot of your wearable showing the
@@ -344,7 +362,7 @@ export default class Upload extends Command {
       const successOptions: MessageOptions = {
         value: count,
         valueType: challengeName,
-        activityName: "strength",
+        activityName: activityName,
         conversionRate,
         month,
         day,
@@ -367,11 +385,9 @@ export default class Upload extends Command {
       const month = date.monthLong;
       const count = 1;
 
-      for (const day of days) {
-        this.validateDay(day, maxDay);
-      }
+      this.validateDays(days, maxDay);
       
-      await this.getMultiProof(prompt, "strength training");
+      await this.getMultiProof(prompt, activityName);
 
 
       for (let i = 0; i < days.length; i++) {
@@ -379,7 +395,7 @@ export default class Upload extends Command {
         const successOptions: MessageOptions = {
           value: count,
           valueType: challengeName,
-          activityName: "strength training",
+          activityName: activityName,
           conversionRate,
           month,
           day,
@@ -401,6 +417,7 @@ export default class Upload extends Command {
     const prompt = new Prompt(this.msg, { cancelKeyword: ["cancel"] });
     const lookupID = `${challengeName}-${this.challenge.ID}`;
     const conversionRate = this.convertTable.get(lookupID);
+    const activityName = "steps";
 
     if (!conversionRate)
       throw new Error(`conversion rate does not exists for "${lookupID}"`);
@@ -434,7 +451,7 @@ export default class Upload extends Command {
 
       const successOptions: MessageOptions = {
         value: steps,
-        activityName: "steps",
+        activityName: activityName,
         valueType: challengeName,
         conversionRate,
         month,
@@ -452,15 +469,12 @@ export default class Upload extends Command {
         and seperate them with a space \`(example: 1 2 3 4 ….)\``
       );
 
-      const days = answer.split(/\s+/).map(x => parseInt(x));
+      const days = split(answer).map(x => parseInt(x));
       const date = DateTime.local(this.challenge.Year, this.challenge.Month - 1);
       const maxDay = date.daysInMonth;
       const month = date.monthLong;
 
-      for (const day of days) {
-
-        this.validateDay(day, maxDay);
-      }
+      this.validateDays(days, maxDay);
 
       const stepsResponds = await prompt.ask(
         oneLine`Please write how many steps you want to upload for days
@@ -468,7 +482,7 @@ export default class Upload extends Command {
         \`(example: 1456 2583 2847 8582 …)\``
       );
 
-      const allSteps = stepsResponds.split(/\s+/).map(x => parseInt(x));
+      const allSteps = split(stepsResponds).map(x => parseInt(x));
 
       if (allSteps.length !== days.length) {
         throw new Error(
@@ -523,6 +537,7 @@ export default class Upload extends Command {
     const prompt = new Prompt(this.msg, { cancelKeyword: ["cancel"] });
     const lookupID = `${challengeName}-${this.challenge.ID}`;
     const conversionRate = this.convertTable.get(lookupID)!;
+    const activityName = "cycled";
 
     if (!conversionRate)
       throw new Error(`conversion rate does not exists for "${lookupID}"`);
@@ -565,12 +580,12 @@ export default class Upload extends Command {
         throw new Error("invalid distance")
       }
 
-      await this.getProof(prompt, distance, "cycled", month, day);
+      await this.getProof(prompt, distance, activityName, month, day);
 
       const successOptions: MessageOptions = {
         value: distance,
         valueType: challengeName,
-        activityName: "cycled",
+        activityName: activityName,
         conversionRate,
         month,
         day,
@@ -603,15 +618,12 @@ export default class Upload extends Command {
         (${unit}) for and seperate them with a space \`(example: 1 2 3 4 ….)\``,
       );
 
-      const days = answer.split(/\s+/).map(x => parseInt(x));
+      const days = split(answer).map(x => parseInt(x));
       const date = DateTime.local(this.challenge.Year, this.challenge.Month - 1);
       const maxDay = date.daysInMonth;
       const month = date.monthLong;
 
-      for (const day of days) {
-
-        this.validateDay(day, maxDay);
-      }
+      this.validateDays(days, maxDay);
 
       const cyclingResponds = await prompt.ask(
         oneLine`Please write how many cycling (${bold(unit)}) you want to upload
@@ -619,7 +631,7 @@ export default class Upload extends Command {
         a space \`(example: 5,27 20,54 7,25 8,55 …)\``
       );
 
-      const allCycling = cyclingResponds.split(/\s+/).map(x => parseFloat(x));
+      const allCycling = split(cyclingResponds).map(x => parseFloat(x));
 
       if (allCycling.length !== days.length) {
         throw new Error(
