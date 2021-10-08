@@ -8,6 +8,7 @@ import {
   RED_BUTTON,
   split,
   NUMBER_BUTTONS as NB,
+  inlineCode,
 } from "../internals/utils";
 import { ButtonHandler } from "../internals/ButtonHandler";
 import { oneLine } from "common-tags";
@@ -41,7 +42,7 @@ export default class Upload extends Command {
   convertTable!: Map<string, number>;
   challenge!: Challenge;
 
-  async exec(msg: Message) {
+  async exec(msg: Message, args: string[]) {
 
     const channelID = client.isDev ? "859483633534238762" : msg.channel.id;
     this.msg = msg;
@@ -52,19 +53,47 @@ export default class Upload extends Command {
       return msg.channel.send("wrong channel");
     }
 
+    const categoryHandler = new Map<string, () => Promise<void>>();
+    categoryHandler.set("steps", () => this.handleSteps());
+    categoryHandler.set("cycling", () => this.handleCycling());
+    categoryHandler.set("strength", () => this.handleStrength());
+    categoryHandler.set("yoga", () => this.handleYogaAndMeditation("yoga"));
+    categoryHandler.set("meditation", () => this.handleYogaAndMeditation("meditation"));
+
+    let handler: undefined | (() => Promise<void>);
+
+    if (args[0]) {
+
+      const category = args[0];
+      const cb = categoryHandler.get(category);
+
+      if (!cb) {
+        const categories = [...categoryHandler.keys()]
+          .map(x => inlineCode(x))
+          .join(", ");
+
+        return msg.channel.send(
+          oneLine`Invalid category. Valid categeries are ${categories}.`
+        );
+      }
+
+      handler = cb;
+    }
+
     const question = "Please select a category to upload for points";
     const menu = new ButtonHandler(msg, question);
 
-    menu.addButton(NB[1], "steps", () => this.handleSteps());
-    menu.addButton(NB[2], "cycling", () => this.handleCycling());
-    menu.addButton(NB[3], "strength", () => this.handleStrength());
-    menu.addButton(NB[4], "yoga", () => this.handleYogaAndMeditation("yoga"));
-    menu.addButton(NB[5], "meditation", () => this.handleYogaAndMeditation("meditation"));
+    let i = 1;
+    for (const [category, handler] of categoryHandler) {
+      menu.addButton(NB[i], category, handler);
+      i++;
+    }
+
     menu.addCloseButton();
 
     try {
 
-      await menu.run();
+      handler ? await handler() : await menu.run();
 
       msg.channel.send(
         oneLine`For a total overview of your uploads this month, use
