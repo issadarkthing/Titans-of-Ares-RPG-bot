@@ -59,6 +59,7 @@ export default class Upload extends Command {
     categoryHandler.set("strength", () => this.handleStrength());
     categoryHandler.set("yoga", () => this.handleYogaAndMeditation("yoga"));
     categoryHandler.set("meditation", () => this.handleYogaAndMeditation("meditation"));
+    categoryHandler.set("rowing", () => this.handleRowing());
 
     let handler: undefined | (() => Promise<void>);
 
@@ -294,6 +295,150 @@ export default class Upload extends Command {
     }
   }
 
+  private async handleRowing() {
+
+    const question = oneLine`You can earn 1 point for every 1km or 0,62mi rowed.
+      Do you want to upload a single day or multiple days?`;
+
+    const menu = new ButtonHandler(this.msg, question);
+    const prompt = new Prompt(this.msg, { cancelKeyword: ["cancel"] });
+    let unit: "km" | "mi" = "km";
+    let challengeName: ChallengeName = "rowingkm";
+    const activityName = "rowed";
+
+    menu.addButton(BLUE_BUTTON, "single", async () => {
+
+      const question = "Do you want to upload rowing distance in km or mi?";
+      const menu = new ButtonHandler(this.msg, question);
+
+      menu.addButton(BLUE_BUTTON, "km", () => {
+        challengeName = "rowingkm";
+        unit = "km";
+      });
+
+      menu.addButton(RED_BUTTON, "mi", () => {
+        challengeName = "rowingmi";
+        unit = "mi";
+      });
+
+      menu.addCloseButton();
+      await menu.run();
+
+      const lookupID = `${challengeName}-${this.challenge.ID}`;
+      const conversionRate = this.convertTable.get(lookupID)!;
+
+      if (!conversionRate)
+        throw new Error(`conversion rate does not exists for "${lookupID}"`);
+
+      const day = parseInt(await prompt.ask(
+        oneLine`Please write the day of the month you want to upload cycling
+        (${unit}) for.`
+      ));
+
+      const date = DateTime.local(this.challenge.Year, this.challenge.Month - 1);
+      const maxDay = date.daysInMonth;
+      const month = date.monthLong;
+
+      this.validateDay(day, maxDay);
+
+      const distance = parseFloat(await prompt.ask(
+        oneLine`Please write the distance (${unit}) you have cycled on
+        ${bold(day)} ${bold(month)}`
+      ));
+
+      if (Number.isNaN(distance) || distance <= 0) {
+        throw new Error("invalid distance")
+      }
+
+      await this.getProof(prompt, distance, activityName, month, day);
+
+      const messageOptions: MessageOptions = {
+        value: distance,
+        valueType: challengeName,
+        activityName: activityName,
+        conversionRate,
+        month,
+        day,
+      }
+
+      await this.registerDay(messageOptions);
+
+    })
+
+    menu.addButton(RED_BUTTON, "multiple", async () => {
+
+      const question = "Do you want to upload rowing distance in km or mi?";
+      const menu = new ButtonHandler(this.msg, question);
+
+      menu.addButton(BLUE_BUTTON, "km", () => {
+        challengeName = "rowingkm";
+        unit = "km";
+      });
+
+      menu.addButton(RED_BUTTON, "mi", () => {
+        challengeName = "rowingmi";
+        unit = "mi";
+      });
+
+      menu.addCloseButton();
+      await menu.run();
+
+      const lookupID = `${challengeName}-${this.challenge.ID}`;
+      const conversionRate = this.convertTable.get(lookupID)!;
+
+      if (!conversionRate)
+        throw new Error(`conversion rate does not exists for "${lookupID}"`);
+
+      const answer = await prompt.ask(
+        oneLine`Please write the days of the month you want to rowing ${unit}
+        steps for and seperate them with a space \`(example: 1 2 3 4 ….)\``
+      );
+
+      const days = split(answer).map(x => parseFloat(x));
+      const date = DateTime.local(this.challenge.Year, this.challenge.Month - 1);
+      const maxDay = date.daysInMonth;
+      const month = date.monthLong;
+
+      this.validateDays(days, maxDay);
+
+      const rowsRespond = await prompt.ask(
+        oneLine`Please write how many rowing ${unit} you want to upload for days
+        ${days.join(" ")} in the right order, please seperate them with a space
+        \`(example: 5,27 20,54 7,25 8,55 …)\``
+      );
+
+      const rows = split(rowsRespond).map(x => parseFloat(x));
+
+      this.validateMultiRegister(days, rows, `${unit} rowed`);
+
+      for (const row of rows) {
+        if (Number.isNaN(row)) {
+          throw new Error(`invalid format "${row}"`);
+        }
+      }
+
+      await this.getMultiProof(prompt, `${unit} rowed`);
+
+      for (let i = 0; i < days.length; i++) {
+        const day = days[i];
+        const steps = rows[i];
+        const successOptions: MessageOptions = {
+          value: steps,
+          valueType: challengeName,
+          activityName: `${unit} rowed`,
+          conversionRate,
+          month,
+          day,
+        }
+
+        await this.registerDay(successOptions);
+      }
+
+    })
+
+    menu.addCloseButton();
+    await menu.run();
+  }
 
   private async handleYogaAndMeditation(activity: "yoga" | "meditation") {
 
@@ -741,12 +886,7 @@ export default class Upload extends Command {
       to upload a single day or multiple days?`;
     const menu = new ButtonHandler(this.msg, question);
     const prompt = new Prompt(this.msg, { cancelKeyword: ["cancel"] });
-    const lookupID = `${challengeName}-${this.challenge.ID}`;
-    const conversionRate = this.convertTable.get(lookupID)!;
     const activityName = "cycled";
-
-    if (!conversionRate)
-      throw new Error(`conversion rate does not exists for "${lookupID}"`);
 
     menu.addButton(BLUE_BUTTON, "single", async () => {
 
@@ -765,6 +905,12 @@ export default class Upload extends Command {
 
       menu.addCloseButton();
       await menu.run();
+
+      const lookupID = `${challengeName}-${this.challenge.ID}`;
+      const conversionRate = this.convertTable.get(lookupID)!;
+
+      if (!conversionRate)
+        throw new Error(`conversion rate does not exists for "${lookupID}"`);
 
       const day = parseInt(await prompt.ask(
         oneLine`Please write the day of the month you want to upload cycling
@@ -818,6 +964,12 @@ export default class Upload extends Command {
 
       menu.addCloseButton();
       await menu.run();
+
+      const lookupID = `${challengeName}-${this.challenge.ID}`;
+      const conversionRate = this.convertTable.get(lookupID)!;
+
+      if (!conversionRate)
+        throw new Error(`conversion rate does not exists for "${lookupID}"`);
 
       const answer = await prompt.ask(
         oneLine`Please write the days of the month you want to upload cycling
