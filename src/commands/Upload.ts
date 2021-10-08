@@ -2,12 +2,10 @@ import Command from "../internals/Command";
 import { Message } from "discord.js";
 import { CancelledInputError, Prompt } from "../internals/Prompt";
 import {
-  BLACK_BUTTON,
   BLUE_BUTTON,
   bold,
   getXp,
   RED_BUTTON,
-  WHITE_BUTTON,
   split,
   NUMBER_BUTTONS as NB,
 } from "../internals/utils";
