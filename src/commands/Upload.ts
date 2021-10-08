@@ -59,7 +59,8 @@ export default class Upload extends Command {
     menu.addButton(BLUE_BUTTON, "steps", () => this.handleSteps());
     menu.addButton(RED_BUTTON, "cycling", () => this.handleCycling());
     menu.addButton(WHITE_BUTTON, "strength", () => this.handleStrength());
-    menu.addButton(BLACK_BUTTON, "yoga", () => this.handleYoga());
+    menu.addButton(BLACK_BUTTON, "yoga", () => this.handleYogaAndMeditation("yoga"));
+    menu.addButton(BLACK_BUTTON, "meditation", () => this.handleYogaAndMeditation("meditation"));
     menu.addCloseButton();
 
     try {
@@ -265,12 +266,22 @@ export default class Upload extends Command {
     }
   }
 
-  private async handleYoga() {
 
-    const activity = "yoga";
-    const question = oneLine`You can earn 5 points for yoga over 10
-    minutes. You can earn 10 points for yoga over 30 minutes. Do
-    you want to upload a single day or multiple days?`;
+  private async handleYogaAndMeditation(activity: "yoga" | "meditation") {
+
+    const yoga10points = this.convertTable.get("yoga10");
+    const yoga30points = this.convertTable.get("yoga30");
+    const meditation10points = this.convertTable.get("meditation10");
+    const meditation30points = this.convertTable.get("meditation30");
+
+    const [session10points, session30points] = activity === "yoga" ? 
+      [yoga10points, yoga30points] : 
+      [meditation10points, meditation30points];
+
+    const question = oneLine`You can earn ${session10points} points for
+    ${activity} over 10 minutes. You can earn ${session30points} points for
+    ${activity} over 30 minutes. Do you want to upload a single day or multiple
+    days?`;
 
     const menu = new ButtonHandler(this.msg, question);
     const prompt = new Prompt(this.msg, { cancelKeyword: ["cancel"] });
@@ -278,8 +289,8 @@ export default class Upload extends Command {
     menu.addButton(BLUE_BUTTON, "single", async () => {
 
       const answer = await prompt.ask(
-        oneLine`Please write the day of the month you want to upload a yoga
-        session for.`
+        oneLine`Please write the day of the month you want to upload a
+        ${activity} session for.`
       );
 
       const date = DateTime.local(this.challenge.Year, this.challenge.Month - 1);
@@ -309,19 +320,19 @@ export default class Upload extends Command {
       await this.getProof(
         prompt,
         1,
-        "yoga session",
+        `${activity} session`,
         month,
         day,
         oneLine`Please upload a single screenshot of your wearable showing the
         date, duration of workout and heartrate. Alternatively, a photo of the
-        yoga spot with mentioned elapsed time and/or additional information can
-        be accepted.`,
+        ${activity} spot with mentioned elapsed time and/or additional
+        information can be accepted.`,
       );
 
       const options: MessageOptions = {
         value: 1,
         valueType: challengeName,
-        activityName: `${session} minutes yoga session`,
+        activityName: `${session} minutes ${activity} session`,
         conversionRate,
         month,
         day,
@@ -329,14 +340,14 @@ export default class Upload extends Command {
 
       const dayEntries = await getDayEntries(this.msg.author.id, this.challenge.ID);
       const dayEntry = dayEntries.filter(x => x.Day === day);
-      const yogaEntry = dayEntry.find(x => x.ValueType.includes("yoga"));
+      const activityEntry = dayEntry.find(x => x.ValueType.includes(activity));
 
-      if (yogaEntry) {
-        const valueType = yogaEntry.ValueType;
-        const amount = valueType === "yoga10" ? "10min+" : "30min+";
+      if (activityEntry) {
+        const valueType = activityEntry.ValueType;
+        const amount = valueType.includes("10") ? "10min+" : "30min+";
 
         const question =
-          oneLine`You already registered ${amount} yoga session on
+          oneLine`You already registered ${amount} ${activity} session on
           ${bold(month)} ${bold(day)}. Do you want to replace or add point on
           this day?`;
 
@@ -401,7 +412,7 @@ export default class Upload extends Command {
 
       const sessions = split(sessionAnswer).map(x => parseInt(x));
 
-      this.validateMultiRegister(days, sessions, "yoga session");
+      this.validateMultiRegister(days, sessions, `${activity} session`);
 
       for (const session of sessions) {
         if (session !== 30 && session !== 10) {
@@ -409,12 +420,12 @@ export default class Upload extends Command {
         }
       }
 
-      await this.getMultiProof(prompt, "yoga session");
+      await this.getMultiProof(prompt, `${activity} session`);
 
       for (let i = 0; i < days.length; i++) {
         const day = days[i];
         const session = sessions[i] as (10 | 30);
-        const challengeName: ChallengeName = `yoga${session}`;
+        const challengeName: ChallengeName = `${activity}${session}`;
         const lookupID = `${challengeName}-${this.challenge.ID}`;
         const conversionRate = this.convertTable.get(lookupID);
 
@@ -425,7 +436,7 @@ export default class Upload extends Command {
         const options: MessageOptions = {
           value: 1,
           valueType: challengeName,
-          activityName: `${session}min+ yoga session`,
+          activityName: `${session}min+ ${activity} session`,
           conversionRate,
           month,
           day,
@@ -433,14 +444,14 @@ export default class Upload extends Command {
 
         const dayEntries = await getDayEntries(this.msg.author.id, this.challenge.ID);
         const dayEntry = dayEntries.filter(x => x.Day === day);
-        const yogaEntry = dayEntry.find(x => x.ValueType.includes("yoga"));
+        const yogaEntry = dayEntry.find(x => x.ValueType.includes(activity));
 
         if (yogaEntry) {
           const valueType = yogaEntry.ValueType;
-          const amount = valueType === "yoga10" ? "10min+" : "30min+";
+          const amount = valueType.includes("10") ? "10min+" : "30min+";
 
           const question =
-            oneLine`You already registered ${amount} yoga session on
+            oneLine`You already registered ${amount} ${activity} session on
             ${bold(month)} ${bold(day)}. Do you want to replace or add point on
             this day?`;
 
