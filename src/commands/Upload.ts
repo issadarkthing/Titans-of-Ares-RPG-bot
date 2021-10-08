@@ -9,6 +9,7 @@ import {
   RED_BUTTON,
   WHITE_BUTTON,
   split,
+  NUMBER_BUTTONS as NB,
 } from "../internals/utils";
 import { ButtonHandler } from "../internals/ButtonHandler";
 import { oneLine } from "common-tags";
@@ -56,11 +57,11 @@ export default class Upload extends Command {
     const question = "Please select a category to upload for points";
     const menu = new ButtonHandler(msg, question);
 
-    menu.addButton(BLUE_BUTTON, "steps", () => this.handleSteps());
-    menu.addButton(RED_BUTTON, "cycling", () => this.handleCycling());
-    menu.addButton(WHITE_BUTTON, "strength", () => this.handleStrength());
-    menu.addButton(BLACK_BUTTON, "yoga", () => this.handleYogaAndMeditation("yoga"));
-    menu.addButton(BLACK_BUTTON, "meditation", () => this.handleYogaAndMeditation("meditation"));
+    menu.addButton(NB[1], "steps", () => this.handleSteps());
+    menu.addButton(NB[2], "cycling", () => this.handleCycling());
+    menu.addButton(NB[3], "strength", () => this.handleStrength());
+    menu.addButton(NB[4], "yoga", () => this.handleYogaAndMeditation("yoga"));
+    menu.addButton(NB[5], "meditation", () => this.handleYogaAndMeditation("meditation"));
     menu.addCloseButton();
 
     try {
