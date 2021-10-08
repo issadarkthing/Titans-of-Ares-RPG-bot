@@ -799,12 +799,7 @@ export default class Upload extends Command {
 
       const allCycling = split(cyclingResponds).map(x => parseFloat(x));
 
-      if (allCycling.length !== days.length) {
-        throw new Error(
-          oneLine`You are uploading for ${days.length} days but only
-          ${allCycling.length} cycle distances are given.`
-        );
-      }
+      this.validateMultiRegister(days, allCycling, "cycling");
 
       for (const cyclingRespond of allCycling) {
 
