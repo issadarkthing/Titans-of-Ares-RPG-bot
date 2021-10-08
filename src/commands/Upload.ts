@@ -270,10 +270,11 @@ export default class Upload extends Command {
 
   private async handleYogaAndMeditation(activity: "yoga" | "meditation") {
 
-    const yoga10points = this.convertTable.get("yoga10");
-    const yoga30points = this.convertTable.get("yoga30");
-    const meditation10points = this.convertTable.get("meditation10");
-    const meditation30points = this.convertTable.get("meditation30");
+    const id = this.challenge.ID;
+    const yoga10points = this.convertTable.get(`yoga10-${id}`);
+    const yoga30points = this.convertTable.get(`yoga30-${id}`);
+    const meditation10points = this.convertTable.get(`meditation10-${id}`);
+    const meditation30points = this.convertTable.get(`meditation30-${id}`);
 
     const [session10points, session30points] = activity === "yoga" ? 
       [yoga10points, yoga30points] : 
