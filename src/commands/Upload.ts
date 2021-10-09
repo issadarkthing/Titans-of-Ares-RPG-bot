@@ -816,7 +816,7 @@ export default class Upload extends Command {
 
       await this.getProof(prompt, steps, "steps", month, day);
 
-      const successOptions: MessageOptions = {
+      const options: MessageOptions = {
         value: steps,
         activityName: activityName,
         valueType: challengeName,
@@ -825,7 +825,7 @@ export default class Upload extends Command {
         day,
       }
 
-      await this.registerDay(successOptions);
+      await this.registerDay(options);
 
     })
 
