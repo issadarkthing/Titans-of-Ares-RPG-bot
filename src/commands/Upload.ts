@@ -60,6 +60,7 @@ export default class Upload extends Command {
     categoryHandler.set("yoga", () => this.handleYogaAndMeditation("yoga"));
     categoryHandler.set("meditation", () => this.handleYogaAndMeditation("meditation"));
     categoryHandler.set("rowing", () => this.handleRowing());
+    categoryHandler.set("othercardio", () => this.handleOtherCardio());
 
     let handler: undefined | (() => Promise<void>);
 
@@ -112,6 +113,12 @@ export default class Upload extends Command {
   private validateDays(days: number[], maxDay: number) {
     for (const day of days) {
       this.validateDay(day, maxDay);
+    }
+  }
+
+  private validateNumber(num: number) {
+    if (Number.isNaN(num)) {
+      throw new Error(`${inlineCode(num)} is not valid number type`);
     }
   }
 
@@ -312,6 +319,74 @@ export default class Upload extends Command {
         ${values.length} ${activityName} are given.`
       );
     }
+  }
+
+  private async handleOtherCardio() {
+
+    const challengeName = "othercardio";
+    const question = oneLine`You can earn 0,2 points for every minute of other
+    cardio. Only cardio with average heartrate of 125+ can be uploaded. The
+    cardio should not fit other categories or already award steps in a
+    reasonable way (running is already awarded by steps).`;
+
+    const lookupID = `${challengeName}-${this.challenge.ID}`;
+    const conversionRate = this.convertTable.get(lookupID);
+
+    if (conversionRate === undefined)
+      throw new Error("no conversion rate found");
+
+    const menu = new ButtonHandler(this.msg, question);
+    const prompt = new Prompt(this.msg, { cancelKeyword: ["cancel"] });
+
+    menu.addButton(BLUE_BUTTON, "single", async () => {
+
+      const answer = await prompt.ask(
+        oneLine`Please write the day of the month you want to upload other
+        cardio for.`
+      );
+
+      const date = DateTime.local(this.challenge.Year, this.challenge.Month - 1);
+      const maxDay = date.daysInMonth;
+      const month = date.monthLong;
+      const day = parseInt(answer);
+
+      this.validateDay(day, maxDay);
+
+      const minutes = parseInt(await prompt.ask(
+        oneLine`Please write how many full minutes of other cardio (no decimals)
+        you want to upload for ${month} ${day}.`
+      ));
+
+      this.validateNumber(minutes);
+      const activityName = " minutes other cardio session";
+
+      await this.getProof(
+        prompt,
+        minutes,
+        activityName,
+        month,
+        day,
+        oneLine`Please upload a single screenshot of your wearable showing
+        ${bold(minutes)} minutes of other cardio with average heartrate above 125+ on
+        ${bold(month)} ${bold(day)}.`,
+      );
+
+      const options: MessageOptions = {
+        value: minutes,
+        activityName,
+        valueType: challengeName,
+        conversionRate,
+        month,
+        day,
+      }
+
+      await this.registerDay(options);
+
+    });
+
+
+    menu.addCloseButton();
+    await menu.run();
   }
 
   private async handleRowing() {
