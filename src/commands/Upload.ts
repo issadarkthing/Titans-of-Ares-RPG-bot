@@ -282,6 +282,25 @@ export default class Upload extends Command {
     }
   }
 
+  private async registerDays(
+    days: number[],
+    values: number[],
+    messageOptions: Omit<MessageOptions, "value" | "day">,
+  ) {
+
+      for (let i = 0; i < days.length; i++) {
+        const day = days[i];
+        const value = values[i];
+        const successOptions: MessageOptions = {
+          ...messageOptions,
+          day,
+          value,
+        }
+
+        await this.registerDay(successOptions);
+      }
+  }
+
   private validateMultiRegister<T>(
     days: number[],
     values: T[],
@@ -419,20 +438,12 @@ export default class Upload extends Command {
 
       await this.getMultiProof(prompt, `${unit} rowed`);
 
-      for (let i = 0; i < days.length; i++) {
-        const day = days[i];
-        const steps = rows[i];
-        const successOptions: MessageOptions = {
-          value: steps,
-          valueType: challengeName,
-          activityName: `${unit} rowed`,
-          conversionRate,
-          month,
-          day,
-        }
-
-        await this.registerDay(successOptions);
-      }
+      await this.registerDays(days, rows, {
+        valueType: challengeName,
+        activityName: `${unit} rowed`,
+        conversionRate,
+        month,
+      });
 
     })
 
@@ -448,8 +459,8 @@ export default class Upload extends Command {
     const meditation10points = this.convertTable.get(`meditation10-${id}`);
     const meditation30points = this.convertTable.get(`meditation30-${id}`);
 
-    const [session10points, session30points] = activity === "yoga" ? 
-      [yoga10points, yoga30points] : 
+    const [session10points, session30points] = activity === "yoga" ?
+      [yoga10points, yoga30points] :
       [meditation10points, meditation30points];
 
     const question = oneLine`You can earn ${session10points} points for
@@ -842,9 +853,7 @@ export default class Upload extends Command {
 
       this.validateMultiRegister(days, allSteps, "steps");
 
-      for (const stepsRespond of allSteps) {
-
-        const steps = stepsRespond;
+      for (const steps of allSteps) {
 
         if (Number.isNaN(steps)) {
           throw new Error(`invalid format "${steps}"`);
@@ -855,20 +864,12 @@ export default class Upload extends Command {
 
       await this.getMultiProof(prompt, "steps");
 
-      for (let i = 0; i < days.length; i++) {
-        const day = days[i];
-        const steps = allSteps[i];
-        const successOptions: MessageOptions = {
-          value: steps,
-          valueType: challengeName,
-          activityName: "steps",
-          conversionRate,
-          month,
-          day,
-        }
-
-        await this.registerDay(successOptions);
-      }
+      await this.registerDays(days, allSteps, {
+        valueType: challengeName,
+        activityName: "steps",
+        conversionRate,
+        month,
+      })
 
     })
 
@@ -934,7 +935,7 @@ export default class Upload extends Command {
 
       await this.getProof(prompt, distance, activityName, month, day);
 
-      const successOptions: MessageOptions = {
+      const options: MessageOptions = {
         value: distance,
         valueType: challengeName,
         activityName: activityName,
@@ -943,7 +944,7 @@ export default class Upload extends Command {
         day,
       }
 
-      await this.registerDay(successOptions);
+      await this.registerDay(options);
 
     });
 
@@ -993,9 +994,7 @@ export default class Upload extends Command {
 
       this.validateMultiRegister(days, allCycling, "cycling");
 
-      for (const cyclingRespond of allCycling) {
-
-        const cycling = cyclingRespond;
+      for (const cycling of allCycling) {
 
         if (Number.isNaN(cycling)) {
           throw new Error(`invalid format "${cycling}"`);
@@ -1004,20 +1003,12 @@ export default class Upload extends Command {
 
       await this.getMultiProof(prompt, "cycling");
 
-      for (let i = 0; i < days.length; i++) {
-        const day = days[i];
-        const cycling = allCycling[i];
-        const successOptions: MessageOptions = {
-          value: cycling,
-          valueType: challengeName,
-          activityName: `${unit} cycled`,
-          conversionRate,
-          month,
-          day,
-        }
-
-        await this.registerDay(successOptions);
-      }
+      await this.registerDays(days, allCycling, {
+        valueType: challengeName,
+        activityName: `${unit} cycled`,
+        conversionRate,
+        month,
+      });
     });
 
     menu.addCloseButton();
