@@ -74,7 +74,7 @@ export default class Upload extends Command {
           .join(", ");
 
         return msg.channel.send(
-          oneLine`Invalid category. Valid categeries are ${categories}.`
+          oneLine`Invalid category. Valid categories are ${categories}.`
         );
       }
 
