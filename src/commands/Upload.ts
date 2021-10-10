@@ -28,7 +28,7 @@ import { DateTime } from "luxon";
 
 type MessageOptions = {
   value: number;
-  valueType: ChallengeName;
+  challengeName: ChallengeName;
   activityName: string;
   day: number;
 };
@@ -138,7 +138,7 @@ export default class Upload extends Command {
 
   private showSuccessMessage(data: MessageOptions) {
 
-    const conversionRate = this.getConversionRate(data.valueType);
+    const conversionRate = this.getConversionRate(data.challengeName);
     const points = Math.round(conversionRate * data.value);
     const xp = getXp(points);
     const amount = data.value === 1 ? "a" : bold(data.value);
@@ -153,7 +153,7 @@ export default class Upload extends Command {
 
   private showAddMessage(data: MessageOptions) {
 
-    const conversionRate = this.getConversionRate(data.valueType);
+    const conversionRate = this.getConversionRate(data.challengeName);
     const points = Math.round(conversionRate * data.value);
     const xp = getXp(points);
     const amount = data.value === 1 ? "a" : bold(data.value);
@@ -169,7 +169,7 @@ export default class Upload extends Command {
 
   private showReplaceMessage(data: MessageOptions) {
 
-    const conversionRate = this.getConversionRate(data.valueType);
+    const conversionRate = this.getConversionRate(data.challengeName);
     const points = Math.round(conversionRate * data.value);
     const xp = getXp(points);
     const amount = data.value === 1 ? "a" : bold(data.value);
@@ -257,7 +257,7 @@ export default class Upload extends Command {
         this.msg.author.id,
         options.day,
         this.challenge.ID,
-        options.valueType,
+        options.challengeName,
         options.value,
       );
 
@@ -280,7 +280,7 @@ export default class Upload extends Command {
           this.msg.author.id,
           options.day,
           this.challenge.ID,
-          options.valueType,
+          options.challengeName,
           options.value,
         );
 
@@ -293,7 +293,7 @@ export default class Upload extends Command {
           this.msg.author.id,
           options.day,
           this.challenge.ID,
-          options.valueType,
+          options.challengeName,
           options.value,
         );
 
@@ -390,7 +390,7 @@ export default class Upload extends Command {
       const options: MessageOptions = {
         value: minutes,
         activityName,
-        valueType: challengeName,
+        challengeName: challengeName,
         day,
       }
 
@@ -422,7 +422,7 @@ export default class Upload extends Command {
       await this.getMultiProof(prompt, activityName);
 
       await this.registerDays(days, sessions, {
-        valueType: "othercardio",
+        challengeName: "othercardio",
         activityName,
       });
     })
@@ -484,7 +484,7 @@ export default class Upload extends Command {
 
       const messageOptions: MessageOptions = {
         value: distance,
-        valueType: challengeName,
+        challengeName: challengeName,
         activityName: activityName,
         day,
       }
@@ -540,7 +540,7 @@ export default class Upload extends Command {
       await this.getMultiProof(prompt, `${unit} rowed`);
 
       await this.registerDays(days, rows, {
-        valueType: challengeName,
+        challengeName: challengeName,
         activityName: `${unit} rowed`,
       });
 
@@ -610,7 +610,7 @@ export default class Upload extends Command {
 
       const options: MessageOptions = {
         value: 1,
-        valueType: challengeName,
+        challengeName: challengeName,
         activityName: `${session} minutes ${activity} session`,
         day,
       }
@@ -635,7 +635,7 @@ export default class Upload extends Command {
             this.msg.author.id,
             options.day,
             this.challenge.ID,
-            options.valueType,
+            options.challengeName,
             options.value,
           );
 
@@ -648,7 +648,7 @@ export default class Upload extends Command {
             this.msg.author.id,
             options.day,
             this.challenge.ID,
-            options.valueType,
+            options.challengeName,
             options.value,
           );
 
@@ -705,7 +705,7 @@ export default class Upload extends Command {
 
         const options: MessageOptions = {
           value: 1,
-          valueType: challengeName,
+          challengeName: challengeName,
           activityName: `${session}min+ ${activity} session`,
           day,
         }
@@ -730,7 +730,7 @@ export default class Upload extends Command {
               this.msg.author.id,
               options.day,
               this.challenge.ID,
-              options.valueType,
+              options.challengeName,
               options.value,
             );
 
@@ -743,7 +743,7 @@ export default class Upload extends Command {
               this.msg.author.id,
               options.day,
               this.challenge.ID,
-              options.valueType,
+              options.challengeName,
               options.value,
             );
 
@@ -804,7 +804,7 @@ export default class Upload extends Command {
 
       const successOptions: MessageOptions = {
         value: count,
-        valueType: challengeName,
+        challengeName: challengeName,
         activityName: activityName,
         day,
       }
@@ -832,7 +832,7 @@ export default class Upload extends Command {
         const day = days[i];
         const successOptions: MessageOptions = {
           value: count,
-          valueType: challengeName,
+          challengeName: challengeName,
           activityName: activityName,
           day,
         }
@@ -886,7 +886,7 @@ export default class Upload extends Command {
       const options: MessageOptions = {
         value: steps,
         activityName: activityName,
-        valueType: challengeName,
+        challengeName: challengeName,
         day,
       }
 
@@ -927,7 +927,7 @@ export default class Upload extends Command {
       await this.getMultiProof(prompt, "steps");
 
       await this.registerDays(days, allSteps, {
-        valueType: challengeName,
+        challengeName: challengeName,
         activityName: "steps",
       })
 
@@ -992,7 +992,7 @@ export default class Upload extends Command {
 
       const options: MessageOptions = {
         value: distance,
-        valueType: challengeName,
+        challengeName: challengeName,
         activityName: activityName,
         day,
       }
@@ -1048,7 +1048,7 @@ export default class Upload extends Command {
       await this.getMultiProof(prompt, "cycling");
 
       await this.registerDays(days, allCycling, {
-        valueType: challengeName,
+        challengeName: challengeName,
         activityName: `${unit} cycled`,
       });
     });
