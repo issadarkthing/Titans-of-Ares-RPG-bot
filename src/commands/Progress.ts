@@ -7,6 +7,7 @@ import { toList } from "../internals/utils";
 
 export default class extends Command {
   name = "progress";
+  aliases = ["pr"];
 
   async exec(msg: Message) {
 
