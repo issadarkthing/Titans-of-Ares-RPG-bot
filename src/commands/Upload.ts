@@ -30,7 +30,6 @@ type MessageOptions = {
   value: number;
   valueType: ChallengeName;
   activityName: string;
-  month: string;
   day: number;
   conversionRate: number;
 };
@@ -41,6 +40,8 @@ export default class Upload extends Command {
   msg!: Message;
   convertTable!: Map<string, number>;
   challenge!: Challenge;
+  maxDay!: number;
+  month!: string;
 
   async exec(msg: Message, args: string[]) {
 
@@ -52,6 +53,10 @@ export default class Upload extends Command {
     if (!this.challenge) {
       return msg.channel.send("wrong channel");
     }
+
+    const date = DateTime.local(this.challenge.Year, this.challenge.Month - 1);
+    this.maxDay = date.daysInMonth;
+    this.month = date.monthLong;
 
     const categoryHandler = new Map<string, () => Promise<void>>();
     categoryHandler.set("steps", () => this.handleSteps());
@@ -110,9 +115,9 @@ export default class Upload extends Command {
     }
   }
 
-  private validateDays(days: number[], maxDay: number) {
+  private validateDays(days: number[]) {
     for (const day of days) {
-      this.validateDay(day, maxDay);
+      this.validateDay(day, this.maxDay);
     }
   }
 
@@ -130,7 +135,7 @@ export default class Upload extends Command {
 
     const text =
       oneLine`You have registered ${amount} ${data.activityName} on
-      ${bold(data.month)} ${bold(data.day)} and earned ${bold(points)} monthly
+      ${bold(this.month)} ${bold(data.day)} and earned ${bold(points)} monthly
       points + ${bold(xp)} permanent XP!`;
 
     this.msg.channel.send(text);
@@ -144,7 +149,7 @@ export default class Upload extends Command {
 
     const text =
       oneLine`You have registered ${amount} additional
-      ${data.activityName} on ${bold(data.month)} ${bold(data.day)} and earned
+      ${data.activityName} on ${bold(this.month)} ${bold(data.day)} and earned
       ${bold(points)} monthly points + ${bold(xp)} permanent XP!`;
 
     this.msg.channel.send(text);
@@ -159,7 +164,7 @@ export default class Upload extends Command {
 
     const text =
       oneLine`You have registered ${amount} ${data.activityName} on
-      ${bold(data.month)} ${bold(data.day)} and earned ${bold(points)} monthly
+      ${bold(this.month)} ${bold(data.day)} and earned ${bold(points)} monthly
       points + ${bold(xp)} permanent XP! Your previous gained points for this
       day have been removed.`;
 
@@ -248,12 +253,12 @@ export default class Upload extends Command {
 
     } catch (e: unknown) {
 
-      const { month, day, activityName, value } = options;
+      const { day, activityName, value } = options;
       const err = e as OverlapError;
       const amount = value === 1 ? "a" : bold(err.dayEntry.Value);
       const question =
         oneLine`You already registered ${amount} ${activityName} on
-        ${bold(month)} ${bold(day)}. Do you want to replace or add
+        ${bold(this.month)} ${bold(day)}. Do you want to replace or add
         point on this day?`;
 
       const menu = new ButtonHandler(this.msg, question);
@@ -376,7 +381,6 @@ export default class Upload extends Command {
         activityName,
         valueType: challengeName,
         conversionRate,
-        month,
         day,
       }
 
@@ -391,12 +395,9 @@ export default class Upload extends Command {
         cardio for and seperate them with a space (example: 1 2 3 4 ….)`
       );
 
-      const date = DateTime.local(this.challenge.Year, this.challenge.Month - 1);
-      const maxDay = date.daysInMonth;
-      const month = date.monthLong;
       const days = split(answer).map(x => parseInt(x));
 
-      this.validateDays(days, maxDay);
+      this.validateDays(days);
 
       const minutesAnswer = await prompt.ask(
         oneLine`Please write how many full minutes of other cardio (no decimals)
@@ -414,7 +415,6 @@ export default class Upload extends Command {
         valueType: "othercardio",
         activityName,
         conversionRate,
-        month,
       });
     })
 
@@ -484,7 +484,6 @@ export default class Upload extends Command {
         valueType: challengeName,
         activityName: activityName,
         conversionRate,
-        month,
         day,
       }
 
@@ -522,11 +521,8 @@ export default class Upload extends Command {
       );
 
       const days = split(answer).map(x => parseFloat(x));
-      const date = DateTime.local(this.challenge.Year, this.challenge.Month - 1);
-      const maxDay = date.daysInMonth;
-      const month = date.monthLong;
 
-      this.validateDays(days, maxDay);
+      this.validateDays(days);
 
       const rowsRespond = await prompt.ask(
         oneLine`Please write how many rowing ${unit} you want to upload for days
@@ -550,7 +546,6 @@ export default class Upload extends Command {
         valueType: challengeName,
         activityName: `${unit} rowed`,
         conversionRate,
-        month,
       });
 
     })
@@ -627,7 +622,6 @@ export default class Upload extends Command {
         valueType: challengeName,
         activityName: `${session} minutes ${activity} session`,
         conversionRate,
-        month,
         day,
       }
 
@@ -691,11 +685,10 @@ export default class Upload extends Command {
       );
 
       const date = DateTime.local(this.challenge.Year, this.challenge.Month - 1);
-      const maxDay = date.daysInMonth;
       const month = date.monthLong;
       const days = split(answer).map(x => parseInt(x));
 
-      this.validateDays(days, maxDay);
+      this.validateDays(days);
 
       const sessionAnswer = await prompt.ask(
         oneLine`Please write from left to right if the session was over 10
@@ -731,7 +724,6 @@ export default class Upload extends Command {
           valueType: challengeName,
           activityName: `${session}min+ ${activity} session`,
           conversionRate,
-          month,
           day,
         }
 
@@ -837,7 +829,6 @@ export default class Upload extends Command {
         valueType: challengeName,
         activityName: activityName,
         conversionRate,
-        month,
         day,
       }
 
@@ -852,13 +843,10 @@ export default class Upload extends Command {
         training for and seperate them with a space \`(example: 1 2 3 4 ….)\``
       );
 
-      const days = answer.split(/\s+/).map(x => parseInt(x));
-      const date = DateTime.local(this.challenge.Year, this.challenge.Month - 1);
-      const maxDay = date.daysInMonth;
-      const month = date.monthLong;
+      const days = split(answer).map(x => parseInt(x));
       const count = 1;
 
-      this.validateDays(days, maxDay);
+      this.validateDays(days);
 
       await this.getMultiProof(prompt, activityName);
 
@@ -870,7 +858,6 @@ export default class Upload extends Command {
           valueType: challengeName,
           activityName: activityName,
           conversionRate,
-          month,
           day,
         }
 
@@ -929,7 +916,6 @@ export default class Upload extends Command {
         activityName: activityName,
         valueType: challengeName,
         conversionRate,
-        month,
         day,
       }
 
@@ -945,11 +931,8 @@ export default class Upload extends Command {
       );
 
       const days = split(answer).map(x => parseInt(x));
-      const date = DateTime.local(this.challenge.Year, this.challenge.Month - 1);
-      const maxDay = date.daysInMonth;
-      const month = date.monthLong;
 
-      this.validateDays(days, maxDay);
+      this.validateDays(days);
 
       const stepsResponds = await prompt.ask(
         oneLine`Please write how many steps you want to upload for days
@@ -976,7 +959,6 @@ export default class Upload extends Command {
         valueType: challengeName,
         activityName: "steps",
         conversionRate,
-        month,
       })
 
     })
@@ -1048,7 +1030,6 @@ export default class Upload extends Command {
         valueType: challengeName,
         activityName: activityName,
         conversionRate,
-        month,
         day,
       }
 
@@ -1086,11 +1067,8 @@ export default class Upload extends Command {
       );
 
       const days = split(answer).map(x => parseInt(x));
-      const date = DateTime.local(this.challenge.Year, this.challenge.Month - 1);
-      const maxDay = date.daysInMonth;
-      const month = date.monthLong;
 
-      this.validateDays(days, maxDay);
+      this.validateDays(days);
 
       const cyclingResponds = await prompt.ask(
         oneLine`Please write how many cycling (${bold(unit)}) you want to upload
@@ -1115,7 +1093,6 @@ export default class Upload extends Command {
         valueType: challengeName,
         activityName: `${unit} cycled`,
         conversionRate,
-        month,
       });
     });
 
