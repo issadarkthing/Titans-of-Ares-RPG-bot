@@ -31,6 +31,7 @@ type RegisterOptions = {
   challengeName: ChallengeName;
   activityName: string;
   day: number;
+  replaceOnly?: boolean;
 };
 
 export default class Upload extends Command {
@@ -271,8 +272,9 @@ export default class Upload extends Command {
       const amount = value === 1 ? "a" : bold(err.dayEntry.Value);
       const question =
         oneLine`You already registered ${amount} ${activityName} on
-        ${bold(this.month)} ${bold(day)}. Do you want to replace or add
-        point on this day?`;
+        ${bold(this.month)} ${bold(day)}. Do you want to
+        replace ${options?.replaceOnly ? "" : "or add"}
+        points on this day?`;
 
       const menu = new ButtonHandler(this.msg, question);
 
@@ -289,18 +291,21 @@ export default class Upload extends Command {
         this.showReplaceMessage(options);
       });
 
-      menu.addButton(RED_BUTTON, "add points", () => {
-        addDayEntry(
-          this.msg.author.id,
-          options.day,
-          this.challenge.ID,
-          options.challengeName,
-          options.value,
-        );
+      if (!options?.replaceOnly) {
 
-        this.msg.channel.send(`Successfully added`);
-        this.showAddMessage(options);
-      });
+        menu.addButton(RED_BUTTON, "add points", () => {
+          addDayEntry(
+            this.msg.author.id,
+            options.day,
+            this.challenge.ID,
+            options.challengeName,
+            options.value,
+          );
+
+          this.msg.channel.send(`Successfully added`);
+          this.showAddMessage(options);
+        });
+      }
 
       menu.addCloseButton();
       await menu.run();
@@ -623,19 +628,6 @@ export default class Upload extends Command {
           this.showReplaceMessage(options);
         });
 
-        menu.addButton(RED_BUTTON, "add points", () => {
-          addDayEntry(
-            this.msg.author.id,
-            options.day,
-            this.challenge.ID,
-            options.challengeName,
-            options.value,
-          );
-
-          this.msg.channel.send(`Successfully added`);
-          this.showAddMessage(options);
-        });
-
         menu.addCloseButton();
         await menu.run();
 
@@ -717,18 +709,6 @@ export default class Upload extends Command {
             this.showReplaceMessage(options);
           });
 
-          menu.addButton(RED_BUTTON, "add points", () => {
-            addDayEntry(
-              this.msg.author.id,
-              options.day,
-              this.challenge.ID,
-              options.challengeName,
-              options.value,
-            );
-
-            this.msg.channel.send(`Successfully added`);
-            this.showAddMessage(options);
-          });
 
           menu.addCloseButton();
           await menu.run();
@@ -780,6 +760,7 @@ export default class Upload extends Command {
         challengeName: challengeName,
         activityName: activityName,
         day,
+        replaceOnly: true,
       })
 
     })
@@ -798,17 +779,13 @@ export default class Upload extends Command {
 
       await this.getMultiProof(activityName);
 
+      const trainings = days.map(() => count);
 
-      for (let i = 0; i < days.length; i++) {
-        const day = days[i];
-
-        await this.registerDay({
-          value: count,
-          challengeName: challengeName,
-          activityName: activityName,
-          day,
-        })
-      }
+      await this.registerDays(days, trainings, {
+        challengeName: challengeName,
+        activityName: activityName,
+        replaceOnly: true,
+      })
     })
 
     menu.addCloseButton();
