@@ -329,6 +329,7 @@ export default class Upload extends Command {
     cardio should not fit other categories or already award steps in a
     reasonable way (running is already awarded by steps).`;
 
+    const activityName = " minutes other cardio session";
     const lookupID = `${challengeName}-${this.challenge.ID}`;
     const conversionRate = this.convertTable.get(lookupID);
 
@@ -358,7 +359,6 @@ export default class Upload extends Command {
       ));
 
       this.validateNumber(minutes);
-      const activityName = " minutes other cardio session";
 
       await this.getProof(
         prompt,
@@ -384,6 +384,39 @@ export default class Upload extends Command {
 
     });
 
+    menu.addButton(RED_BUTTON, "multiple", async () => {
+
+      const answer = await prompt.ask(
+        oneLine`Please write the days of the month you want to upload other
+        cardio for and seperate them with a space (example: 1 2 3 4 ….)`
+      );
+
+      const date = DateTime.local(this.challenge.Year, this.challenge.Month - 1);
+      const maxDay = date.daysInMonth;
+      const month = date.monthLong;
+      const days = split(answer).map(x => parseInt(x));
+
+      this.validateDays(days, maxDay);
+
+      const minutesAnswer = await prompt.ask(
+        oneLine`Please write how many full minutes of other cardio (no decimals)
+        you want to upload for days ${bold(days.join(", "))} in the right order,
+        please seperate them with a space \`(example: 60 90 42 30 …)\``
+      );
+
+      const sessions = split(minutesAnswer).map(x => parseInt(x));
+
+      this.validateMultiRegister(days, sessions, activityName);
+
+      await this.getMultiProof(prompt, activityName);
+
+      await this.registerDays(days, sessions, {
+        valueType: "othercardio",
+        activityName,
+        conversionRate,
+        month,
+      });
+    })
 
     menu.addCloseButton();
     await menu.run();
