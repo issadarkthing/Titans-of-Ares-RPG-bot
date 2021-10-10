@@ -69,18 +69,23 @@ export default class Upload extends Command {
     categoryHandler.set("meditation", () => this.handleYogaAndMeditation("meditation"));
     categoryHandler.set("rowing", () => this.handleRowing());
     categoryHandler.set("othercardio", () => this.handleOtherCardio());
-    categoryHandler.set("bonus", () => this.handleBonusChallenges());
+    categoryHandler.set("bonus challenges", () => this.handleBonusChallenges());
 
     let handler: undefined | (() => Promise<void>);
 
     if (args[0]) {
 
-      const category = args[0];
+      let category = args[0];
+      
+      if (category === "bonus") {
+        category = "bonus challenges";
+      }
+
       const cb = categoryHandler.get(category);
 
       if (!cb) {
         const categories = [...categoryHandler.keys()]
-          .map(x => inlineCode(x))
+          .map(x => inlineCode(x === "bonus challenges" ? "bonus" : x))
           .join(", ");
 
         return msg.channel.send(
