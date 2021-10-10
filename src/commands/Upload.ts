@@ -31,7 +31,6 @@ type MessageOptions = {
   valueType: ChallengeName;
   activityName: string;
   day: number;
-  conversionRate: number;
 };
 
 export default class Upload extends Command {
@@ -115,6 +114,16 @@ export default class Upload extends Command {
     }
   }
 
+  private getConversionRate(challengeName: ChallengeName) {
+    const lookupID = `${challengeName}-${this.challenge.ID}`;
+    const conversionRate = this.convertTable.get(lookupID);
+
+    if (!conversionRate)
+      throw new Error(`conversion rate does not exists for "${lookupID}"`);
+
+    return conversionRate;
+  }
+
   private validateDays(days: number[]) {
     for (const day of days) {
       this.validateDay(day, this.maxDay);
@@ -129,7 +138,8 @@ export default class Upload extends Command {
 
   private showSuccessMessage(data: MessageOptions) {
 
-    const points = Math.round(data.conversionRate * data.value);
+    const conversionRate = this.getConversionRate(data.valueType);
+    const points = Math.round(conversionRate * data.value);
     const xp = getXp(points);
     const amount = data.value === 1 ? "a" : bold(data.value);
 
@@ -143,7 +153,8 @@ export default class Upload extends Command {
 
   private showAddMessage(data: MessageOptions) {
 
-    const points = Math.round(data.conversionRate * data.value);
+    const conversionRate = this.getConversionRate(data.valueType);
+    const points = Math.round(conversionRate * data.value);
     const xp = getXp(points);
     const amount = data.value === 1 ? "a" : bold(data.value);
 
@@ -158,7 +169,8 @@ export default class Upload extends Command {
 
   private showReplaceMessage(data: MessageOptions) {
 
-    const points = Math.round(data.conversionRate * data.value);
+    const conversionRate = this.getConversionRate(data.valueType);
+    const points = Math.round(conversionRate * data.value);
     const xp = getXp(points);
     const amount = data.value === 1 ? "a" : bold(data.value);
 
@@ -335,8 +347,7 @@ export default class Upload extends Command {
     reasonable way (running is already awarded by steps).`;
 
     const activityName = " minutes other cardio session";
-    const lookupID = `${challengeName}-${this.challenge.ID}`;
-    const conversionRate = this.convertTable.get(lookupID);
+    const conversionRate = this.getConversionRate(challengeName);
 
     if (conversionRate === undefined)
       throw new Error("no conversion rate found");
@@ -380,7 +391,6 @@ export default class Upload extends Command {
         value: minutes,
         activityName,
         valueType: challengeName,
-        conversionRate,
         day,
       }
 
@@ -414,7 +424,6 @@ export default class Upload extends Command {
       await this.registerDays(days, sessions, {
         valueType: "othercardio",
         activityName,
-        conversionRate,
       });
     })
 
@@ -451,12 +460,6 @@ export default class Upload extends Command {
       menu.addCloseButton();
       await menu.run();
 
-      const lookupID = `${challengeName}-${this.challenge.ID}`;
-      const conversionRate = this.convertTable.get(lookupID)!;
-
-      if (!conversionRate)
-        throw new Error(`conversion rate does not exists for "${lookupID}"`);
-
       const day = parseInt(await prompt.ask(
         oneLine`Please write the day of the month you want to upload cycling
         (${unit}) for.`
@@ -483,7 +486,6 @@ export default class Upload extends Command {
         value: distance,
         valueType: challengeName,
         activityName: activityName,
-        conversionRate,
         day,
       }
 
@@ -509,11 +511,6 @@ export default class Upload extends Command {
       menu.addCloseButton();
       await menu.run();
 
-      const lookupID = `${challengeName}-${this.challenge.ID}`;
-      const conversionRate = this.convertTable.get(lookupID)!;
-
-      if (!conversionRate)
-        throw new Error(`conversion rate does not exists for "${lookupID}"`);
 
       const answer = await prompt.ask(
         oneLine`Please write the days of the month you want to rowing ${unit}
@@ -545,7 +542,6 @@ export default class Upload extends Command {
       await this.registerDays(days, rows, {
         valueType: challengeName,
         activityName: `${unit} rowed`,
-        conversionRate,
       });
 
     })
@@ -596,11 +592,6 @@ export default class Upload extends Command {
       menu.addButton(RED_BUTTON, "30 minutes", () => { session = 30; });
 
       const challengeName: ChallengeName = `${activity}${session}`;
-      const lookupID = `${challengeName}-${this.challenge.ID}`;
-      const conversionRate = this.convertTable.get(lookupID);
-
-      if (!conversionRate)
-        throw new Error(`conversion rate does not exists for "${lookupID}"`);
 
       menu.addCloseButton();
       await menu.run();
@@ -621,7 +612,6 @@ export default class Upload extends Command {
         value: 1,
         valueType: challengeName,
         activityName: `${session} minutes ${activity} session`,
-        conversionRate,
         day,
       }
 
@@ -712,18 +702,11 @@ export default class Upload extends Command {
         const day = days[i];
         const session = sessions[i] as (10 | 30);
         const challengeName: ChallengeName = `${activity}${session}`;
-        const lookupID = `${challengeName}-${this.challenge.ID}`;
-        const conversionRate = this.convertTable.get(lookupID);
-
-        if (!conversionRate) {
-          throw new Error(`conversion rate does not exists for "${lookupID}"`);
-        }
 
         const options: MessageOptions = {
           value: 1,
           valueType: challengeName,
           activityName: `${session}min+ ${activity} session`,
-          conversionRate,
           day,
         }
 
@@ -792,12 +775,7 @@ export default class Upload extends Command {
 
     const menu = new ButtonHandler(this.msg, question);
     const prompt = new Prompt(this.msg, { cancelKeyword: ["cancel"] });
-    const lookupID = `${challengeName}-${this.challenge.ID}`;
-    const conversionRate = this.convertTable.get(lookupID);
     const activityName = "strength training";
-
-    if (!conversionRate)
-      throw new Error(`conversion rate does not exists for "${lookupID}"`);
 
     menu.addButton(BLUE_BUTTON, "single", async () => {
 
@@ -828,7 +806,6 @@ export default class Upload extends Command {
         value: count,
         valueType: challengeName,
         activityName: activityName,
-        conversionRate,
         day,
       }
 
@@ -857,7 +834,6 @@ export default class Upload extends Command {
           value: count,
           valueType: challengeName,
           activityName: activityName,
-          conversionRate,
           day,
         }
 
@@ -871,18 +847,14 @@ export default class Upload extends Command {
 
   private async handleSteps() {
 
-    const challengeName: ChallengeName = "steps";
     const question =
       oneLine`You can earn 1 point for every 1000 steps taken. Do you want to
       upload a single day or multiple days?`;
+
+    const challengeName: ChallengeName = "steps";
     const menu = new ButtonHandler(this.msg, question);
     const prompt = new Prompt(this.msg, { cancelKeyword: ["cancel"] });
-    const lookupID = `${challengeName}-${this.challenge.ID}`;
-    const conversionRate = this.convertTable.get(lookupID);
     const activityName = "steps";
-
-    if (!conversionRate)
-      throw new Error(`conversion rate does not exists for "${lookupID}"`);
 
     menu.addButton(BLUE_BUTTON, "single", async () => {
 
@@ -915,7 +887,6 @@ export default class Upload extends Command {
         value: steps,
         activityName: activityName,
         valueType: challengeName,
-        conversionRate,
         day,
       }
 
@@ -958,7 +929,6 @@ export default class Upload extends Command {
       await this.registerDays(days, allSteps, {
         valueType: challengeName,
         activityName: "steps",
-        conversionRate,
       })
 
     })
@@ -997,11 +967,6 @@ export default class Upload extends Command {
       menu.addCloseButton();
       await menu.run();
 
-      const lookupID = `${challengeName}-${this.challenge.ID}`;
-      const conversionRate = this.convertTable.get(lookupID)!;
-
-      if (!conversionRate)
-        throw new Error(`conversion rate does not exists for "${lookupID}"`);
 
       const day = parseInt(await prompt.ask(
         oneLine`Please write the day of the month you want to upload cycling
@@ -1029,7 +994,6 @@ export default class Upload extends Command {
         value: distance,
         valueType: challengeName,
         activityName: activityName,
-        conversionRate,
         day,
       }
 
@@ -1054,12 +1018,6 @@ export default class Upload extends Command {
 
       menu.addCloseButton();
       await menu.run();
-
-      const lookupID = `${challengeName}-${this.challenge.ID}`;
-      const conversionRate = this.convertTable.get(lookupID)!;
-
-      if (!conversionRate)
-        throw new Error(`conversion rate does not exists for "${lookupID}"`);
 
       const answer = await prompt.ask(
         oneLine`Please write the days of the month you want to upload cycling
@@ -1092,7 +1050,6 @@ export default class Upload extends Command {
       await this.registerDays(days, allCycling, {
         valueType: challengeName,
         activityName: `${unit} cycled`,
-        conversionRate,
       });
     });
 
