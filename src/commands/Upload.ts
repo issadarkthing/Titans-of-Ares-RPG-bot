@@ -26,7 +26,7 @@ import {
 } from "../db/monthlyChallenge";
 import { DateTime } from "luxon";
 
-type MessageOptions = {
+type RegisterOptions = {
   value: number;
   challengeName: ChallengeName;
   activityName: string;
@@ -139,7 +139,7 @@ export default class Upload extends Command {
     }
   }
 
-  private showSuccessMessage(data: MessageOptions) {
+  private showSuccessMessage(data: RegisterOptions) {
 
     const conversionRate = this.getConversionRate(data.challengeName);
     const points = Math.round(conversionRate * data.value);
@@ -154,7 +154,7 @@ export default class Upload extends Command {
     this.msg.channel.send(text);
   }
 
-  private showAddMessage(data: MessageOptions) {
+  private showAddMessage(data: RegisterOptions) {
 
     const conversionRate = this.getConversionRate(data.challengeName);
     const points = Math.round(conversionRate * data.value);
@@ -170,7 +170,7 @@ export default class Upload extends Command {
   }
 
 
-  private showReplaceMessage(data: MessageOptions) {
+  private showReplaceMessage(data: RegisterOptions) {
 
     const conversionRate = this.getConversionRate(data.challengeName);
     const points = Math.round(conversionRate * data.value);
@@ -250,7 +250,7 @@ export default class Upload extends Command {
     }
   }
 
-  private async registerDay(options: MessageOptions) {
+  private async registerDay(options: RegisterOptions) {
 
     try {
 
@@ -310,13 +310,13 @@ export default class Upload extends Command {
   private async registerDays(
     days: number[],
     values: number[],
-    messageOptions: Omit<MessageOptions, "value" | "day">,
+    messageOptions: Omit<RegisterOptions, "value" | "day">,
   ) {
 
       for (let i = 0; i < days.length; i++) {
         const day = days[i];
         const value = values[i];
-        const successOptions: MessageOptions = {
+        const successOptions: RegisterOptions = {
           ...messageOptions,
           day,
           value,
@@ -588,7 +588,7 @@ export default class Upload extends Command {
         information can be accepted.`,
       );
 
-      const options: MessageOptions = {
+      const options: RegisterOptions = {
         value: 1,
         challengeName: challengeName,
         activityName: `${session} minutes ${activity} session`,
@@ -682,7 +682,7 @@ export default class Upload extends Command {
         const session = sessions[i] as (10 | 30);
         const challengeName: ChallengeName = `${activity}${session}`;
 
-        const options: MessageOptions = {
+        const options: RegisterOptions = {
           value: 1,
           challengeName: challengeName,
           activityName: `${session}min+ ${activity} session`,
