@@ -347,10 +347,6 @@ export default class Upload extends Command {
     reasonable way (running is already awarded by steps).`;
 
     const activityName = " minutes other cardio session";
-    const conversionRate = this.getConversionRate(challengeName);
-
-    if (conversionRate === undefined)
-      throw new Error("no conversion rate found");
 
     const menu = new ButtonHandler(this.msg, question);
     const prompt = new Prompt(this.msg, { cancelKeyword: ["cancel"] });
