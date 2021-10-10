@@ -69,6 +69,7 @@ export default class Upload extends Command {
     categoryHandler.set("meditation", () => this.handleYogaAndMeditation("meditation"));
     categoryHandler.set("rowing", () => this.handleRowing());
     categoryHandler.set("othercardio", () => this.handleOtherCardio());
+    categoryHandler.set("bonus", () => this.handleBonusChallenges());
 
     let handler: undefined | (() => Promise<void>);
 
@@ -342,6 +343,27 @@ export default class Upload extends Command {
         ${values.length} ${activityName} are given.`
       );
     }
+  }
+
+  private async handleBonusChallenges() {
+
+    const menu = new ButtonHandler(this.msg, 
+      oneLine`There are multiple bonus challenges every month. Click on one to
+      get more details or if you want to upload a bonus challenge.`
+    );
+
+    menu.addButton(NB[1], "Get a 5 point weekstreak", () => {
+
+      this.msg.channel.send(
+        oneLine`You can obtain 10 additional monthly points (and 20 permanent
+        XP) every week by earning 5 points daily Monday to Sunday. The bot will
+        let you know when you have earned this bonus and will add the points
+        automatically!`
+      );
+    });
+
+    menu.addCloseButton();
+    await menu.run();
   }
 
   private async handleOtherCardio() {
