@@ -39,23 +39,26 @@ export default class Upload extends Command {
   msg!: Message;
   convertTable!: Map<string, number>;
   challenge!: Challenge;
+  date!: DateTime;
   maxDay!: number;
   month!: string;
+  prompt!: Prompt;
 
   async exec(msg: Message, args: string[]) {
 
     const channelID = client.isDev ? "859483633534238762" : msg.channel.id;
     this.msg = msg;
     this.challenge = await getChallengeByChannelID(channelID);
+    this.prompt = new Prompt(this.msg, { cancelKeyword: ["cancel"] });
     this.convertTable = await getConvertTable();
 
     if (!this.challenge) {
       return msg.channel.send("wrong channel");
     }
 
-    const date = DateTime.local(this.challenge.Year, this.challenge.Month - 1);
-    this.maxDay = date.daysInMonth;
-    this.month = date.monthLong;
+    this.date = DateTime.local(this.challenge.Year, this.challenge.Month - 1);
+    this.maxDay = this.date.daysInMonth;
+    this.month = this.date.monthLong;
 
     const categoryHandler = new Map<string, () => Promise<void>>();
     categoryHandler.set("steps", () => this.handleSteps());
@@ -126,7 +129,7 @@ export default class Upload extends Command {
 
   private validateDays(days: number[]) {
     for (const day of days) {
-      this.validateDay(day, this.maxDay);
+      this.validateDay(day);
     }
   }
 
@@ -183,8 +186,8 @@ export default class Upload extends Command {
     this.msg.channel.send(text);
   }
 
-  private validateDay(day: number, maxDay: number) {
-      if (Number.isNaN(day) || day > maxDay || day <= 0) {
+  private validateDay(day: number) {
+      if (Number.isNaN(day) || day > this.maxDay || day <= 0) {
         throw new Error(
           oneLine`Please only write the day of the the month (Example: use "5"
           for the 5th day in the month).`
@@ -193,20 +196,18 @@ export default class Upload extends Command {
   }
 
   private async getProof(
-    prompt: Prompt,
     value: number,
-    activity: string,
-    month: string,
+    activityName: string,
     day: number,
     question?: string,
   ) {
 
     try {
 
-      const collected = await prompt.collect(
+      const collected = await this.prompt.collect(
         question ||
         oneLine`Please upload a single screenshot of your wearable showing
-        ${bold(value)} ${activity} on ${bold(month)} ${bold(day)}.`,
+        ${bold(value)} ${activityName} on ${bold(this.month)} ${bold(day)}.`,
         { max: 1 },
       );
 
@@ -225,11 +226,11 @@ export default class Upload extends Command {
     }
   }
 
-  private async getMultiProof(prompt: Prompt, activity: string) {
+  private async getMultiProof(activity: string) {
 
     try {
 
-      const collected = await prompt.collect(
+      const collected = await this.prompt.collect(
         oneLine`Please upload one or more screenshots proving your ${activity}
         for these days of the month. When done, please write 'done' in the
         channel.`,
@@ -349,23 +350,20 @@ export default class Upload extends Command {
     const activityName = " minutes other cardio session";
 
     const menu = new ButtonHandler(this.msg, question);
-    const prompt = new Prompt(this.msg, { cancelKeyword: ["cancel"] });
 
     menu.addButton(BLUE_BUTTON, "single", async () => {
 
-      const answer = await prompt.ask(
+      const answer = await this.prompt.ask(
         oneLine`Please write the day of the month you want to upload other
         cardio for.`
       );
 
-      const date = DateTime.local(this.challenge.Year, this.challenge.Month - 1);
-      const maxDay = date.daysInMonth;
-      const month = date.monthLong;
+      const month = this.month;
       const day = parseInt(answer);
 
-      this.validateDay(day, maxDay);
+      this.validateDay(day);
 
-      const minutes = parseInt(await prompt.ask(
+      const minutes = parseInt(await this.prompt.ask(
         oneLine`Please write how many full minutes of other cardio (no decimals)
         you want to upload for ${month} ${day}.`
       ));
@@ -373,30 +371,26 @@ export default class Upload extends Command {
       this.validateNumber(minutes);
 
       await this.getProof(
-        prompt,
         minutes,
         activityName,
-        month,
         day,
         oneLine`Please upload a single screenshot of your wearable showing
         ${bold(minutes)} minutes of other cardio with average heartrate above 125+ on
         ${bold(month)} ${bold(day)}.`,
       );
 
-      const options: MessageOptions = {
+      await this.registerDay({
         value: minutes,
         activityName,
         challengeName: challengeName,
         day,
-      }
-
-      await this.registerDay(options);
+      })
 
     });
 
     menu.addButton(RED_BUTTON, "multiple", async () => {
 
-      const answer = await prompt.ask(
+      const answer = await this.prompt.ask(
         oneLine`Please write the days of the month you want to upload other
         cardio for and seperate them with a space (example: 1 2 3 4 ….)`
       );
@@ -405,7 +399,7 @@ export default class Upload extends Command {
 
       this.validateDays(days);
 
-      const minutesAnswer = await prompt.ask(
+      const minutesAnswer = await this.prompt.ask(
         oneLine`Please write how many full minutes of other cardio (no decimals)
         you want to upload for days ${bold(days.join(", "))} in the right order,
         please seperate them with a space \`(example: 60 90 42 30 …)\``
@@ -415,7 +409,7 @@ export default class Upload extends Command {
 
       this.validateMultiRegister(days, sessions, activityName);
 
-      await this.getMultiProof(prompt, activityName);
+      await this.getMultiProof(activityName);
 
       await this.registerDays(days, sessions, {
         challengeName: "othercardio",
@@ -433,7 +427,6 @@ export default class Upload extends Command {
       Do you want to upload a single day or multiple days?`;
 
     const menu = new ButtonHandler(this.msg, question);
-    const prompt = new Prompt(this.msg, { cancelKeyword: ["cancel"] });
     let unit: "km" | "mi" = "km";
     let challengeName: ChallengeName = "rowingkm";
     const activityName = "rowed";
@@ -456,18 +449,16 @@ export default class Upload extends Command {
       menu.addCloseButton();
       await menu.run();
 
-      const day = parseInt(await prompt.ask(
+      const day = parseInt(await this.prompt.ask(
         oneLine`Please write the day of the month you want to upload cycling
         (${unit}) for.`
       ));
 
-      const date = DateTime.local(this.challenge.Year, this.challenge.Month - 1);
-      const maxDay = date.daysInMonth;
-      const month = date.monthLong;
+      const month = this.month;
 
-      this.validateDay(day, maxDay);
+      this.validateDay(day);
 
-      const distance = parseFloat(await prompt.ask(
+      const distance = parseFloat(await this.prompt.ask(
         oneLine`Please write the distance (${unit}) you have cycled on
         ${bold(day)} ${bold(month)}`
       ));
@@ -476,16 +467,14 @@ export default class Upload extends Command {
         throw new Error("invalid distance")
       }
 
-      await this.getProof(prompt, distance, activityName, month, day);
+      await this.getProof(distance, activityName, day);
 
-      const messageOptions: MessageOptions = {
+      await this.registerDay({
         value: distance,
         challengeName: challengeName,
         activityName: activityName,
         day,
-      }
-
-      await this.registerDay(messageOptions);
+      })
 
     })
 
@@ -508,7 +497,7 @@ export default class Upload extends Command {
       await menu.run();
 
 
-      const answer = await prompt.ask(
+      const answer = await this.prompt.ask(
         oneLine`Please write the days of the month you want to rowing ${unit}
         steps for and seperate them with a space \`(example: 1 2 3 4 ….)\``
       );
@@ -517,7 +506,7 @@ export default class Upload extends Command {
 
       this.validateDays(days);
 
-      const rowsRespond = await prompt.ask(
+      const rowsRespond = await this.prompt.ask(
         oneLine`Please write how many rowing ${unit} you want to upload for days
         ${days.join(" ")} in the right order, please seperate them with a space
         \`(example: 5,27 20,54 7,25 8,55 …)\``
@@ -533,7 +522,7 @@ export default class Upload extends Command {
         }
       }
 
-      await this.getMultiProof(prompt, `${unit} rowed`);
+      await this.getMultiProof(`${unit} rowed`);
 
       await this.registerDays(days, rows, {
         challengeName: challengeName,
@@ -564,22 +553,19 @@ export default class Upload extends Command {
     days?`;
 
     const menu = new ButtonHandler(this.msg, question);
-    const prompt = new Prompt(this.msg, { cancelKeyword: ["cancel"] });
 
     menu.addButton(BLUE_BUTTON, "single", async () => {
 
-      const answer = await prompt.ask(
+      const answer = await this.prompt.ask(
         oneLine`Please write the day of the month you want to upload a
         ${activity} session for.`
       );
 
-      const date = DateTime.local(this.challenge.Year, this.challenge.Month - 1);
-      const maxDay = date.daysInMonth;
-      const month = date.monthLong;
+      const month = this.month;
       const day = parseInt(answer);
       let session: 10 | 30 = 10;
 
-      this.validateDay(day, maxDay);
+      this.validateDay(day);
 
       const sessionQuestion = "Was your session over 10 minutes or 30 minutes?";
       const menu = new ButtonHandler(this.msg, sessionQuestion);
@@ -593,10 +579,8 @@ export default class Upload extends Command {
       await menu.run();
 
       await this.getProof(
-        prompt,
         1,
         `${activity} session`,
-        month,
         day,
         oneLine`Please upload a single screenshot of your wearable showing the
         date, duration of workout and heartrate. Alternatively, a photo of the
@@ -664,19 +648,18 @@ export default class Upload extends Command {
 
     menu.addButton(RED_BUTTON, "multiple", async () => {
 
-      const answer = await prompt.ask(
+      const answer = await this.prompt.ask(
         oneLine`Please write the days of the month you want to upload
         yoga/meditation sessions for and seperate them with a space (example: 1
         2 3 4 ….)`
       );
 
-      const date = DateTime.local(this.challenge.Year, this.challenge.Month - 1);
-      const month = date.monthLong;
+      const month = this.month;
       const days = split(answer).map(x => parseInt(x));
 
       this.validateDays(days);
 
-      const sessionAnswer = await prompt.ask(
+      const sessionAnswer = await this.prompt.ask(
         oneLine`Please write from left to right if the session was over 10
         minutes or 30 minutes for every day and seperate them with a space
         (example: 10 30 10 30 …)`
@@ -692,7 +675,7 @@ export default class Upload extends Command {
         }
       }
 
-      await this.getMultiProof(prompt, `${activity} session`);
+      await this.getMultiProof(`${activity} session`);
 
       for (let i = 0; i < days.length; i++) {
         const day = days[i];
@@ -770,48 +753,40 @@ export default class Upload extends Command {
       day or multiple days?`;
 
     const menu = new ButtonHandler(this.msg, question);
-    const prompt = new Prompt(this.msg, { cancelKeyword: ["cancel"] });
     const activityName = "strength training";
 
     menu.addButton(BLUE_BUTTON, "single", async () => {
 
-      const answer = await prompt.ask(
+      const answer = await this.prompt.ask(
         oneLine`Please write the day of the month you want to upload a strength
         training for.`
       );
 
-      const date = DateTime.local(this.challenge.Year, this.challenge.Month - 1);
-      const maxDay = date.daysInMonth;
-      const month = date.monthLong;
       const day = parseInt(answer);
       const count = 1;
 
-      this.validateDay(day, maxDay);
+      this.validateDay(day);
 
       await this.getProof(
-        prompt,
         count,
         activityName,
-        month,
         day,
         oneLine`Please upload a single screenshot of your wearable showing the
         date, duration of workout and heartrate.`,
       );
 
-      const successOptions: MessageOptions = {
+      await this.registerDay({
         value: count,
         challengeName: challengeName,
         activityName: activityName,
         day,
-      }
-
-      await this.registerDay(successOptions);
+      })
 
     })
 
     menu.addButton(RED_BUTTON, "multiple", async () => {
 
-      const answer = await prompt.ask(
+      const answer = await this.prompt.ask(
         oneLine`Please write the days of the month you want to upload strength
         training for and seperate them with a space \`(example: 1 2 3 4 ….)\``
       );
@@ -821,19 +796,18 @@ export default class Upload extends Command {
 
       this.validateDays(days);
 
-      await this.getMultiProof(prompt, activityName);
+      await this.getMultiProof(activityName);
 
 
       for (let i = 0; i < days.length; i++) {
         const day = days[i];
-        const successOptions: MessageOptions = {
+
+        await this.registerDay({
           value: count,
           challengeName: challengeName,
           activityName: activityName,
           day,
-        }
-
-        await this.registerDay(successOptions);
+        })
       }
     })
 
@@ -849,23 +823,20 @@ export default class Upload extends Command {
 
     const challengeName: ChallengeName = "steps";
     const menu = new ButtonHandler(this.msg, question);
-    const prompt = new Prompt(this.msg, { cancelKeyword: ["cancel"] });
     const activityName = "steps";
 
     menu.addButton(BLUE_BUTTON, "single", async () => {
 
-      const answer = await prompt.ask(
+      const answer = await this.prompt.ask(
         "Please write the day of the month you want to upload steps for."
       );
 
-      const date = DateTime.local(this.challenge.Year, this.challenge.Month - 1);
-      const maxDay = date.daysInMonth;
-      const month = date.monthLong;
+      const month = this.month;
       const day = parseInt(answer);
 
-      this.validateDay(day, maxDay);
+      this.validateDay(day);
 
-      const stepsRespond = await prompt.ask(
+      const stepsRespond = await this.prompt.ask(
         oneLine`Please write how many steps you want to upload for
         ${bold(month)} ${bold(day)}.`
       );
@@ -877,22 +848,20 @@ export default class Upload extends Command {
         throw new Error("This challenge capped at 250k steps");
       }
 
-      await this.getProof(prompt, steps, "steps", month, day);
+      await this.getProof(steps, "steps", day);
 
-      const options: MessageOptions = {
+      await this.registerDay({
         value: steps,
         activityName: activityName,
         challengeName: challengeName,
         day,
-      }
-
-      await this.registerDay(options);
+      })
 
     })
 
     menu.addButton(RED_BUTTON, "multiple", async () => {
 
-      const answer = await prompt.ask(
+      const answer = await this.prompt.ask(
         oneLine`Please write the days of the month you want to upload steps for
         and seperate them with a space \`(example: 1 2 3 4 ….)\``
       );
@@ -901,7 +870,7 @@ export default class Upload extends Command {
 
       this.validateDays(days);
 
-      const stepsResponds = await prompt.ask(
+      const stepsResponds = await this.prompt.ask(
         oneLine`Please write how many steps you want to upload for days
         ${days.join(" ")} in the right order, please seperate them with a space
         \`(example: 1456 2583 2847 8582 …)\``
@@ -920,7 +889,7 @@ export default class Upload extends Command {
         }
       }
 
-      await this.getMultiProof(prompt, "steps");
+      await this.getMultiProof("steps");
 
       await this.registerDays(days, allSteps, {
         challengeName: challengeName,
@@ -942,7 +911,6 @@ export default class Upload extends Command {
       oneLine`You can earn 1 point for every 2km or 1,24mi cycled. Do you want
       to upload a single day or multiple days?`;
     const menu = new ButtonHandler(this.msg, question);
-    const prompt = new Prompt(this.msg, { cancelKeyword: ["cancel"] });
     const activityName = "cycled";
 
     menu.addButton(BLUE_BUTTON, "single", async () => {
@@ -964,18 +932,16 @@ export default class Upload extends Command {
       await menu.run();
 
 
-      const day = parseInt(await prompt.ask(
+      const day = parseInt(await this.prompt.ask(
         oneLine`Please write the day of the month you want to upload cycling
         (${unit}) for.`
       ));
 
-      const date = DateTime.local(this.challenge.Year, this.challenge.Month - 1);
-      const maxDay = date.daysInMonth;
-      const month = date.monthLong;
+      const month = this.month;
 
-      this.validateDay(day, maxDay);
+      this.validateDay(day);
 
-      const distance = parseFloat(await prompt.ask(
+      const distance = parseFloat(await this.prompt.ask(
         oneLine`Please write the distance (${unit}) you have cycled on
         ${bold(day)} ${bold(month)}`
       ));
@@ -984,16 +950,14 @@ export default class Upload extends Command {
         throw new Error("invalid distance")
       }
 
-      await this.getProof(prompt, distance, activityName, month, day);
+      await this.getProof(distance, activityName, day);
 
-      const options: MessageOptions = {
+      await this.registerDay({
         value: distance,
-        challengeName: challengeName,
-        activityName: activityName,
+        challengeName,
+        activityName,
         day,
-      }
-
-      await this.registerDay(options);
+      });
 
     });
 
@@ -1015,7 +979,7 @@ export default class Upload extends Command {
       menu.addCloseButton();
       await menu.run();
 
-      const answer = await prompt.ask(
+      const answer = await this.prompt.ask(
         oneLine`Please write the days of the month you want to upload cycling
         (${unit}) for and seperate them with a space \`(example: 1 2 3 4 ….)\``,
       );
@@ -1024,7 +988,7 @@ export default class Upload extends Command {
 
       this.validateDays(days);
 
-      const cyclingResponds = await prompt.ask(
+      const cyclingResponds = await this.prompt.ask(
         oneLine`Please write how many cycling (${bold(unit)}) you want to upload
         for days ${days.join(" ")} in the right order, please seperate them with
         a space \`(example: 5,27 20,54 7,25 8,55 …)\``
@@ -1041,7 +1005,7 @@ export default class Upload extends Command {
         }
       }
 
-      await this.getMultiProof(prompt, "cycling");
+      await this.getMultiProof("cycling");
 
       await this.registerDays(days, allCycling, {
         challengeName: challengeName,
