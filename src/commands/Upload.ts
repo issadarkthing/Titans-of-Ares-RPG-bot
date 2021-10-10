@@ -461,7 +461,7 @@ export default class Upload extends Command {
     const menu = new ButtonHandler(this.msg, question);
     let unit: "km" | "mi" = "km";
     let challengeName: ChallengeName = "rowingkm";
-    const activityName = "rowed";
+    const activityName = ` ${unit} rowed`;
 
     menu.addButton(BLUE_BUTTON, "single", async () => {
 
@@ -915,7 +915,7 @@ export default class Upload extends Command {
       oneLine`You can earn 1 point for every 2km or 1,24mi cycled. Do you want
       to upload a single day or multiple days?`;
     const menu = new ButtonHandler(this.msg, question);
-    const activityName = "cycled";
+    const activityName = `${unit} cycled`;
 
     menu.addButton(BLUE_BUTTON, "single", async () => {
 
