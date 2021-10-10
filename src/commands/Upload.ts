@@ -605,10 +605,10 @@ export default class Upload extends Command {
       menu.addButton(BLUE_BUTTON, "10 minutes", () => { session = 10; });
       menu.addButton(RED_BUTTON, "30 minutes", () => { session = 30; });
 
-      const challengeName: ChallengeName = `${activity}${session}`;
-
       menu.addCloseButton();
       await menu.run();
+      
+      const challengeName: ChallengeName = `${activity}${session}`;
 
       await this.getProof(
         1,
