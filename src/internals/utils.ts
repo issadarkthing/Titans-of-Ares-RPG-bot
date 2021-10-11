@@ -192,3 +192,7 @@ export function bold(str: string | number) {
 export function split(str: string) {
   return str.split(/\s+/);
 }
+
+export function parseDecimal(str: string) {
+  return parseFloat(str.replace(",", "."));
+}

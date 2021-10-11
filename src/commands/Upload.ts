@@ -9,6 +9,7 @@ import {
   split,
   NUMBER_BUTTONS as NB,
   inlineCode,
+  parseDecimal,
 } from "../internals/utils";
 import { ButtonHandler } from "../internals/ButtonHandler";
 import { oneLine } from "common-tags";
@@ -502,7 +503,7 @@ export default class Upload extends Command {
 
       this.validateDay(day);
 
-      const distance = parseFloat(await this.prompt.ask(
+      const distance = parseDecimal(await this.prompt.ask(
         oneLine`Please write the distance (${unit}) you have cycled on
         ${bold(day)} ${bold(month)}`
       ));
@@ -546,7 +547,7 @@ export default class Upload extends Command {
         steps for and seperate them with a space \`(example: 1 2 3 4 ….)\``
       );
 
-      const days = split(answer).map(x => parseFloat(x));
+      const days = split(answer).map(x => parseDecimal(x));
 
       this.validateDays(days);
 
@@ -556,7 +557,7 @@ export default class Upload extends Command {
         \`(example: 5,27 20,54 7,25 8,55 …)\``
       );
 
-      const rows = split(rowsRespond).map(x => parseFloat(x));
+      const rows = split(rowsRespond).map(x => parseDecimal(x));
 
       this.validateMultiRegister(days, rows, `${unit} rowed`);
 
@@ -957,7 +958,7 @@ export default class Upload extends Command {
 
       this.validateDay(day);
 
-      const distance = parseFloat(await this.prompt.ask(
+      const distance = parseDecimal(await this.prompt.ask(
         oneLine`Please write the distance (${unit}) you have cycled on
         ${bold(day)} ${bold(month)}`
       ));
@@ -1010,7 +1011,7 @@ export default class Upload extends Command {
         a space \`(example: 5,27 20,54 7,25 8,55 …)\``
       );
 
-      const allCycling = split(cyclingResponds).map(x => parseFloat(x));
+      const allCycling = split(cyclingResponds).map(x => parseDecimal(x));
 
       this.validateMultiRegister(days, allCycling, "cycling");
 
