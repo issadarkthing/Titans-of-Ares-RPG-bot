@@ -380,6 +380,48 @@ export default class Upload extends Command {
       );
     });
 
+    menu.addButton(NB[2], "Get 10 walks over 5km/3,1mi", async () => {
+      await this.handleBonusWalkAndCycle("walking");
+    })
+
+    menu.addButton(NB[3], "Get 10 cycling sessions over 15km/9,32mi", async () => {
+      await this.handleBonusWalkAndCycle("cycling");
+    })
+
+    menu.addCloseButton();
+    await menu.run();
+  }
+
+  private async handleBonusWalkAndCycle(activity: "walking" | "cycling") {
+    
+    const conversionRate = activity ? "5km/3,1mi" : "15km/9,32mi";
+    const challengeName: ChallengeName = activity ? "get10walks" : "get10cycling";
+    const menu = new ButtonHandler(this.msg,
+      oneLine`You can earn 25 points for completing 10 ${activity} sessions over
+      ${conversionRate} this month. Do you want to upload 10 ${activity} session
+      now?`
+    );
+
+    menu.addButton(BLUE_BUTTON, "yes", async () => {
+
+      const day = parseInt(await this.prompt.ask(
+        oneLine`Please write the day of the month of the last ${activity}
+        session that you did to complete this challenge.`
+      ));
+
+      this.validateDay(day);
+
+      await this.getMultiProof(activity);
+
+      await this.registerDay({
+        value: 1,
+        challengeName,
+        activityName: `10 ${activity} session`,
+        day,
+      });
+
+    });
+
     menu.addCloseButton();
     await menu.run();
   }
