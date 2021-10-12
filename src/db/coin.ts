@@ -20,6 +20,15 @@ export async function setCoin($userId: string, $amount: number) {
   return dbRun(sql, { $userId, $amount });
 }
 
+export async function updateCoin($userId: string, $amount: number) {
+  const sql = `
+    UPDATE Player
+    SET Coin = Coin + $amount
+    WHERE DiscordID = $userId
+  `; 
+  return dbRun(sql, { $userId, $amount });
+}
+
 export async function setArenaCoin($userId: string, $amount: number) {
   const sql = `
     UPDATE Player

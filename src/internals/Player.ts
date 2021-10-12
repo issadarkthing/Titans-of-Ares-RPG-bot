@@ -1,6 +1,6 @@
 import { stripIndents } from "common-tags";
 import { GuildMember, MessageEmbed } from "discord.js";
-import { setArenaCoin, setCoin } from "../db/coin";
+import { setArenaCoin, updateCoin } from "../db/coin";
 import { getGears, Gear as GearDB } from "../db/gear";
 import { GemDB, getAllGems } from "../db/gem";
 import { getInventory, Item as ItemDB } from "../db/inventory";
@@ -362,7 +362,7 @@ export class Player extends Fighter {
 
   // this adds or deduces the amount of coins of a player
   async addCoin(amount: number) {
-    await setCoin(this.id, this.coins + amount);
+    await updateCoin(this.id, amount);
     this.coins += amount;
   }
 
