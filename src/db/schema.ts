@@ -117,3 +117,16 @@ schema += `
     GearID      INTEGER
   );
 `
+
+schema += `
+  CREATE TABLE IF NOT EXISTS Book (
+    ID          INTEGER PRIMARY KEY,
+    ChallengeID INTEGER NOT NULL,
+    Day         INTEGER NOT NULL,
+    Name        TEXT NOT NULL,
+    Lesson      TEXT NOT NULL,
+    PhotoUrl    TEXT,
+    Evaluation  TEXT NOT NULL,
+    Finished    DEFAULT 0
+  );
+`
