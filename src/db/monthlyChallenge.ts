@@ -141,6 +141,22 @@ export async function registerChallenge($userID: string, $challengeID: number) {
   return dbRun(sql, { $userID, $challengeID });
 }
 
+export async function deleteDayEntry(
+  $userID: string,
+  $day: number,
+  $challengeID: number,
+  $challengeName: ChallengeName,
+) {
+  const sql = `
+    DELETE FROM DayEntry
+    WHERE EntryID = $entryID AND Day = $day AND ValueType = $challengeName
+  `
+
+  const $entryID = await getEntryID($userID, $challengeID);
+
+  return dbRun(sql, { $entryID, $day, $challengeName });
+}
+
 export async function replaceDayEntry(
   $userID: string,
   $day: number,
