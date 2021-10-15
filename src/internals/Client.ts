@@ -1,5 +1,5 @@
 import { Database, verbose } from "sqlite3";
-import { CommandManager } from "./Command";
+import { CommandManager } from "@jiman24/commandment";
 import Discord, { Guild, TextChannel } from "discord.js";
 import { schema } from "../db/schema";
 import { Phase } from "./TeamArena";
@@ -22,11 +22,13 @@ export default class Client {
   readonly serverID = process.env.SERVER_ID!;
   readonly devID = process.env.DEV_ID!;
   readonly isDev = process.env.ENV === "DEV";
-  readonly commandManager = new CommandManager();
+  readonly commandManager = new CommandManager(this.prefix);
   readonly safeFn = new SafeFn();
   readonly blockingPoll = new Set<BlockingPollHandler>();
   readonly bot = new Discord.Client();
   readonly random = new Random(MersenneTwister19937.autoSeed());
+  /** holds user id of player which command is running */
+  readonly activePlayers = new Set<string>();
   db: Database;
   mainGuild!: Guild;
   logChannel!: TextChannel;

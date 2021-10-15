@@ -28,27 +28,33 @@ client.bot.once('ready', async () => {
   client.startPollEvent();
 })
 
-client.bot.on('message', (msg) => {
+client.bot.on('message', async msg => {
 
   const words = msg.content.split(' ');
   const command = words[0];
-  const args = words.slice(1);
+  const authorID = msg.author.id;
 
   if (
     msg.content.startsWith("Registered") 
-    && (msg.author.id === client.oldBotID || msg.author.id === client.devID)
+    && (authorID === client.oldBotID || authorID === client.devID)
   ) {
     const rank = new Rank();
     rank.exec(msg, []);
     xpLog(msg);
     
   } else if (command.startsWith("!") && !msg.author.bot) {
-    client.xpLogTriggers = msg.author.id;
+    client.xpLogTriggers = authorID;
 
   } else if (!command.startsWith(client.prefix) || msg.author.bot) {
     return;
   }
 
-  const cmd = command.replace(client.prefix, '').toLowerCase();
-  client.commandManager.handleMessage(cmd, msg, args);
+  if (client.activePlayers.has(authorID)) {
+    return msg.channel.send("There is already another command running");
+  } else {
+    client.activePlayers.add(authorID);
+    await client.commandManager.handleMessage(msg);
+    client.activePlayers.delete(authorID);
+  }
+
 })
