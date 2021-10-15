@@ -11,7 +11,7 @@ import {
   inlineCode,
   parseDecimal,
 } from "../internals/utils";
-import { ButtonHandler } from "../internals/ButtonHandler";
+import { ButtonConfirmation, ButtonHandler } from "../internals/ButtonHandler";
 import { oneLine } from "common-tags";
 import { client } from "../main";
 import {
@@ -27,6 +27,7 @@ import {
   getDayEntries,
 } from "../db/monthlyChallenge";
 import { DateTime } from "luxon";
+import { registerBook } from "../db/book";
 
 type RegisterOptions = {
   value: number;
@@ -364,6 +365,10 @@ export default class Upload extends Command {
     }
   }
 
+  private confirmation(text: string) {
+    return (new ButtonConfirmation(this.msg, text)).confirm();
+  }
+
   private async handleBonusChallenges() {
 
     const menu = new ButtonHandler(this.msg, 
@@ -388,6 +393,90 @@ export default class Upload extends Command {
     menu.addButton(NB[3], "Get 10 cycling sessions over 15km/9,32mi", async () => {
       await this.handleBonusWalkAndCycle("cycling");
     })
+
+    menu.addButton(NB[4], "Read an educational book", async () => {
+      await this.handleBook();
+    })
+
+    menu.addCloseButton();
+    await menu.run();
+  }
+
+  private async handleBook() {
+
+    const challengeName: ChallengeName = "readabook";
+    const menu = new ButtonHandler(this.msg,
+      oneLine`You can pick an educational book to read and share it with others.
+      The goal generally is to finish the book within a month, but you are
+      allowed to read it over a longer period. Upon finishing the book you can
+      return to this menu and claim your 25 bonus points by sharing your
+      experience with reading the book. You can claim read a book bonus points
+      once a month.`
+    );
+
+    menu.addButton(BLUE_BUTTON, "yes", async () => {
+
+      const bookName = await this.prompt.ask(
+        `Please type the name of the book you are going to read`
+      );
+
+      const bookNameConfirmation = await this.confirmation(
+        `Ah, I see you are reading ${bold(bookName)}! Is that correct?`
+      );
+
+      if (!bookNameConfirmation) {
+        throw new Error("cancelled book name");
+      }
+
+      const bookLesson = await this.prompt.ask(
+        oneLine`What do you expect to learn about in this book? Please answer in
+        1 message. Please note that this will be shared with the other Titans so
+        they can also learn from your book choice!`
+      );
+
+      const bookLessonConfirmation = await this.confirmation(
+        `You expect to learn the following: "${bookLesson}", is that correct?`
+      );
+
+      if (!bookLessonConfirmation) {
+        throw new Error("cancelled book lesson");
+      }
+
+      const addBookPhoto = await this.confirmation(
+        `Do you want to add a picture/screenshot/photo of your book?`
+      );
+
+
+      if (addBookPhoto) {
+
+        await this.getProof(
+          1,
+          challengeName,
+          this.date.day,
+          "Please upload 1 picture of your book in the chat"
+        );
+
+      }
+
+
+      await registerBook({
+        $userID: this.msg.author.id,
+        $challengeID: this.challenge.ID,
+        $day: this.date.day,
+        $name: bookName,
+        $lesson: bookLesson,
+      });
+
+      const succesMessage = oneLine`Excellent! Your book is registered and you
+        can return here once you have finished it to claim the bonus points!`
+
+      if (client.isDev) {
+        await this.msg.channel.send(succesMessage);
+      } else {
+        await client.mainTextChannel.send(succesMessage);
+      }
+
+    });
 
     menu.addCloseButton();
     await menu.run();

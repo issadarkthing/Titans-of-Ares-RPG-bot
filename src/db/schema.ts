@@ -121,12 +121,12 @@ schema += `
 schema += `
   CREATE TABLE IF NOT EXISTS Book (
     ID          INTEGER PRIMARY KEY,
+    DiscordID   TEXT NOT NULL,
     ChallengeID INTEGER NOT NULL,
     Day         INTEGER NOT NULL,
     Name        TEXT NOT NULL,
     Lesson      TEXT NOT NULL,
-    PhotoUrl    TEXT,
-    Evaluation  TEXT NOT NULL,
+    Evaluation  TEXT,
     Finished    DEFAULT 0
   );
 `

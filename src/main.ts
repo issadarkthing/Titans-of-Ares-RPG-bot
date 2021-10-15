@@ -24,6 +24,7 @@ client.bot.once('ready', async () => {
   client.mainGuild = guild;
   client.logChannel = channels.get(client.xpLogChannelID) as TextChannel;
   client.teamArenaChannel = channels.get(client.teamArenaChannelID) as TextChannel;
+  client.mainTextChannel = channels.get(client.mainTextChannelID) as TextChannel;
   client.startPollEvent();
 })
 

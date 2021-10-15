@@ -189,6 +189,10 @@ export function bold(str: string | number) {
   return `**${str}**`;
 }
 
+export function italic(str: string | number) {
+  return `_${str}_`;
+}
+
 export function split(str: string) {
   return str.split(/\s+/);
 }

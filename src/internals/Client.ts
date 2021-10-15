@@ -17,6 +17,7 @@ export default class Client {
   readonly rankChannelID = process.env.RANK_CHANNEL!;
   readonly xpLogChannelID = process.env.XP_LOG_CHANNEL!;
   readonly teamArenaChannelID = process.env.TEAM_ARENA_CHANNEL!;
+  readonly mainTextChannelID = process.env.MAIN_TEXT_CHANNEL!;
   readonly dbPath = process.env.DB!;
   readonly serverID = process.env.SERVER_ID!;
   readonly devID = process.env.DEV_ID!;
@@ -29,6 +30,7 @@ export default class Client {
   db: Database;
   mainGuild!: Guild;
   logChannel!: TextChannel;
+  mainTextChannel!: TextChannel;
   teamArenaChannel!: TextChannel;
   /** functions to be run every 1 seconds interval */
   pollHandlers: PollHandler[] = [];

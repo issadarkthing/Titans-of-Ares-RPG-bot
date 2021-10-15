@@ -1,5 +1,5 @@
 import { Collection, Message, MessageEmbed, MessageReaction, User } from "discord.js";
-import { BROWN } from "./utils";
+import { BROWN, BLUE_BUTTON } from "./utils";
 
 interface Button {
   emoji: string;
@@ -98,5 +98,21 @@ export class ButtonHandler {
         await cb(reaction.emoji.name);
       }
     }
+  }
+}
+
+export class ButtonConfirmation extends ButtonHandler {
+  private result = false;
+
+  constructor(msg: Message, embed: string | MessageEmbed) {
+    super(msg, embed);
+
+    this.addButton(BLUE_BUTTON, "yes", () => this.result = true);
+    this.addCloseButton();
+  }
+
+  async confirm() {
+    await this.run();
+    return this.result;
   }
 }
