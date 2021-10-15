@@ -15,6 +15,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@jiman24/commandment": "^0.2.5",
     "@jiman24/rankcard": "^1.0.1",
     "canvacord": "^5.2.1",
     "canvas": "^2.8.0",
