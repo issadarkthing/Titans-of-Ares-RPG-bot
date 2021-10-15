@@ -782,8 +782,8 @@ export default class Upload extends Command {
 
         const question =
           oneLine`You already registered ${amount} ${activity} session on
-          ${bold(month)} ${bold(day)}. Do you want to replace or add point on
-          this day?`;
+          ${bold(month)} ${bold(day)}. Do you want to replace points on this
+          day?`;
 
         const menu = new ButtonHandler(this.msg, question);
 
@@ -863,26 +863,33 @@ export default class Upload extends Command {
 
         const dayEntries = await getDayEntries(this.msg.author.id, this.challenge.ID);
         const dayEntry = dayEntries.filter(x => x.Day === day);
-        const yogaEntry = dayEntry.find(x => x.ValueType.includes(activity));
+        const activityEntry = dayEntry.find(x => x.ValueType.includes(activity));
 
-        if (yogaEntry) {
-          const valueType = yogaEntry.ValueType;
+        if (activityEntry) {
+          const valueType = activityEntry.ValueType;
           const amount = valueType.includes("10") ? "10min+" : "30min+";
 
           const question =
             oneLine`You already registered ${amount} ${activity} session on
-            ${bold(month)} ${bold(day)}. Do you want to replace or add point on
-            this day?`;
+            ${bold(month)} ${bold(day)}. Do you want to replace points on this
+            day?`;
 
           const menu = new ButtonHandler(this.msg, question);
 
-          menu.addButton(BLUE_BUTTON, "replace", () => {
-            replaceDayEntry(
+          menu.addButton(BLUE_BUTTON, "replace", async () => {
+            await deleteDayEntry(
+              this.msg.author.id,
+              options.day,
+              this.challenge.ID,
+              activityEntry.ValueType,
+            );
+
+            await registerDayEntry(
               this.msg.author.id,
               options.day,
               this.challenge.ID,
               options.challengeName,
-              options.value,
+              1,
             );
 
             this.msg.channel.send(`Successfully replaced`);
