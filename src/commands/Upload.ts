@@ -53,7 +53,7 @@ export default class Upload extends Command {
     const channelID = client.isDev ? "859483633534238762" : msg.channel.id;
     this.msg = msg;
     this.challenge = await getChallengeByChannelID(channelID);
-    this.prompt = new Prompt(this.msg, { cancelKeyword: ["cancel"] });
+    this.prompt = new Prompt(this.msg, { cancelKeyword: ["cancel", "Cancel"] });
     this.convertTable = await getConvertTable();
 
     if (!this.challenge) {
@@ -256,7 +256,10 @@ export default class Upload extends Command {
         oneLine`Please upload one or more screenshots proving your ${activity}
         for these days of the month. When done, please write 'done' in the
         channel.`,
-        { max: Number.MAX_SAFE_INTEGER, cancelKeyword: ["done", "cancel"] },
+        { 
+          max: Number.MAX_SAFE_INTEGER, 
+          cancelKeyword: ["done", "Done", "cancel"] 
+        },
       );
 
       if (collected.attachments.size <= 0) {
@@ -266,7 +269,7 @@ export default class Upload extends Command {
     } catch (e: unknown) {
       const err = e as CancelledInputError;
 
-      if (err.keyword !== "done") {
+      if (err.keyword !== "done" && err.keyword !== "Done") {
         throw err;
       }
     }
