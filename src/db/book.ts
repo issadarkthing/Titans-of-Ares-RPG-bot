@@ -60,3 +60,20 @@ export async function registerBook(options: BookOptions) {
   return dbRun(sql, { ...options });
 }
 
+export async function removeBook($bookID: number) {
+  const sql = `
+    DELETE FROM Book WHERE ID = $bookID
+  `
+
+  return dbRun(sql, { $bookID });
+}
+
+export async function finishBook($bookID: number, $evaluation: string) {
+  const sql = `
+    UPDATE Book
+    SET Finished = 1, Evaluation = $evaluation
+    WHERE ID = $bookID
+  `
+
+  return dbRun(sql, { $bookID, $evaluation });
+}

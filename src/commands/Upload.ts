@@ -10,6 +10,7 @@ import {
   NUMBER_BUTTONS as NB,
   inlineCode,
   parseDecimal,
+  WHITE_BUTTON,
 } from "../internals/utils";
 import { ButtonConfirmation, ButtonHandler } from "../internals/ButtonHandler";
 import { oneLine } from "common-tags";
@@ -27,7 +28,7 @@ import {
   getDayEntries,
 } from "../db/monthlyChallenge";
 import { DateTime } from "luxon";
-import { registerBook } from "../db/book";
+import { registerBook, getAllBooks, removeBook, finishBook } from "../db/book";
 
 type RegisterOptions = {
   value: number;
@@ -418,6 +419,81 @@ export default class Upload extends Command {
     );
 
     menu.addButton(BLUE_BUTTON, "yes", async () => {
+
+      const books = await getAllBooks(this.msg.author.id);
+      // finds unfinished book
+      const book = books.find(x => !x.Finished);
+
+      if (book) {
+
+        const menu = new ButtonHandler(this.msg,
+          `Did you finish reading ${bold(book.Name)}?`
+        );
+
+        // eslint-disable-next-line
+        menu.addButton(BLUE_BUTTON, "Continue reading", () => {});
+
+        menu.addButton(RED_BUTTON, "I finished my book", async () => {
+
+          const evaluation = await this.prompt.ask(
+            oneLine`Excellent! Please share us your thoughts in one message. Did
+            you learn something? What was it about? Let others know if the book
+            is worth to pick up or not!`
+          );
+
+          const confirmation = await this.confirmation(
+            oneLine`The following message will be shared with the other Titans:
+            "${evaluation}". Is the text correct?`
+          );
+
+          if (confirmation) {
+
+            await this.registerDay({
+              value: 1,
+              activityName: "a book",
+              challengeName,
+              day: this.date.day,
+            });
+
+            await finishBook(book.ID, evaluation);
+
+            client.mainTextChannel.send(
+              oneLine`${this.msg.author.username} has finished the book
+              ${book.Name}! The evaluation is the following:
+              "${evaluation}".  Hopefully this also helps you to consider
+              picking the book up or not!`
+            )
+
+          }
+
+        });
+
+        menu.addButton(
+          WHITE_BUTTON, 
+          "I want to remove my current book", 
+          async () => {
+
+            const confirmation = await this.confirmation(
+              oneLine`You are about to remove your current book
+              ${book.Name}, are you sure?`
+            );
+
+            if (confirmation) {
+
+              await removeBook(book.ID);
+              
+              this.msg.channel.send(
+                oneLine`You have removed ${book.Name} from the read a
+                book challenge!`
+              );
+            }
+          },
+        )
+
+        await menu.run();
+
+        return;
+      }
 
       const bookName = await this.prompt.ask(
         `Please type the name of the book you are going to read`
