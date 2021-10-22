@@ -1,6 +1,5 @@
 import crypto, { createHash } from "crypto";
 import { DMChannel, TextChannel } from "discord.js";
-import { MersenneTwister19937, Random } from "random-js";
 
 export const RED = "#FF0000";
 export const GREEN = "#008000";

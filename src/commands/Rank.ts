@@ -65,11 +65,12 @@ export default class extends Command {
     channel.stopTyping();
 
     if (args.length === 0) {
-      if (messages.size > 0) {
-        await nukeChannel(channel);
-      }
 
-      await channel.send({ files });
+      await nukeChannel(channel);
+
+      for (const file of files) {
+        await channel.send({ files: [file] });
+      }
 
     } else if (args.length > 0) {
       try {
