@@ -37,7 +37,6 @@ export default class extends Command {
       return;
     }
 
-    const messages = await channel.messages.fetch();
     let count = 10;
 
     const rankCount = parseInt(args[0]);
