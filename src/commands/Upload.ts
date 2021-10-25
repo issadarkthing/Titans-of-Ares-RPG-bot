@@ -402,6 +402,45 @@ export default class Upload extends Command {
       await this.handleBook();
     })
 
+    menu.addButton(NB[5], "Food diary", async () => {
+      await this.handleFoodDiary();
+    })
+
+    menu.addCloseButton();
+    await menu.run();
+  }
+
+  private async handleFoodDiary() {
+
+    const challengeName: ChallengeName = "diary";
+    const activity = "food diary logging";
+    const menu = new ButtonHandler(this.msg,
+      oneLine`You can earn 10 points for counting your food and calories for at
+      least 5 days in 1 week (Monday to Sunday). These points can be earned
+      every week. Do you want to upload a week of food logging now? Yes/go back
+      in menu/exit menu`
+    );
+
+    menu.addButton(BLUE_BUTTON, "yes", async () => {
+
+      const day = parseInt(await this.prompt.ask(
+        oneLine`Please write the day of the month of the last food logging that
+        you did to complete this challenge.`
+      ));
+
+      this.validateDay(day);
+
+      await this.getMultiProof(activity);
+
+      await this.registerDay({
+        value: 1,
+        challengeName,
+        activityName: activity,
+        day,
+      });
+
+    });
+
     menu.addCloseButton();
     await menu.run();
   }
