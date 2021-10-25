@@ -410,6 +410,63 @@ export default class Upload extends Command {
       await this.handleWorkoutSelfie();
     })
 
+    menu.addButton(NB[7], "Share a personal photo", async () => {
+      await this.handlePersonalPhoto();
+    })
+
+    menu.addCloseButton();
+    await menu.run();
+  }
+
+  private async handlePersonalPhoto() {
+
+    const challengeName: ChallengeName = "personalphoto";
+    const activity = "share a personal photo";
+    const menu = new ButtonHandler(this.msg,
+      oneLine`You can earn 5 points for sharing a personal photo with text.
+      These points can be earned once a month. You can share a photo of
+      yourself, with your friends, with your pet or family. Do you want to share
+      a personal photo now?`
+    );
+
+    menu.addButton(BLUE_BUTTON, "yes", async () => {
+
+
+      await this.getProof(
+        1,
+        activity,
+        this.date.day,
+        "Please upload your personal photo now.",
+      );
+
+      const title = await this.prompt.ask(
+        oneLine`Please write text to be posted with your personal photo, please
+        write it in 1 message.`
+      );
+
+      const confirmation = await this.confirmation(
+        oneLine`Your text with your personal photo is the following:
+        ${title}, this will be shared with your photo. Is this
+        correct?`
+      );
+
+      if (confirmation) {
+
+        await this.registerDay({
+          value: 1,
+          challengeName,
+          activityName: activity,
+          day: this.date.day,
+        });
+
+        client.mainTextChannel.send(
+          oneLine`${this.msg.author.username} has uploaded a personal photo!
+          ${title} `
+        )
+      }
+
+    });
+
     menu.addCloseButton();
     await menu.run();
   }
