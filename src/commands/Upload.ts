@@ -406,6 +406,62 @@ export default class Upload extends Command {
       await this.handleFoodDiary();
     })
 
+    menu.addButton(NB[6], "Share a workout selfie", async () => {
+      await this.handleWorkoutSelfie();
+    })
+
+    menu.addCloseButton();
+    await menu.run();
+  }
+
+  private async handleWorkoutSelfie() {
+
+    const challengeName: ChallengeName = "workoutselfie";
+    const activity = "share a workout selfie";
+    const menu = new ButtonHandler(this.msg,
+      oneLine`You can earn 5 points for sharing a workout selfie (or post
+      workout). These points can be earned 4 times a month. Do you want to
+      share a workout selfie now? Yes/go back in menu/exit menu`
+    );
+
+    menu.addButton(BLUE_BUTTON, "yes", async () => {
+
+
+      await this.getProof(
+        1,
+        activity,
+        this.date.day,
+        "Please upload your workout selfie now.",
+      );
+
+      const title = await this.prompt.ask(
+        oneLine`Please give a title or text to your workout selfie, please write
+        it in 1 message.`
+      );
+
+      const confirmation = await this.confirmation(
+        oneLine`Your title/text with your workout selfie is the following:
+        ${title}, this will be shared with your workout selfie. Is
+        this correct?`
+      );
+
+      if (confirmation) {
+
+        await this.registerDay({
+          value: 1,
+          challengeName,
+          activityName: activity,
+          day: this.date.day,
+        });
+
+        client.mainTextChannel.send(
+          oneLine`${this.msg.author.username} has uploaded a workoutselfie!
+          ${title} `
+        )
+      }
+
+    });
+
     menu.addCloseButton();
     await menu.run();
   }

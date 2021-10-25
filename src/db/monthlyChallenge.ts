@@ -23,6 +23,7 @@ export type ChallengeName =
   | "get10cycling"
   | "readabook"
   | "diary"
+  | "workoutselfie"
 ;
 
 export async function getChallengeId($channelId: string) {
