@@ -133,7 +133,7 @@ export default class Upload extends Command {
       );
 
     } catch (err) {
-      msg.channel.send(err.message);
+      msg.channel.send((err as Error).message);
       msg.channel.send(
         `Upload process failed. Please rerun \`${client.prefix}${this.name}\``
       );
