@@ -1,4 +1,4 @@
-import { Database, verbose } from "sqlite3";
+import sqlite from "sqlite3";
 import { CommandManager } from "@jiman24/commandment";
 import Discord, { Guild, TextChannel } from "discord.js";
 import { schema } from "../db/schema";
@@ -29,7 +29,7 @@ export default class Client {
   readonly random = new Random(MersenneTwister19937.autoSeed());
   /** holds user id of player which command is running */
   readonly activePlayers = new Set<string>();
-  db: Database;
+  db: sqlite.Database;
   mainGuild!: Guild;
   logChannel!: TextChannel;
   mainTextChannel!: TextChannel;
@@ -45,8 +45,7 @@ export default class Client {
   arenaPhase = Phase.SIGNUP_1;
 
   constructor(dbPath: string) {
-    const sqlite3 = verbose();
-    this.db = new sqlite3.Database(dbPath);
+    this.db = new sqlite.Database(dbPath);
   }
 
   addPollHandler(fn: PollHandler) {
